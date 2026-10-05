@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="12dp"
+    app:cardBackgroundColor="#101725"
+    app:cardCornerRadius="18dp"
+    app:cardElevation="3dp"
+    app:strokeColor="#1E293B"
+    app:strokeWidth="1dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp">
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardIconItem"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                android:layout_centerVertical="true"
+                app:cardBackgroundColor="#0D2247"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="0dp"
+                app:strokeWidth="0dp">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_gravity="center"
+                    android:contentDescription="Producto"
+                    android:src="@drawable/ic_box"
+                    app:tint="#3B82F6" />
+            </com.google.android.material.card.MaterialCardView>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="12dp"
+                android:layout_toEndOf="@id/cardIconItem"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tvDetalleItemNombre"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Bolt"
+                    android:textColor="@color/white"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tvDetalleItemCategoria"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:background="#0D2247"
+                    android:paddingHorizontal="8dp"
+                    android:paddingVertical="2dp"
+                    android:text="BEBIDAS"
+                    android:textColor="#3B82F6"
+                    android:textSize="10sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+        </RelativeLayout>
+
+        <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#1E293B" android:layout_marginBottom="10dp" />
+
+        <RelativeLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="6dp">
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Paquetes comprados" android:textColor="#94A3B8" android:textSize="13sp" />
+            <TextView android:id="@+id/tvDetalleItemPaquetes" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_alignParentEnd="true" android:text="5" android:textColor="@color/white" android:textSize="13sp" android:textStyle="bold" />
+        </RelativeLayout>
+
+        <RelativeLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="6dp">
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Unidades ingresadas" android:textColor="#94A3B8" android:textSize="13sp" />
+            <TextView android:id="@+id/tvDetalleItemUnidades" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_alignParentEnd="true" android:text="60" android:textColor="@color/white" android:textSize="13sp" android:textStyle="bold" />
+        </RelativeLayout>
+
+        <RelativeLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="6dp">
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Precio por paquete" android:textColor="#94A3B8" android:textSize="13sp" />
+            <TextView android:id="@+id/tvDetalleItemPrecioPaq" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_alignParentEnd="true" android:text="S/ 30.00" android:textColor="@color/white" android:textSize="13sp" android:textStyle="bold" />
+        </RelativeLayout>
+
+        <RelativeLayout android:layout_width="match_parent" android:layout_height="wrap_content">
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Subtotal" android:textColor="#94A3B8" android:textSize="13sp" />
+            <TextView android:id="@+id/tvDetalleItemSubtotal" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_alignParentEnd="true" android:text="S/ 150.00" android:textColor="#3B82F6" android:textSize="13sp" android:textStyle="bold" />
+        </RelativeLayout>
+
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

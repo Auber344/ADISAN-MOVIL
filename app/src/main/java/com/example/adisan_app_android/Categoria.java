@@ -16,6 +16,10 @@ public class Categoria {
 
     public Categoria() {}
 
+    public Categoria(String nombre) {
+        this.nombre = nombre;
+    }
+
     public Categoria(String nombre, int factor) {
         this.nombre = nombre;
         this.factor = factor;

@@ -3,113 +3,153 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    app:cardBackgroundColor="@color/white"
-    app:cardCornerRadius="20dp"
-    app:cardElevation="8dp"
-    app:strokeWidth="0dp">
+    app:cardBackgroundColor="#0E2142"
+    app:cardCornerRadius="24dp"
+    app:cardElevation="12dp"
+    app:strokeColor="#1E3A8A"
+    app:strokeWidth="1dp">
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="24dp">
+        android:overScrollMode="never">
 
-        <TextView
-            android:id="@+id/tvDialogTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Nuevo Producto"
-            android:textColor="@color/text_primary"
-            android:textSize="20sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/tvDialogSubtitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="2dp"
-            android:text="Ingresa los datos del producto"
-            android:textColor="@color/text_secondary"
-            android:textSize="13sp" />
-
-        <!-- Campo Nombre -->
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/tilNombre"
-            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            app:boxCornerRadiusBottomEnd="10dp"
-            app:boxCornerRadiusBottomStart="10dp"
-            app:boxCornerRadiusTopEnd="10dp"
-            app:boxCornerRadiusTopStart="10dp"
-            app:boxStrokeColor="@color/input_stroke_color">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etNombre"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Nombre del producto"
-                android:inputType="textPersonName"
-                android:maxLines="1"
-                android:textColor="@color/text_primary"
-                android:textSize="14sp" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <!-- Selector de Proveedor -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:padding="24dp">
 
             <TextView
+                android:id="@+id/tvDialogTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="4dp"
-                android:text="Proveedor"
-                android:textColor="@color/text_secondary"
-                android:textSize="12sp"
+                android:text="Nuevo producto"
+                android:textColor="@color/white"
+                android:textSize="20sp"
                 android:textStyle="bold" />
-
-            <Spinner
-                android:id="@+id/spinnerProveedor"
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:background="@drawable/bg_spinner_outlined"
-                android:paddingHorizontal="12dp" />
-        </LinearLayout>
-
-        <!-- Selector de Categoría con Botón "+" -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:orientation="vertical">
 
             <TextView
+                android:id="@+id/tvDialogSubtitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="4dp"
-                android:text="Categoría"
-                android:textColor="@color/text_secondary"
-                android:textSize="12sp"
-                android:textStyle="bold" />
+                android:layout_marginTop="2dp"
+                android:text="Ingresa los datos del producto"
+                android:textColor="#7D99C6"
+                android:textSize="13sp" />
 
+            <!-- Sección: Información general -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
 
-                <Spinner
-                    android:id="@+id/spinnerCategoria"
+                <ImageView
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:src="@drawable/ic_box"
+                    app:tint="#3B82F6" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:text="Información general"
+                    android:textColor="@color/white"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <!-- Campo Nombre -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilNombre"
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                app:boxBackgroundColor="#122B52"
+                app:boxCornerRadiusBottomEnd="12dp"
+                app:boxCornerRadiusBottomStart="12dp"
+                app:boxCornerRadiusTopEnd="12dp"
+                app:boxCornerRadiusTopStart="12dp"
+                app:boxStrokeColor="#1F4072"
+                app:hintTextColor="#5B7BA8">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etNombre"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Ej. Coca Cola 1.5L *"
+                    android:inputType="textPersonName"
+                    android:maxLines="1"
+                    android:textColor="@color/white"
+                    android:textColorHint="#5B7BA8"
+                    android:textSize="14sp" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- Selector de Proveedor (Autocomplete + Dropdown) -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilProveedor"
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                app:boxBackgroundColor="#122B52"
+                app:boxCornerRadiusBottomEnd="12dp"
+                app:boxCornerRadiusBottomStart="12dp"
+                app:boxCornerRadiusTopEnd="12dp"
+                app:boxCornerRadiusTopStart="12dp"
+                app:boxStrokeColor="#1F4072"
+                app:hintTextColor="#5B7BA8">
+
+                <AutoCompleteTextView
+                    android:id="@+id/actvProveedor"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Proveedor *"
+                    android:inputType="text"
+                    android:maxLines="1"
+                    android:textColor="@color/white"
+                    android:textColorHint="#5B7BA8"
+                    android:textSize="14sp" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- Selector de Categoría (Autocomplete + Dropdown) con Botón "+" -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/tilCategoria"
+                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                     android:layout_width="0dp"
-                    android:layout_height="48dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginEnd="8dp"
                     android:layout_weight="1"
-                    android:background="@drawable/bg_spinner_outlined"
-                    android:paddingHorizontal="12dp" />
+                    app:boxBackgroundColor="#122B52"
+                    app:boxCornerRadiusBottomEnd="12dp"
+                    app:boxCornerRadiusBottomStart="12dp"
+                    app:boxCornerRadiusTopEnd="12dp"
+                    app:boxCornerRadiusTopStart="12dp"
+                    app:boxStrokeColor="#1F4072"
+                    app:hintTextColor="#5B7BA8">
+
+                    <AutoCompleteTextView
+                        android:id="@+id/actvCategoria"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Categoría *"
+                        android:inputType="text"
+                        android:maxLines="1"
+                        android:textColor="@color/white"
+                        android:textColorHint="#5B7BA8"
+                        android:textSize="14sp" />
+                </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnCrearCategoria"
@@ -122,160 +162,207 @@
                     android:insetBottom="0dp"
                     android:padding="0dp"
                     android:text="+"
-                    android:textColor="@color/blue_primary"
+                    android:textColor="#007AFF"
                     android:textSize="20sp"
                     android:textStyle="bold"
-                    app:cornerRadius="10dp"
-                    app:strokeColor="@color/blue_primary"
+                    app:cornerRadius="12dp"
+                    app:strokeColor="#1F4072"
                     app:strokeWidth="1dp" />
 
             </LinearLayout>
-        </LinearLayout>
 
-        <!-- Fila Stock y Factor -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:baselineAligned="false"
-            android:orientation="horizontal">
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/tilStock"
-                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-                android:layout_width="0dp"
+            <!-- Sección: Presentación -->
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="6dp"
-                android:layout_weight="1"
-                app:boxCornerRadiusBottomEnd="10dp"
-                app:boxCornerRadiusBottomStart="10dp"
-                app:boxCornerRadiusTopEnd="10dp"
-                app:boxCornerRadiusTopStart="10dp"
-                app:boxStrokeColor="@color/input_stroke_color">
+                android:layout_marginTop="16dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:src="@drawable/ic_box"
+                    app:tint="#F59E0B" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:text="Presentación"
+                    android:textColor="@color/white"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <!-- Fila Unidades por Paquete -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilUnidadesPorPaquete"
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                app:boxBackgroundColor="#122B52"
+                app:boxCornerRadiusBottomEnd="12dp"
+                app:boxCornerRadiusBottomStart="12dp"
+                app:boxCornerRadiusTopEnd="12dp"
+                app:boxCornerRadiusTopStart="12dp"
+                app:boxStrokeColor="#1F4072"
+                app:hintTextColor="#5B7BA8">
 
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etStock"
+                    android:id="@+id/etUnidadesPorPaquete"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Stock"
+                    android:hint="Unidades por paquete *"
                     android:inputType="number"
                     android:maxLines="1"
-                    android:textColor="@color/text_primary"
+                    android:textColor="@color/white"
+                    android:textColorHint="#5B7BA8"
                     android:textSize="14sp" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/tilFactor"
-                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-                android:layout_width="0dp"
+            <!-- Sección: Precios -->
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="6dp"
-                android:layout_weight="1"
-                app:boxCornerRadiusBottomEnd="10dp"
-                app:boxCornerRadiusBottomStart="10dp"
-                app:boxCornerRadiusTopEnd="10dp"
-                app:boxCornerRadiusTopStart="10dp"
-                app:boxStrokeColor="@color/input_stroke_color">
+                android:layout_marginTop="16dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:src="@drawable/ic_dollar"
+                    app:tint="#10B981" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:text="Precios"
+                    android:textColor="@color/white"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <!-- Precio Compra Paquete -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilPrecioCompraPaquete"
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                app:boxBackgroundColor="#122B52"
+                app:boxCornerRadiusBottomEnd="12dp"
+                app:boxCornerRadiusBottomStart="12dp"
+                app:boxCornerRadiusTopEnd="12dp"
+                app:boxCornerRadiusTopStart="12dp"
+                app:boxStrokeColor="#1F4072"
+                app:hintTextColor="#5B7BA8">
 
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etFactor"
+                    android:id="@+id/etPrecioCompraPaquete"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Factor (ej: 12)"
-                    android:inputType="number"
-                    android:maxLines="1"
-                    android:textColor="@color/text_primary"
-                    android:textSize="14sp" />
-            </com.google.android.material.textfield.TextInputLayout>
-
-        </LinearLayout>
-
-        <!-- Fila Precio Compra y Venta -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:baselineAligned="false"
-            android:orientation="horizontal">
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/tilPrecioCompra"
-                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="6dp"
-                android:layout_weight="1"
-                app:boxCornerRadiusBottomEnd="10dp"
-                app:boxCornerRadiusBottomStart="10dp"
-                app:boxCornerRadiusTopEnd="10dp"
-                app:boxCornerRadiusTopStart="10dp"
-                app:boxStrokeColor="@color/input_stroke_color">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etPrecioCompra"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="Precio Compra"
+                    android:hint="Precio de compra (por paquete) *"
                     android:inputType="numberDecimal"
                     android:maxLines="1"
-                    android:textColor="@color/text_primary"
+                    android:textColor="@color/white"
+                    android:textColorHint="#5B7BA8"
                     android:textSize="14sp" />
             </com.google.android.material.textfield.TextInputLayout>
 
+            <!-- Precio Venta Paquete -->
             <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/tilPrecioVenta"
+                android:id="@+id/tilPrecioVentaPaquete"
                 style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="6dp"
-                android:layout_weight="1"
-                app:boxCornerRadiusBottomEnd="10dp"
-                app:boxCornerRadiusBottomStart="10dp"
-                app:boxCornerRadiusTopEnd="10dp"
-                app:boxCornerRadiusTopStart="10dp"
-                app:boxStrokeColor="@color/input_stroke_color">
+                android:layout_marginTop="10dp"
+                app:boxBackgroundColor="#122B52"
+                app:boxCornerRadiusBottomEnd="12dp"
+                app:boxCornerRadiusBottomStart="12dp"
+                app:boxCornerRadiusTopEnd="12dp"
+                app:boxCornerRadiusTopStart="12dp"
+                app:boxStrokeColor="#1F4072"
+                app:hintTextColor="#5B7BA8">
 
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etPrecioVenta"
+                    android:id="@+id/etPrecioVentaPaquete"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Precio Venta"
+                    android:hint="Precio de venta (por paquete) *"
                     android:inputType="numberDecimal"
                     android:maxLines="1"
-                    android:textColor="@color/text_primary"
+                    android:textColor="@color/white"
+                    android:textColorHint="#5B7BA8"
                     android:textSize="14sp" />
             </com.google.android.material.textfield.TextInputLayout>
 
-        </LinearLayout>
-
-        <!-- Botones de Accion -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:gravity="end"
-            android:orientation="horizontal">
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnCancelarDialog"
-                style="@style/Widget.Material3.Button.TextButton"
-                android:layout_width="wrap_content"
+            <!-- Precio Venta Unidad -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilPrecioVentaUnidad"
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:text="Cancelar"
-                android:textColor="@color/text_secondary" />
+                android:layout_marginTop="10dp"
+                app:boxBackgroundColor="#122B52"
+                app:boxCornerRadiusBottomEnd="12dp"
+                app:boxCornerRadiusBottomStart="12dp"
+                app:boxCornerRadiusTopEnd="12dp"
+                app:boxCornerRadiusTopStart="12dp"
+                app:boxStrokeColor="#1F4072"
+                app:hintTextColor="#5B7BA8">
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnGuardarDialog"
-                android:layout_width="wrap_content"
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etPrecioVentaUnidad"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Precio de venta (por unidad) *"
+                    android:inputType="numberDecimal"
+                    android:maxLines="1"
+                    android:textColor="@color/white"
+                    android:textColorHint="#5B7BA8"
+                    android:textSize="14sp" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- Botones de Accion -->
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:backgroundTint="@color/blue_primary"
-                android:text="Guardar"
-                android:textColor="@color/white"
-                app:cornerRadius="10dp" />
+                android:layout_marginTop="24dp"
+                android:baselineAligned="false"
+                android:orientation="horizontal">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnCancelarDialog"
+                    style="@style/Widget.Material3.Button.TextButton"
+                    android:layout_width="0dp"
+                    android:layout_height="48dp"
+                    android:layout_marginEnd="6dp"
+                    android:layout_weight="1"
+                    android:text="Cancelar"
+                    android:textColor="#7D99C6"
+                    android:textSize="14sp" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnGuardarDialog"
+                    android:layout_width="0dp"
+                    android:layout_height="48dp"
+                    android:layout_marginStart="6dp"
+                    android:layout_weight="1"
+                    android:backgroundTint="#F97316"
+                    android:text="Guardar"
+                    android:textAllCaps="false"
+                    android:textColor="@color/white"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    app:cornerRadius="12dp" />
+
+            </LinearLayout>
 
         </LinearLayout>
-
-    </LinearLayout>
+    </ScrollView>
 
 </com.google.android.material.card.MaterialCardView>

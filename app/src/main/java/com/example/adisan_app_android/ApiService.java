@@ -68,6 +68,12 @@ public interface ApiService {
     @GET("api/categorias")
     Call<List<Categoria>> getCategorias();
 
+    @GET("api/categorias")
+    Call<com.google.gson.JsonElement> getCategoriasElement();
+
+    @GET("api/categorias")
+    Call<CategoriaResponse> getCategoriasResponse();
+
     @POST("api/categorias")
     Call<CategoriaResponse> crearCategoria(@Body Categoria categoria);
 
@@ -77,6 +83,9 @@ public interface ApiService {
 
     @GET("api/productos")
     Call<ProductoResponse> getProductos();
+
+    @GET("api/productos")
+    Call<com.google.gson.JsonElement> getProductosElement();
 
     @GET("api/productos")
     Call<List<Producto>> getProductosDirectList();
@@ -106,12 +115,81 @@ public interface ApiService {
     @GET("api/pedidos/{id}")
     Call<Pedido> getPedidoById(@Path("id") int id);
 
+    @GET("api/pedidos/{id}")
+    Call<com.google.gson.JsonElement> getPedidoByIdJson(@Path("id") int id);
+
     @POST("api/pedidos")
     Call<PedidoResponse> crearPedido(@Body Pedido pedido);
+
+    @POST("api/pedidos")
+    Call<PedidoResponse> crearPedidoNuevo(@Body PedidoRequest request);
 
     @PUT("api/pedidos/{id}")
     Call<PedidoResponse> editarPedido(@Path("id") int id, @Body Pedido pedido);
 
     @DELETE("api/pedidos/{id}")
     Call<PedidoResponse> eliminarPedido(@Path("id") int id);
+
+    // ==========================================
+    // INVENTARIO
+    // ==========================================
+
+    @GET("api/inventario")
+    Call<InventarioResponse> getInventario();
+
+    @GET("api/inventario")
+    Call<List<Inventario>> getInventarioDirectList();
+
+    @GET("api/inventario/{productoId}")
+    Call<Inventario> getInventarioByProductoId(@Path("productoId") int productoId);
+
+    @GET("api/inventario/{productoId}/movimientos")
+    Call<MovimientoInventarioResponse> getMovimientosInventario(@Path("productoId") int productoId);
+
+    @GET("api/inventario/{productoId}/movimientos")
+    Call<List<MovimientoInventario>> getMovimientosInventarioDirectList(@Path("productoId") int productoId);
+
+    @POST("api/inventario/{productoId}/ajustes")
+    Call<InventarioResponse> ajustarInventario(@Path("productoId") int productoId, @Body InventarioAjusteRequest request);
+
+    // ==========================================
+    // COMPRAS
+    // ==========================================
+
+    @GET("api/compras")
+    Call<CompraResponse> getCompras();
+
+    @GET("api/compras")
+    Call<List<Compra>> getComprasDirectList();
+
+    @GET("api/compras/{id}")
+    Call<Compra> getCompraById(@Path("id") int id);
+
+    @POST("api/compras")
+    Call<CompraResponse> crearCompra(@Body CompraRequest request);
+
+    // ==========================================
+    // OFERTAS
+    // ==========================================
+
+    @GET("api/ofertas")
+    Call<OfertaResponse> getOfertas();
+
+    @GET("api/ofertas")
+    Call<List<Oferta>> getOfertasDirectList();
+
+    @GET("api/ofertas/catalogo")
+    Call<OfertaResponse> getOfertasCatalogo();
+
+    @GET("api/ofertas/catalogo")
+    Call<List<Oferta>> getOfertasCatalogoDirectList();
+
+    @POST("api/ofertas")
+    Call<OfertaResponse> crearOferta(@Body OfertaRequest request);
+
+    @PUT("api/ofertas/{id}")
+    Call<OfertaResponse> editarOferta(@Path("id") int id, @Body OfertaRequest request);
+
+    @DELETE("api/ofertas/{id}")
+    Call<OfertaResponse> eliminarOferta(@Path("id") int id);
 }

@@ -4,7 +4,15 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.text.TextUtils;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonToken;
+import com.google.gson.stream.JsonWriter;
+
 import java.io.IOException;
+import java.util.Locale;
 
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
@@ -52,11 +60,47 @@ public class ApiClient {
                     .addInterceptor(authInterceptor)
                     .build();
 
+            TypeAdapter<String> stringTypeAdapter = new TypeAdapter<String>() {
+                @Override
+                public void write(JsonWriter out, String value) throws IOException {
+                    if (value == null) {
+                        out.nullValue();
+                    } else {
+                        out.value(value);
+                    }
+                }
+
+                @Override
+                public String read(JsonReader in) throws IOException {
+                    if (in.peek() == JsonToken.NULL) {
+                        in.nextNull();
+                        return "0.00";
+                    }
+                    if (in.peek() == JsonToken.STRING) {
+                        return in.nextString();
+                    }
+                    if (in.peek() == JsonToken.NUMBER) {
+                        double d = in.nextDouble();
+                        return String.format(Locale.US, "%.2f", d);
+                    }
+                    if (in.peek() == JsonToken.BOOLEAN) {
+                        return String.valueOf(in.nextBoolean());
+                    }
+                    in.skipValue();
+                    return "0.00";
+                }
+            };
+
+            Gson gson = new GsonBuilder()
+                    .serializeNulls()
+                    .registerTypeAdapter(String.class, stringTypeAdapter)
+                    .create();
+
             // Construir la instancia de Retrofit
             retrofit = new Retrofit.Builder()
                     .baseUrl(BASE_URL)
                     .client(okHttpClient)
-                    .addConverterFactory(GsonConverterFactory.create())
+                    .addConverterFactory(GsonConverterFactory.create(gson))
                     .build();
         }
 

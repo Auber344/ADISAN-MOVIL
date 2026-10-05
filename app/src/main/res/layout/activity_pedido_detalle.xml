@@ -1,0 +1,741 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#0F172A">
+
+    <!-- Top Bar -->
+    <LinearLayout
+        android:id="@+id/topBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingHorizontal="20dp"
+        android:paddingTop="36dp"
+        android:paddingBottom="16dp"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/btnVolverDetalle"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:padding="6dp"
+            android:rotation="180"
+            android:src="@drawable/ic_chevron_right"
+            app:tint="@color/white" />
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginStart="16dp"
+            app:cardBackgroundColor="#2563EB"
+            app:cardCornerRadius="8dp"
+            app:strokeWidth="0dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="A"
+                android:textColor="@color/white"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+        </com.google.android.material.card.MaterialCardView>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="ADISAN"
+                android:textColor="@color/white"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="DISTRIBUCIONES"
+                android:textColor="#94A3B8"
+                android:textSize="9sp" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/pbLoadingDetalle"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:indeterminateTint="#2563EB"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ScrollView
+        android:id="@+id/svContent"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:clipToPadding="false"
+        android:paddingHorizontal="20dp"
+        android:paddingBottom="20dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@id/bottomBar"
+        app:layout_constraintTop_toBottomOf="@id/topBar"
+        tools:visibility="visible">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- Title & Status -->
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp">
+
+                <TextView
+                    android:id="@+id/tvDetalleTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:text="Pedido #--"
+                    android:textColor="@color/white"
+                    android:textSize="24sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tvDetalleStatus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:background="#3B2C0D"
+                    android:paddingHorizontal="12dp"
+                    android:paddingVertical="6dp"
+                    android:text="Pendiente"
+                    android:textColor="#F59E0B"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+            </RelativeLayout>
+
+            <!-- Date -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="14dp"
+                    android:layout_height="14dp"
+                    android:src="@drawable/ic_shopping_cart"
+                    app:tint="#94A3B8" />
+
+                <TextView
+                    android:id="@+id/tvDetalleDate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="6dp"
+                    android:text="--/--/---- --:--"
+                    android:textColor="#94A3B8"
+                    android:textSize="13sp" />
+            </LinearLayout>
+
+            <!-- Tabs -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_bottom_sheet"
+                    android:backgroundTint="#F97316"
+                    android:gravity="center"
+                    android:paddingVertical="10dp"
+                    android:text="Detalle"
+                    android:textColor="@color/white"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tvTabProductos"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_bottom_sheet"
+                    android:backgroundTint="#1E293B"
+                    android:gravity="center"
+                    android:paddingVertical="10dp"
+                    android:text="Productos"
+                    android:textColor="#94A3B8"
+                    android:textSize="12sp" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_bottom_sheet"
+                    android:backgroundTint="#1E293B"
+                    android:gravity="center"
+                    android:paddingVertical="10dp"
+                    android:text="Historial"
+                    android:textColor="#94A3B8"
+                    android:textSize="12sp" />
+            </LinearLayout>
+
+            <!-- Información del pedido -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                app:cardBackgroundColor="#1E293B"
+                app:cardCornerRadius="16dp"
+                app:strokeColor="#334155"
+                app:strokeWidth="1dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="20dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <ImageView
+                            android:layout_width="16dp"
+                            android:layout_height="16dp"
+                            android:src="@drawable/ic_shopping_cart"
+                            app:tint="#3B82F6" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:text="Información del pedido"
+                            android:textColor="@color/white"
+                            android:textSize="14sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:orientation="horizontal">
+
+                        <LinearLayout
+                            android:layout_width="120dp"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                            <ImageView
+                                android:layout_width="16dp"
+                                android:layout_height="16dp"
+                                android:src="@drawable/ic_user"
+                                app:tint="#94A3B8" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="8dp"
+                                android:text="Cliente"
+                                android:textColor="#94A3B8"
+                                android:textSize="13sp" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                            <com.google.android.material.card.MaterialCardView
+                                android:id="@+id/cvClienteAvatar"
+                                android:layout_width="32dp"
+                                android:layout_height="32dp"
+                                android:layout_marginEnd="10dp"
+                                app:cardBackgroundColor="#0D2247"
+                                app:cardCornerRadius="16dp"
+                                app:strokeWidth="0dp">
+
+                                <ImageView
+                                    android:id="@+id/ivClienteAvatar"
+                                    android:layout_width="16dp"
+                                    android:layout_height="16dp"
+                                    android:layout_gravity="center"
+                                    android:src="@drawable/ic_user"
+                                    app:tint="#3B82F6" />
+                            </com.google.android.material.card.MaterialCardView>
+
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:id="@+id/tvInfoCliente"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Venta directa"
+                                    android:textColor="@color/white"
+                                    android:textSize="14sp"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:id="@+id/tvInfoClienteId"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="ID: --"
+                                    android:textColor="#94A3B8"
+                                    android:textSize="12sp"
+                                    android:visibility="gone" />
+                            </LinearLayout>
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <LinearLayout
+                            android:layout_width="120dp"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                            <ImageView
+                                android:layout_width="16dp"
+                                android:layout_height="16dp"
+                                android:src="@drawable/ic_user"
+                                app:tint="#94A3B8" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="8dp"
+                                android:text="Tipo de venta"
+                                android:textColor="#94A3B8"
+                                android:textSize="13sp" />
+                        </LinearLayout>
+
+                        <TextView
+                            android:id="@+id/tvInfoTipoVenta"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Cliente registrado"
+                            android:textColor="@color/white"
+                            android:textSize="14sp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <LinearLayout
+                            android:layout_width="120dp"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                            <ImageView
+                                android:layout_width="16dp"
+                                android:layout_height="16dp"
+                                android:src="@drawable/ic_shopping_cart"
+                                app:tint="#94A3B8" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="8dp"
+                                android:text="Método de pago"
+                                android:textColor="#94A3B8"
+                                android:textSize="13sp" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                            <com.google.android.material.card.MaterialCardView
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:layout_marginEnd="8dp"
+                                app:cardBackgroundColor="#8B5CF6"
+                                app:cardCornerRadius="6dp"
+                                app:strokeWidth="0dp">
+
+                                <ImageView
+                                    android:layout_width="12dp"
+                                    android:layout_height="12dp"
+                                    android:layout_gravity="center"
+                                    android:src="@drawable/ic_shopping_cart"
+                                    app:tint="@color/white" />
+                            </com.google.android.material.card.MaterialCardView>
+
+                            <TextView
+                                android:id="@+id/tvInfoMetodoPago"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Yape"
+                                android:textColor="@color/white"
+                                android:textSize="14sp"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Resumen -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                app:cardBackgroundColor="#1E293B"
+                app:cardCornerRadius="16dp"
+                app:strokeColor="#334155"
+                app:strokeWidth="1dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="20dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <ImageView
+                            android:layout_width="16dp"
+                            android:layout_height="16dp"
+                            android:src="@drawable/ic_shopping_cart"
+                            app:tint="#3B82F6" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:text="Resumen"
+                            android:textColor="@color/white"
+                            android:textSize="14sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Productos"
+                            android:textColor="#94A3B8"
+                            android:textSize="13sp" />
+
+                        <TextView
+                            android:id="@+id/tvResumenProductos"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="0"
+                            android:textColor="@color/white"
+                            android:textSize="13sp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Paquetes"
+                            android:textColor="#94A3B8"
+                            android:textSize="13sp" />
+
+                        <TextView
+                            android:id="@+id/tvResumenPaquetes"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="0"
+                            android:textColor="@color/white"
+                            android:textSize="13sp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Unidades"
+                            android:textColor="#94A3B8"
+                            android:textSize="13sp" />
+
+                        <TextView
+                            android:id="@+id/tvResumenUnidades"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="0"
+                            android:textColor="@color/white"
+                            android:textSize="13sp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Total de unidades"
+                            android:textColor="#94A3B8"
+                            android:textSize="13sp" />
+
+                        <TextView
+                            android:id="@+id/tvResumenTotalUnidades"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="0"
+                            android:textColor="@color/white"
+                            android:textSize="13sp" />
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginVertical="16dp"
+                        android:background="#334155" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Total de la venta"
+                            android:textColor="#3B82F6"
+                            android:textSize="16sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/tvResumenTotalMonto"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="S/ 0.00"
+                            android:textColor="#3B82F6"
+                            android:textSize="20sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Estado del pedido (Timeline) -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                app:cardBackgroundColor="#1E293B"
+                app:cardCornerRadius="16dp"
+                app:strokeColor="#334155"
+                app:strokeWidth="1dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="20dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <ImageView
+                            android:layout_width="16dp"
+                            android:layout_height="16dp"
+                            android:src="@drawable/ic_shopping_cart"
+                            app:tint="#3B82F6" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:text="Estado del pedido"
+                            android:textColor="@color/white"
+                            android:textSize="14sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/layoutTimeline"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:orientation="vertical">
+
+                        <!-- Timeline steps added programmatically or adjusted in Java, let's pre-define the structure -->
+
+                        <!-- Step 1: Pendiente -->
+                        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal">
+                            <FrameLayout android:layout_width="24dp" android:layout_height="24dp">
+                                <com.google.android.material.card.MaterialCardView android:id="@+id/tlDotPendiente" android:layout_width="16dp" android:layout_height="16dp" android:layout_gravity="center" app:cardBackgroundColor="#F59E0B" app:cardCornerRadius="8dp" app:strokeWidth="0dp">
+                                    <ImageView android:id="@+id/tlCheckPendiente" android:layout_width="10dp" android:layout_height="10dp" android:layout_gravity="center" android:src="@drawable/ic_check" app:tint="@color/white" android:visibility="gone"/>
+                                </com.google.android.material.card.MaterialCardView>
+                                <com.google.android.material.card.MaterialCardView android:id="@+id/tlRingPendiente" android:layout_width="24dp" android:layout_height="24dp" app:cardBackgroundColor="@android:color/transparent" app:cardCornerRadius="12dp" app:strokeColor="#F59E0B" app:strokeWidth="2dp" />
+                            </FrameLayout>
+                            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginStart="16dp" android:orientation="vertical" android:layout_gravity="center_vertical">
+                                <TextView android:id="@+id/tlTextPendiente" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Pendiente" android:textColor="#F59E0B" android:textSize="14sp" android:textStyle="bold"/>
+                                <TextView android:id="@+id/tlDatePendiente" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="--" android:textColor="#94A3B8" android:textSize="11sp" android:layout_marginTop="2dp"/>
+                            </LinearLayout>
+                        </LinearLayout>
+                        <View android:id="@+id/tlLine1" android:layout_width="2dp" android:layout_height="32dp" android:background="#F59E0B" android:layout_marginStart="11dp"/>
+
+                        <!-- Step 2: Aceptado -->
+                        <LinearLayout android:id="@+id/layoutTimelineAceptado" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical">
+                            <FrameLayout android:layout_width="24dp" android:layout_height="24dp">
+                                <com.google.android.material.card.MaterialCardView android:id="@+id/tlDotAceptado" android:layout_width="16dp" android:layout_height="16dp" android:layout_gravity="center" app:cardBackgroundColor="#0F172A" app:cardCornerRadius="8dp" app:strokeColor="#334155" app:strokeWidth="2dp">
+                                    <ImageView android:id="@+id/tlCheckAceptado" android:layout_width="10dp" android:layout_height="10dp" android:layout_gravity="center" android:src="@drawable/ic_check" app:tint="@color/white" android:visibility="gone"/>
+                                </com.google.android.material.card.MaterialCardView>
+                            </FrameLayout>
+                            <TextView android:id="@+id/tlTextAceptado" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="16dp" android:text="Aceptado" android:textColor="#94A3B8" android:textSize="14sp" />
+                        </LinearLayout>
+                        <View android:id="@+id/tlLine2" android:layout_width="2dp" android:layout_height="32dp" android:background="#334155" android:layout_marginStart="11dp"/>
+
+                        <!-- Step 3: En camino -->
+                        <LinearLayout android:id="@+id/layoutTimelineEnCamino" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical">
+                            <FrameLayout android:layout_width="24dp" android:layout_height="24dp">
+                                <com.google.android.material.card.MaterialCardView android:id="@+id/tlDotEnCamino" android:layout_width="16dp" android:layout_height="16dp" android:layout_gravity="center" app:cardBackgroundColor="#0F172A" app:cardCornerRadius="8dp" app:strokeColor="#334155" app:strokeWidth="2dp">
+                                    <ImageView android:id="@+id/tlCheckEnCamino" android:layout_width="10dp" android:layout_height="10dp" android:layout_gravity="center" android:src="@drawable/ic_check" app:tint="@color/white" android:visibility="gone"/>
+                                </com.google.android.material.card.MaterialCardView>
+                            </FrameLayout>
+                            <TextView android:id="@+id/tlTextEnCamino" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="16dp" android:text="En camino" android:textColor="#94A3B8" android:textSize="14sp" />
+                        </LinearLayout>
+                        <View android:id="@+id/tlLine3" android:layout_width="2dp" android:layout_height="32dp" android:background="#334155" android:layout_marginStart="11dp"/>
+
+                        <!-- Step 4: Entregado -->
+                        <LinearLayout android:id="@+id/layoutTimelineEntregado" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical">
+                            <FrameLayout android:layout_width="24dp" android:layout_height="24dp">
+                                <com.google.android.material.card.MaterialCardView android:id="@+id/tlDotEntregado" android:layout_width="16dp" android:layout_height="16dp" android:layout_gravity="center" app:cardBackgroundColor="#0F172A" app:cardCornerRadius="8dp" app:strokeColor="#334155" app:strokeWidth="2dp" />
+                            </FrameLayout>
+                            <TextView android:id="@+id/tlTextEntregado" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="16dp" android:text="Entregado" android:textColor="#94A3B8" android:textSize="14sp" />
+                        </LinearLayout>
+
+                        <!-- Cancelado Overlay (oculto por defecto) -->
+                        <LinearLayout android:id="@+id/layoutTimelineCancelado" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:visibility="gone" android:layout_marginTop="16dp">
+                            <FrameLayout android:layout_width="24dp" android:layout_height="24dp">
+                                <com.google.android.material.card.MaterialCardView android:layout_width="16dp" android:layout_height="16dp" android:layout_gravity="center" app:cardBackgroundColor="#10B981" app:cardCornerRadius="8dp" app:strokeWidth="0dp" />
+                                <com.google.android.material.card.MaterialCardView android:layout_width="24dp" android:layout_height="24dp" app:cardBackgroundColor="@android:color/transparent" app:cardCornerRadius="12dp" app:strokeColor="#10B981" app:strokeWidth="2dp" />
+                            </FrameLayout>
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="16dp" android:text="Cancelado" android:textColor="#10B981" android:textSize="14sp" android:textStyle="bold" />
+                        </LinearLayout>
+
+                    </LinearLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- Bottom Actions -->
+    <LinearLayout
+        android:id="@+id/bottomBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#0F172A"
+        android:orientation="horizontal"
+        android:padding="20dp"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnCambiarEstado"
+            android:layout_width="0dp"
+            android:layout_height="54dp"
+            android:layout_marginEnd="10dp"
+            android:layout_weight="1"
+            android:backgroundTint="#2563EB"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:text="Cambiar estado"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            app:cornerRadius="12dp"
+            app:icon="@drawable/ic_chevron_right"
+            app:iconGravity="textStart"
+            app:iconPadding="8dp"
+            app:iconTint="@color/white" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnCancelarPedido"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="0dp"
+            android:layout_height="54dp"
+            android:layout_weight="1"
+            android:backgroundTint="#1E293B"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:text="Cancelar pedido"
+            android:textAllCaps="false"
+            android:textColor="#EF4444"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            app:cornerRadius="12dp"
+            app:icon="@drawable/ic_shopping_cart"
+            app:iconGravity="textStart"
+            app:iconPadding="8dp"
+            app:iconTint="#EF4444"
+            app:strokeColor="#EF4444"
+            app:strokeWidth="1dp" />
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -2,15 +2,15 @@ package com.example.adisan_app_android;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
-import com.google.android.material.button.MaterialButton;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +19,7 @@ import java.util.Locale;
 public class PedidoAdapter extends RecyclerView.Adapter<PedidoAdapter.PedidoViewHolder> {
 
     public interface OnPedidoActionListener {
+        void onVerDetalle(Pedido pedido);
         void onEditarEstado(Pedido pedido);
         void onCancelar(Pedido pedido);
     }
@@ -29,7 +30,7 @@ public class PedidoAdapter extends RecyclerView.Adapter<PedidoAdapter.PedidoView
 
     public PedidoAdapter(Context context, List<Pedido> pedidoList) {
         this.context = context;
-        this.pedidoList = pedidoList != null ? pedidoList : new ArrayList<>();
+        this.pedidoList = pedidoList != null ? new ArrayList<>(pedidoList) : new ArrayList<>();
     }
 
     public void setOnPedidoActionListener(OnPedidoActionListener listener) {
@@ -37,7 +38,7 @@ public class PedidoAdapter extends RecyclerView.Adapter<PedidoAdapter.PedidoView
     }
 
     public void setPedidos(List<Pedido> pedidos) {
-        this.pedidoList = pedidos != null ? pedidos : new ArrayList<>();
+        this.pedidoList = pedidos != null ? new ArrayList<>(pedidos) : new ArrayList<>();
         notifyDataSetChanged();
     }
 
@@ -51,47 +52,69 @@ public class PedidoAdapter extends RecyclerView.Adapter<PedidoAdapter.PedidoView
     @Override
     public void onBindViewHolder(@NonNull PedidoViewHolder holder, int position) {
         Pedido pedido = pedidoList.get(position);
+        if (pedido == null) return;
 
-        holder.tvIdPedido.setText("Pedido #" + pedido.getId());
-        holder.tvClientePedido.setText(pedido.getCliente());
-        holder.tvFechaPedido.setText(!pedido.getFecha().isEmpty() ? pedido.getFecha() : "Fecha pendiente");
-        holder.tvMetodoPagoPedido.setText(pedido.getMetodoPago());
-        holder.tvTotalPedido.setText(String.format(Locale.US, "$%,.2f", pedido.getTotalDouble()));
+        holder.tvId.setText("Pedido #" + pedido.getId());
+        holder.tvFecha.setText(!TextUtils.isEmpty(pedido.getFecha()) ? pedido.getFecha() : "Fecha pendiente");
+        holder.tvMetodoPago.setText(pedido.getMetodoPago());
+        holder.tvTotal.setText(String.format(Locale.US, "S/ %.2f", pedido.getTotalDouble()));
 
-        String estado = pedido.getEstado().toLowerCase();
-        holder.tvEstadoPedido.setText(estado);
+        // Cliente vs Venta Directa
+        if (pedido.getClienteId() == null || pedido.getClienteId() == 0 || TextUtils.isEmpty(pedido.getCliente()) || "Venta Mostrador".equalsIgnoreCase(pedido.getCliente())) {
+            holder.tvCliente.setText("Venta directa");
+            if (holder.ivIconoCliente != null) holder.ivIconoCliente.setImageResource(R.drawable.ic_box);
+        } else {
+            holder.tvCliente.setText(pedido.getCliente());
+            if (holder.ivIconoCliente != null) holder.ivIconoCliente.setImageResource(R.drawable.ic_user);
+        }
+
+        // Resumen de items / unidades
+        int prodCount = 0;
+        int totalUnid = 0;
+        if (pedido.getDetalles() != null) {
+            prodCount = pedido.getDetalles().size();
+            for (DetallePedido det : pedido.getDetalles()) {
+                totalUnid += det.getCantidad();
+            }
+        }
+        holder.tvResumenItems.setText("Productos: " + prodCount + " • Unidades: " + totalUnid);
+
+        String estado = pedido.getEstado() != null ? pedido.getEstado().toLowerCase() : "pendiente";
+        if (estado.isEmpty()) {
+            estado = "pendiente";
+        }
+        holder.tvEstado.setText(estado.substring(0, 1).toUpperCase() + estado.substring(1).replace("_", " "));
 
         switch (estado) {
             case "aceptado":
             case "aprobado":
-                holder.tvEstadoPedido.setTextColor(Color.parseColor("#2563EB")); // Azul
+                holder.tvEstado.setTextColor(Color.parseColor("#3B82F6"));
+                holder.tvEstado.setBackgroundColor(Color.parseColor("#0D2247"));
                 break;
             case "en_camino":
             case "en camino":
-                holder.tvEstadoPedido.setTextColor(Color.parseColor("#0D9488")); // Teal
+                holder.tvEstado.setTextColor(Color.parseColor("#3B82F6"));
+                holder.tvEstado.setBackgroundColor(Color.parseColor("#0D2247"));
                 break;
             case "entregado":
             case "completado":
-                holder.tvEstadoPedido.setTextColor(Color.parseColor("#059669")); // Verde
+                holder.tvEstado.setTextColor(Color.parseColor("#10B981"));
+                holder.tvEstado.setBackgroundColor(Color.parseColor("#062E29"));
                 break;
             case "cancelado":
             case "rechazado":
-                holder.tvEstadoPedido.setTextColor(Color.parseColor("#DC2626")); // Rojo
+                holder.tvEstado.setTextColor(Color.parseColor("#EF4444"));
+                holder.tvEstado.setBackgroundColor(Color.parseColor("#3B1111"));
                 break;
             default: // pendiente
-                holder.tvEstadoPedido.setTextColor(Color.parseColor("#D97706")); // Naranja
+                holder.tvEstado.setTextColor(Color.parseColor("#F97316"));
+                holder.tvEstado.setBackgroundColor(Color.parseColor("#3B2C0D"));
                 break;
         }
 
-        holder.btnEditar.setOnClickListener(v -> {
+        holder.itemView.setOnClickListener(v -> {
             if (listener != null) {
-                listener.onEditarEstado(pedido);
-            }
-        });
-
-        holder.btnEliminar.setOnClickListener(v -> {
-            if (listener != null) {
-                listener.onCancelar(pedido);
+                listener.onVerDetalle(pedido);
             }
         });
     }
@@ -102,25 +125,25 @@ public class PedidoAdapter extends RecyclerView.Adapter<PedidoAdapter.PedidoView
     }
 
     public static class PedidoViewHolder extends RecyclerView.ViewHolder {
-        TextView tvIdPedido;
-        TextView tvClientePedido;
-        TextView tvFechaPedido;
-        TextView tvMetodoPagoPedido;
-        TextView tvTotalPedido;
-        TextView tvEstadoPedido;
-        MaterialButton btnEditar;
-        MaterialButton btnEliminar;
+        TextView tvId;
+        TextView tvFecha;
+        TextView tvEstado;
+        TextView tvCliente;
+        TextView tvResumenItems;
+        TextView tvMetodoPago;
+        TextView tvTotal;
+        ImageView ivIconoCliente;
 
         public PedidoViewHolder(@NonNull View itemView) {
             super(itemView);
-            tvIdPedido = itemView.findViewById(R.id.tvIdPedido);
-            tvClientePedido = itemView.findViewById(R.id.tvClientePedido);
-            tvFechaPedido = itemView.findViewById(R.id.tvFechaPedido);
-            tvMetodoPagoPedido = itemView.findViewById(R.id.tvMetodoPagoPedido);
-            tvTotalPedido = itemView.findViewById(R.id.tvTotalPedido);
-            tvEstadoPedido = itemView.findViewById(R.id.tvEstadoPedido);
-            btnEditar = itemView.findViewById(R.id.btnEditarPedido);
-            btnEliminar = itemView.findViewById(R.id.btnEliminarPedido);
+            tvId = itemView.findViewById(R.id.tvIdPedido);
+            tvFecha = itemView.findViewById(R.id.tvFechaPedido);
+            tvEstado = itemView.findViewById(R.id.tvEstadoPedido);
+            tvCliente = itemView.findViewById(R.id.tvClientePedido);
+            tvResumenItems = itemView.findViewById(R.id.tvResumenItemsPedido);
+            tvMetodoPago = itemView.findViewById(R.id.tvMetodoPagoPedido);
+            tvTotal = itemView.findViewById(R.id.tvTotalPedido);
+            ivIconoCliente = itemView.findViewById(R.id.ivIconoClientePedido);
         }
     }
 }

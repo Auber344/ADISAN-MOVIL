@@ -13,112 +13,85 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingHorizontal="24dp"
-        android:paddingTop="28dp"
-        android:paddingBottom="24dp">
+        android:paddingTop="40dp"
+        android:paddingBottom="32dp">
 
-        <!-- Slogan Superior Derecho -->
-        <TextView
-            android:id="@+id/tvSloganTop"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="end"
-            android:lineSpacingExtra="2dp"
-            android:text="Organiza.\nControla.\nHaz crecer\ntu negocio."
-            android:textColor="@color/login_text_light"
-            android:textSize="15sp"
-            android:textStyle="bold"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <View
-            android:id="@+id/lineSloganAccent"
-            android:layout_width="60dp"
-            android:layout_height="3dp"
-            android:layout_marginTop="4dp"
-            android:background="@drawable/bg_login_button"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tvSloganTop" />
-
-        <!-- Logo Icon ADISAN -->
+        <!-- Logo Icon ADISAN (Centered) -->
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/cardLogoContainer"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
+            android:layout_width="72dp"
+            android:layout_height="72dp"
             app:cardBackgroundColor="@color/login_accent_blue"
-            app:cardCornerRadius="16dp"
-            app:cardElevation="4dp"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="6dp"
             app:strokeWidth="0dp"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
             <ImageView
                 android:id="@+id/ivLogo"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
                 android:layout_gravity="center"
                 android:contentDescription="@string/company_name"
                 android:src="@drawable/ic_adisan_logo"
                 app:tint="@color/white" />
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- Titulo de Marca -->
+        <!-- Titulo de Marca (Centered) -->
         <TextView
             android:id="@+id/tvBrandName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="14dp"
-            android:letterSpacing="0.05"
+            android:layout_marginTop="16dp"
+            android:letterSpacing="0.08"
             android:text="ADISAN"
             android:textColor="@color/white"
             android:textSize="28sp"
             android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/cardLogoContainer" />
 
-        <!-- Subtitulo Nombre de Empresa -->
+        <!-- Subtitulo Nombre de Empresa (Centered) -->
         <TextView
             android:id="@+id/tvCompanyName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="2dp"
-            android:text="Distribuciones ADISAN"
+            android:letterSpacing="0.1"
+            android:text="DISTRIBUCIONES"
+            android:textAllCaps="true"
             android:textColor="@color/login_text_muted"
-            android:textSize="14sp"
+            android:textSize="12sp"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tvBrandName" />
 
-        <!-- Barrita Acento Azul -->
-        <View
-            android:id="@+id/lineBrandAccent"
-            android:layout_width="24dp"
-            android:layout_height="3dp"
-            android:layout_marginTop="6dp"
-            android:background="@drawable/bg_login_button"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tvCompanyName" />
-
-        <!-- Descripcion Corta del Sistema -->
+        <!-- Descripcion Corta del Sistema (Centered) -->
         <TextView
             android:id="@+id/tvHeaderDescription"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:text="Gestiona tus productos, pedidos e inventario de manera sencilla y segura."
+            android:layout_marginTop="16dp"
+            android:gravity="center"
+            android:text="Gestiona tu negocio de forma segura y eficiente"
             android:textColor="@color/login_text_muted"
-            android:textSize="13sp"
+            android:textSize="14sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/lineBrandAccent" />
+            app:layout_constraintTop_toBottomOf="@id/tvCompanyName" />
 
         <!-- Tarjeta Principal de Login -->
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/cardLogin"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="24dp"
             app:cardBackgroundColor="@color/login_card_dark"
-            app:cardCornerRadius="20dp"
-            app:cardElevation="6dp"
+            app:cardCornerRadius="24dp"
+            app:cardElevation="8dp"
             app:strokeColor="@color/login_card_border"
             app:strokeWidth="1dp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -129,7 +102,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="20dp">
+                android:padding="24dp">
 
                 <!-- Titulo Tarjeta -->
                 <TextView
@@ -146,7 +119,7 @@
                     android:id="@+id/tvLoginSubtitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="2dp"
+                    android:layout_marginTop="4dp"
                     android:text="Ingresa tus credenciales para continuar"
                     android:textColor="@color/login_text_muted"
                     android:textSize="13sp" />
@@ -157,12 +130,12 @@
                     style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
+                    android:layout_marginTop="18dp"
                     app:boxBackgroundColor="@color/login_input_bg"
-                    app:boxCornerRadiusBottomEnd="12dp"
-                    app:boxCornerRadiusBottomStart="12dp"
-                    app:boxCornerRadiusTopEnd="12dp"
-                    app:boxCornerRadiusTopStart="12dp"
+                    app:boxCornerRadiusBottomEnd="14dp"
+                    app:boxCornerRadiusBottomStart="14dp"
+                    app:boxCornerRadiusTopEnd="14dp"
+                    app:boxCornerRadiusTopStart="14dp"
                     app:boxStrokeColor="@color/login_input_border"
                     app:hintTextColor="@color/login_input_hint"
                     app:startIconDrawable="@drawable/ic_user"
@@ -189,10 +162,10 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
                     app:boxBackgroundColor="@color/login_input_bg"
-                    app:boxCornerRadiusBottomEnd="12dp"
-                    app:boxCornerRadiusBottomStart="12dp"
-                    app:boxCornerRadiusTopEnd="12dp"
-                    app:boxCornerRadiusTopStart="12dp"
+                    app:boxCornerRadiusBottomEnd="14dp"
+                    app:boxCornerRadiusBottomStart="14dp"
+                    app:boxCornerRadiusTopEnd="14dp"
+                    app:boxCornerRadiusTopStart="14dp"
                     app:boxStrokeColor="@color/login_input_border"
                     app:endIconMode="password_toggle"
                     app:endIconTint="@color/login_text_muted"
@@ -217,7 +190,7 @@
                 <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp">
+                    android:layout_marginTop="12dp">
 
                     <CheckBox
                         android:id="@+id/cbRecordarme"
@@ -252,126 +225,40 @@
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnLogin"
                     android:layout_width="match_parent"
-                    android:layout_height="50dp"
-                    android:layout_marginTop="16dp"
+                    android:layout_height="52dp"
+                    android:layout_marginTop="18dp"
                     android:backgroundTint="@color/login_accent_blue"
                     android:text="Iniciar sesión"
                     android:textAllCaps="false"
                     android:textColor="@color/white"
                     android:textSize="15sp"
                     android:textStyle="bold"
-                    app:cornerRadius="12dp"
+                    app:cornerRadius="14dp"
                     app:elevation="4dp"
                     app:icon="@drawable/ic_chevron_right"
                     app:iconGravity="textEnd"
                     app:iconPadding="8dp"
                     app:iconTint="@color/white" />
 
-                <!-- Separador 'o continúa con' -->
+                <!-- Views ocultos para mantener IDs esperados por LoginActivity (por seguridad) -->
                 <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="18dp"
-                    android:gravity="center"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:visibility="gone"
                     android:orientation="horizontal">
-
-                    <View
-                        android:layout_width="0dp"
-                        android:layout_height="1dp"
-                        android:layout_weight="1"
-                        android:background="@color/login_card_border" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginHorizontal="10dp"
-                        android:text="o continúa con"
-                        android:textColor="@color/login_text_muted"
-                        android:textSize="12sp" />
-
-                    <View
-                        android:layout_width="0dp"
-                        android:layout_height="1dp"
-                        android:layout_weight="1"
-                        android:background="@color/login_card_border" />
-                </LinearLayout>
-
-                <!-- Botones Circulares de Acceso Rapido -->
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_marginTop="14dp"
-                    android:orientation="horizontal">
-
-                    <!-- Google -->
                     <com.google.android.material.card.MaterialCardView
                         android:id="@+id/btnQuickGoogle"
-                        android:layout_width="44dp"
-                        android:layout_height="44dp"
-                        android:layout_marginEnd="12dp"
-                        app:cardBackgroundColor="@color/white"
-                        app:cardCornerRadius="22dp"
-                        app:cardElevation="2dp"
-                        app:strokeWidth="0dp">
-
-                        <ImageView
-                            android:layout_width="22dp"
-                            android:layout_height="22dp"
-                            android:layout_gravity="center"
-                            android:contentDescription="Google"
-                            android:src="@drawable/ic_google" />
-                    </com.google.android.material.card.MaterialCardView>
-
-                    <!-- Microsoft -->
+                        android:layout_width="1dp"
+                        android:layout_height="1dp" />
                     <com.google.android.material.card.MaterialCardView
                         android:id="@+id/btnQuickMicrosoft"
-                        android:layout_width="44dp"
-                        android:layout_height="44dp"
-                        android:layout_marginHorizontal="6dp"
-                        app:cardBackgroundColor="@color/white"
-                        app:cardElevation="2dp"
-                        app:cardCornerRadius="22dp"
-                        app:strokeWidth="0dp">
-
-                        <ImageView
-                            android:layout_width="20dp"
-                            android:layout_height="20dp"
-                            android:layout_gravity="center"
-                            android:contentDescription="Microsoft"
-                            android:src="@drawable/ic_microsoft" />
-                    </com.google.android.material.card.MaterialCardView>
-
-                    <!-- Fingerprint -->
+                        android:layout_width="1dp"
+                        android:layout_height="1dp" />
                     <com.google.android.material.card.MaterialCardView
                         android:id="@+id/btnQuickBiometric"
-                        android:layout_width="44dp"
-                        android:layout_height="44dp"
-                        android:layout_marginStart="12dp"
-                        app:cardBackgroundColor="@color/white"
-                        app:cardElevation="2dp"
-                        app:cardCornerRadius="22dp"
-                        app:strokeWidth="0dp">
-
-                        <ImageView
-                            android:layout_width="22dp"
-                            android:layout_height="22dp"
-                            android:layout_gravity="center"
-                            android:contentDescription="Biométrico"
-                            android:src="@drawable/ic_fingerprint"
-                            app:tint="@color/login_accent_blue" />
-                    </com.google.android.material.card.MaterialCardView>
-
+                        android:layout_width="1dp"
+                        android:layout_height="1dp" />
                 </LinearLayout>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_marginTop="10dp"
-                    android:text="Acceso rápido y seguro"
-                    android:textColor="@color/login_text_muted"
-                    android:textSize="11sp" />
 
             </LinearLayout>
 
@@ -382,7 +269,7 @@
             android:id="@+id/layoutFeatures"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
+            android:layout_marginTop="28dp"
             android:baselineAligned="false"
             android:orientation="horizontal"
             app:layout_constraintEnd_toEndOf="parent"
@@ -390,94 +277,118 @@
             app:layout_constraintTop_toBottomOf="@id/cardLogin">
 
             <!-- Columna 1: Inventario al día -->
-            <LinearLayout
+            <com.google.android.material.card.MaterialCardView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:gravity="center"
-                android:orientation="vertical">
+                android:layout_marginEnd="8dp"
+                app:cardBackgroundColor="@color/login_card_dark"
+                app:cardCornerRadius="14dp"
+                app:cardElevation="2dp"
+                app:strokeColor="@color/login_card_border"
+                app:strokeWidth="1dp">
 
-                <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:contentDescription="Inventario"
-                    android:src="@drawable/ic_box"
-                    app:tint="@color/login_accent_bright" />
-
-                <TextView
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="6dp"
                     android:gravity="center"
-                    android:text="Inventario\nal día"
-                    android:textColor="@color/login_text_light"
-                    android:textSize="11sp"
-                    android:textStyle="bold" />
-            </LinearLayout>
+                    android:orientation="vertical"
+                    android:padding="14dp">
 
-            <View
-                android:layout_width="1dp"
-                android:layout_height="32dp"
-                android:layout_gravity="center_vertical"
-                android:background="@color/login_card_border" />
+                    <ImageView
+                        android:layout_width="26dp"
+                        android:layout_height="26dp"
+                        android:contentDescription="Inventario"
+                        android:src="@drawable/ic_box"
+                        app:tint="@color/login_accent_bright" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:gravity="center"
+                        android:text="Inventario\nal día"
+                        android:textColor="@color/login_text_light"
+                        android:textSize="11sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
 
             <!-- Columna 2: Pedidos más rápidos -->
-            <LinearLayout
+            <com.google.android.material.card.MaterialCardView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:gravity="center"
-                android:orientation="vertical">
+                android:layout_marginHorizontal="4dp"
+                app:cardBackgroundColor="@color/login_card_dark"
+                app:cardCornerRadius="14dp"
+                app:cardElevation="2dp"
+                app:strokeColor="@color/login_card_border"
+                app:strokeWidth="1dp">
 
-                <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:contentDescription="Pedidos"
-                    android:src="@drawable/ic_truck"
-                    app:tint="@color/login_accent_bright" />
-
-                <TextView
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="6dp"
                     android:gravity="center"
-                    android:text="Pedidos\nmás rápidos"
-                    android:textColor="@color/login_text_light"
-                    android:textSize="11sp"
-                    android:textStyle="bold" />
-            </LinearLayout>
+                    android:orientation="vertical"
+                    android:padding="14dp">
 
-            <View
-                android:layout_width="1dp"
-                android:layout_height="32dp"
-                android:layout_gravity="center_vertical"
-                android:background="@color/login_card_border" />
+                    <ImageView
+                        android:layout_width="26dp"
+                        android:layout_height="26dp"
+                        android:contentDescription="Pedidos"
+                        android:src="@drawable/ic_truck"
+                        app:tint="@color/login_accent_bright" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:gravity="center"
+                        android:text="Pedidos\nmás rápidos"
+                        android:textColor="@color/login_text_light"
+                        android:textSize="11sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
 
             <!-- Columna 3: Tu negocio en crecimiento -->
-            <LinearLayout
+            <com.google.android.material.card.MaterialCardView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:gravity="center"
-                android:orientation="vertical">
+                android:layout_marginStart="8dp"
+                app:cardBackgroundColor="@color/login_card_dark"
+                app:cardCornerRadius="14dp"
+                app:cardElevation="2dp"
+                app:strokeColor="@color/login_card_border"
+                app:strokeWidth="1dp">
 
-                <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:contentDescription="Crecimiento"
-                    android:src="@drawable/ic_chart_growth"
-                    app:tint="@color/login_accent_bright" />
-
-                <TextView
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="6dp"
                     android:gravity="center"
-                    android:text="Tu negocio\nen crecimiento"
-                    android:textColor="@color/login_text_light"
-                    android:textSize="11sp"
-                    android:textStyle="bold" />
-            </LinearLayout>
+                    android:orientation="vertical"
+                    android:padding="14dp">
+
+                    <ImageView
+                        android:layout_width="26dp"
+                        android:layout_height="26dp"
+                        android:contentDescription="Crecimiento"
+                        android:src="@drawable/ic_chart_growth"
+                        app:tint="@color/login_accent_bright" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:gravity="center"
+                        android:text="Tu negocio\nen crecimiento"
+                        android:textColor="@color/login_text_light"
+                        android:textSize="11sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
 
         </LinearLayout>
 
@@ -486,7 +397,7 @@
             android:id="@+id/layoutFooter"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="28dp"
             android:gravity="center"
             android:orientation="vertical"
             app:layout_constraintBottom_toBottomOf="parent"

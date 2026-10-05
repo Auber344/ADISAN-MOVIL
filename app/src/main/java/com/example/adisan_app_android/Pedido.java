@@ -9,7 +9,7 @@ public class Pedido {
     private int id;
 
     @SerializedName(value = "cliente_id", alternate = {"usuario_id", "id_cliente"})
-    private int clienteId;
+    private Integer clienteId;
 
     @SerializedName(value = "cliente", alternate = {"cliente_nombre", "nombres", "usuario", "nombre_cliente"})
     private String cliente;
@@ -40,16 +40,19 @@ public class Pedido {
         this.id = id;
     }
 
-    public int getClienteId() {
+    public Integer getClienteId() {
         return clienteId;
     }
 
-    public void setClienteId(int clienteId) {
+    public void setClienteId(Integer clienteId) {
         this.clienteId = clienteId;
     }
 
     public String getCliente() {
-        return cliente != null ? cliente : "Cliente #" + clienteId;
+        if (clienteId == null || clienteId == 0 || cliente == null || "Venta Mostrador".equalsIgnoreCase(cliente)) {
+            return "Venta directa";
+        }
+        return cliente;
     }
 
     public void setCliente(String cliente) {

@@ -1,59 +1,56 @@
 package com.example.adisan_app_android;
 
+import androidx.annotation.NonNull;
 import com.google.gson.annotations.SerializedName;
 
 public class Producto {
 
-    @SerializedName(value = "producto_id", alternate = {"_id", "id_producto"})
-    private int productoId;
-
     @SerializedName("id")
     private int id;
 
-    @SerializedName(value = "producto_nombre", alternate = {"name", "title", "producto"})
-    private String productoNombre;
+    @SerializedName("producto_id")
+    private int productoId;
 
-    @SerializedName("nombre")
+    @SerializedName(value = "nombre", alternate = {"producto_nombre", "name", "title", "producto"})
     private String nombre;
+
+    @SerializedName("categoria_id")
+    private int categoriaId = 1;
+
+    @SerializedName("producto_categoria_id")
+    private int productoCategoriaId = 1;
+
+    @SerializedName("proveedor_id")
+    private int proveedorId = 1;
+
+    @SerializedName("unidades_por_paquete")
+    private int unidadesPorPaquete = 1;
+
+    @SerializedName("precio_compra_paquete")
+    private String precioCompraPaquete = "0.00";
+
+    @SerializedName("precio_venta_paquete")
+    private String precioVentaPaquete = "0.00";
+
+    @SerializedName("precio_venta_unidad")
+    private String precioVentaUnidad = "0.00";
 
     @SerializedName("activo")
     private int activo = 1;
 
-    @SerializedName("presentacion_id")
-    private Integer presentacionId = 1;
+    @SerializedName("stock_unidades")
+    private int stockUnidades = 0;
 
-    @SerializedName(value = "proveedor_id", alternate = {"id_proveedor"})
-    private Integer proveedorId = 1;
+    public int getId() {
+        return id > 0 ? id : productoId;
+    }
 
-    @SerializedName("categoria_id")
-    private Integer categoriaId = 1;
-
-    @SerializedName("padre_id")
-    private Integer padreId;
-
-    @SerializedName("nivel")
-    private Integer nivel = 1;
-
-    @SerializedName("factor")
-    private Integer factor = 1;
-
-    @SerializedName(value = "stock", alternate = {"cantidad", "inventory"})
-    private int stock;
-
-    @SerializedName(value = "precio_compra", alternate = {"precio_costo"})
-    private String precioCompra;
-
-    @SerializedName("precioCompra")
-    private String precioCompraAlt;
-
-    @SerializedName(value = "precio_venta", alternate = {"precio"})
-    private String precioVenta;
-
-    @SerializedName("precioVenta")
-    private String precioVentaAlt;
+    public void setId(int id) {
+        this.id = id;
+    }
 
     public int getProductoId() {
-        return productoId != 0 ? productoId : id;
+        return getId();
     }
 
     public void setProductoId(int productoId) {
@@ -61,14 +58,19 @@ public class Producto {
         this.id = productoId;
     }
 
+    public String getNombre() {
+        return nombre != null ? nombre : "";
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
     public String getProductoNombre() {
-        if (productoNombre != null && !productoNombre.isEmpty()) return productoNombre;
-        if (nombre != null && !nombre.isEmpty()) return nombre;
-        return "";
+        return getNombre();
     }
 
     public void setProductoNombre(String productoNombre) {
-        this.productoNombre = productoNombre;
         this.nombre = productoNombre;
     }
 
@@ -80,99 +82,102 @@ public class Producto {
         this.activo = activo;
     }
 
-    public Integer getPresentacionId() {
-        return presentacionId != null ? presentacionId : 1;
+    public int getProveedorId() {
+        return proveedorId;
     }
 
-    public void setPresentacionId(Integer presentacionId) {
-        this.presentacionId = presentacionId;
-    }
-
-    public Integer getProveedorId() {
-        return proveedorId != null ? proveedorId : 1;
-    }
-
-    public void setProveedorId(Integer proveedorId) {
+    public void setProveedorId(int proveedorId) {
         this.proveedorId = proveedorId;
     }
 
-    public Integer getCategoriaId() {
-        return categoriaId != null ? categoriaId : 1;
+    public int getCategoriaId() {
+        if (categoriaId > 0) return categoriaId;
+        if (productoCategoriaId > 0) return productoCategoriaId;
+        return 1;
     }
 
-    public void setCategoriaId(Integer categoriaId) {
+    public void setCategoriaId(int categoriaId) {
         this.categoriaId = categoriaId;
     }
 
-    public Integer getPadreId() {
-        return padreId;
+    public int getUnidadesPorPaqueteVal() {
+        return unidadesPorPaquete > 0 ? unidadesPorPaquete : 1;
     }
 
-    public void setPadreId(Integer padreId) {
-        this.padreId = padreId;
+    public int getUnidadesPorPaquete() {
+        return getUnidadesPorPaqueteVal();
     }
 
-    public Integer getNivel() {
-        return nivel != null ? nivel : 1;
+    public void setUnidadesPorPaquete(int unidadesPorPaquete) {
+        this.unidadesPorPaquete = unidadesPorPaquete;
     }
 
-    public void setNivel(Integer nivel) {
-        this.nivel = nivel;
+    public String getPrecioCompraPaquete() {
+        return precioCompraPaquete != null && !precioCompraPaquete.isEmpty() ? precioCompraPaquete : "0.00";
     }
 
-    public Integer getFactor() {
-        return factor != null ? factor : 1;
+    public void setPrecioCompraPaquete(String precioCompraPaquete) {
+        this.precioCompraPaquete = precioCompraPaquete;
     }
 
-    public void setFactor(Integer factor) {
-        this.factor = factor;
+    public String getPrecioVentaPaquete() {
+        return precioVentaPaquete != null && !precioVentaPaquete.isEmpty() ? precioVentaPaquete : "0.00";
     }
 
-    public int getStock() {
-        return stock;
+    public void setPrecioVentaPaquete(String precioVentaPaquete) {
+        this.precioVentaPaquete = precioVentaPaquete;
     }
 
-    public void setStock(int stock) {
-        this.stock = stock;
+    public String getPrecioVentaUnidad() {
+        return precioVentaUnidad != null && !precioVentaUnidad.isEmpty() ? precioVentaUnidad : "0.00";
     }
 
-    public String getPrecioCompra() {
-        if (precioCompra != null && !precioCompra.isEmpty()) return precioCompra;
-        if (precioCompraAlt != null && !precioCompraAlt.isEmpty()) return precioCompraAlt;
-        return "0.00";
+    public void setPrecioVentaUnidad(String precioVentaUnidad) {
+        this.precioVentaUnidad = precioVentaUnidad;
     }
 
-    public void setPrecioCompra(String precioCompra) {
-        this.precioCompra = precioCompra;
-        this.precioCompraAlt = precioCompra;
+    public int getStockUnidadesVal() {
+        return stockUnidades;
     }
 
+    public void setStockUnidades(int stockUnidades) {
+        this.stockUnidades = stockUnidades;
+    }
+
+    // Métodos de compatibilidad legacy
     public String getPrecioVenta() {
-        if (precioVenta != null && !precioVenta.isEmpty()) return precioVenta;
-        if (precioVentaAlt != null && !precioVentaAlt.isEmpty()) return precioVentaAlt;
-        return "0.00";
-    }
-
-    public void setPrecioVenta(String precioVenta) {
-        this.precioVenta = precioVenta;
-        this.precioVentaAlt = precioVenta;
-    }
-
-    public double getPrecioCompraDouble() {
-        try {
-            String val = getPrecioCompra();
-            return Double.parseDouble(val);
-        } catch (Exception e) {
-            return 0.0;
-        }
+        return getPrecioVentaPaquete();
     }
 
     public double getPrecioVentaDouble() {
         try {
-            String val = getPrecioVenta();
-            return Double.parseDouble(val);
+            return Double.parseDouble(getPrecioVentaPaquete());
         } catch (Exception e) {
             return 0.0;
         }
+    }
+
+    public int getStock() {
+        return getStockUnidadesVal();
+    }
+
+    public void setStock(int stock) {
+        this.stockUnidades = stock;
+    }
+
+    public int getPresentacionId() {
+        return 1;
+    }
+
+    public void setPresentacionId(int presentacionId) {}
+
+    public int getFactor() {
+        return getUnidadesPorPaqueteVal();
+    }
+
+    @NonNull
+    @Override
+    public String toString() {
+        return getNombre();
     }
 }

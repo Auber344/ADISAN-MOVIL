@@ -5,10 +5,10 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="12dp"
-    app:cardBackgroundColor="@color/card_bg"
-    app:cardCornerRadius="14dp"
-    app:cardElevation="2dp"
-    app:strokeColor="@color/border_color"
+    app:cardBackgroundColor="#101725"
+    app:cardCornerRadius="20dp"
+    app:cardElevation="3dp"
+    app:strokeColor="#1E293B"
     app:strokeWidth="1dp">
 
     <LinearLayout
@@ -17,28 +17,28 @@
         android:orientation="vertical"
         android:padding="16dp">
 
-        <!-- Fila Superior: Icono, ID, Nombre, Estado -->
+        <!-- Fila Superior: Icono, Nombre, Categoría, Estado -->
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/cardIconContainer"
-                android:layout_width="44dp"
-                android:layout_height="44dp"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
                 android:layout_centerVertical="true"
-                app:cardBackgroundColor="@color/accent_blue_bg"
-                app:cardCornerRadius="10dp"
+                app:cardBackgroundColor="#0D2247"
+                app:cardCornerRadius="12dp"
                 app:cardElevation="0dp"
                 app:strokeWidth="0dp">
 
                 <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
+                    android:layout_width="26dp"
+                    android:layout_height="26dp"
                     android:layout_gravity="center"
                     android:contentDescription="Icono Producto"
                     android:src="@drawable/ic_box"
-                    app:tint="@color/blue_primary" />
+                    app:tint="#3B82F6" />
             </com.google.android.material.card.MaterialCardView>
 
             <LinearLayout
@@ -51,21 +51,27 @@
                 android:orientation="vertical">
 
                 <TextView
-                    android:id="@+id/tvIdProducto"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="ID: #1"
-                    android:textColor="@color/text_muted"
-                    android:textSize="11sp" />
-
-                <TextView
                     android:id="@+id/tvNombreProducto"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="2dp"
-                    android:text="agua cielo"
-                    android:textColor="@color/text_primary"
+                    android:text="Coca Cola 1.5L"
+                    android:textColor="@color/white"
                     android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <!-- Badge de Categoría / ID -->
+                <TextView
+                    android:id="@+id/tvIdProducto"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:background="@drawable/bg_spinner_outlined"
+                    android:backgroundTint="#0D2247"
+                    android:paddingHorizontal="10dp"
+                    android:paddingVertical="3dp"
+                    android:text="Bebidas"
+                    android:textColor="#3B82F6"
+                    android:textSize="11sp"
                     android:textStyle="bold" />
             </LinearLayout>
 
@@ -76,11 +82,11 @@
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
                 android:background="@drawable/ic_box"
-                android:backgroundTint="@color/accent_green_bg"
+                android:backgroundTint="#062E29"
                 android:paddingHorizontal="10dp"
                 android:paddingVertical="4dp"
                 android:text="Activo"
-                android:textColor="@color/security_green"
+                android:textColor="#10B981"
                 android:textSize="11sp"
                 android:textStyle="bold" />
 
@@ -89,10 +95,10 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:layout_marginVertical="12dp"
-            android:background="@color/border_color" />
+            android:layout_marginVertical="14dp"
+            android:background="#1E293B" />
 
-        <!-- Fila de Detalles: Stock, Precio Compra, Precio Venta -->
+        <!-- Fila de Stock y Precios -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -101,14 +107,14 @@
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
+                android:layout_weight="1.2"
                 android:orientation="vertical">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Stock"
-                    android:textColor="@color/text_secondary"
+                    android:textColor="#94A3B8"
                     android:textSize="11sp" />
 
                 <TextView
@@ -116,9 +122,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="2dp"
-                    android:text="131 un."
-                    android:textColor="@color/text_primary"
-                    android:textSize="14sp"
+                    android:text="48 unidades\n(4 paquetes)"
+                    android:textColor="@color/white"
+                    android:textSize="13sp"
                     android:textStyle="bold" />
             </LinearLayout>
 
@@ -131,8 +137,8 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="P. Compra"
-                    android:textColor="@color/text_secondary"
+                    android:text="Venta paquete"
+                    android:textColor="#94A3B8"
                     android:textSize="11sp" />
 
                 <TextView
@@ -140,8 +146,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="2dp"
-                    android:text="S/ 1.00"
-                    android:textColor="@color/text_primary"
+                    android:text="S/ 30.00"
+                    android:textColor="@color/white"
                     android:textSize="14sp"
                     android:textStyle="bold" />
             </LinearLayout>
@@ -155,8 +161,8 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="P. Venta"
-                    android:textColor="@color/text_secondary"
+                    android:text="Venta unidad"
+                    android:textColor="#94A3B8"
                     android:textSize="11sp" />
 
                 <TextView
@@ -164,8 +170,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="2dp"
-                    android:text="S/ 1.30"
-                    android:textColor="@color/blue_primary"
+                    android:text="S/ 5.50"
+                    android:textColor="#3B82F6"
                     android:textSize="14sp"
                     android:textStyle="bold" />
             </LinearLayout>
@@ -176,52 +182,70 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="14dp"
+            android:layout_marginTop="12dp"
             android:gravity="end"
             android:orientation="horizontal">
 
             <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnAgregarStock"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_marginEnd="6dp"
+                android:insetLeft="0dp"
+                android:insetTop="0dp"
+                android:insetRight="0dp"
+                android:insetBottom="0dp"
+                android:padding="0dp"
+                app:icon="@drawable/ic_add"
+                app:iconGravity="textStart"
+                app:iconPadding="0dp"
+                app:iconTint="#10B981"
+                app:strokeColor="#10B981"
+                app:cornerRadius="8dp" />
+
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnAgregarCarrito"
                 android:layout_width="wrap_content"
-                android:layout_height="38dp"
-                android:layout_marginEnd="8dp"
-                android:backgroundTint="@color/blue_primary"
-                android:paddingHorizontal="12dp"
+                android:layout_height="36dp"
+                android:layout_marginEnd="6dp"
+                android:backgroundTint="#2563EB"
+                android:paddingHorizontal="10dp"
                 android:paddingVertical="0dp"
                 android:text="+ Carrito"
                 android:textAllCaps="false"
                 android:textColor="@color/white"
-                android:textSize="12sp"
+                android:textSize="11sp"
                 app:cornerRadius="8dp" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnEditarProducto"
                 style="@style/Widget.Material3.Button.OutlinedButton"
                 android:layout_width="wrap_content"
-                android:layout_height="38dp"
-                android:layout_marginEnd="8dp"
-                android:paddingHorizontal="12dp"
+                android:layout_height="36dp"
+                android:layout_marginEnd="6dp"
+                android:paddingHorizontal="10dp"
                 android:paddingVertical="0dp"
                 android:text="Editar"
                 android:textAllCaps="false"
-                android:textColor="@color/blue_primary"
-                android:textSize="12sp"
+                android:textColor="#3B82F6"
+                android:textSize="11sp"
                 app:cornerRadius="8dp"
-                app:strokeColor="@color/blue_primary" />
+                app:strokeColor="#2563EB" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnEliminarProducto"
                 style="@style/Widget.Material3.Button.OutlinedButton"
                 android:layout_width="wrap_content"
-                android:layout_height="38dp"
-                android:paddingHorizontal="12dp"
+                android:layout_height="36dp"
+                android:paddingHorizontal="10dp"
                 android:paddingVertical="0dp"
                 android:text="Eliminar"
                 android:textAllCaps="false"
-                android:textColor="@color/accent_red"
-                android:textSize="12sp"
+                android:textColor="#EF4444"
+                android:textSize="11sp"
                 app:cornerRadius="8dp"
-                app:strokeColor="@color/accent_red" />
+                app:strokeColor="#EF4444" />
 
         </LinearLayout>
 

@@ -19,9 +19,11 @@ import java.util.Locale;
 public class ProductoAdapter extends RecyclerView.Adapter<ProductoAdapter.ProductoViewHolder> {
 
     public interface OnProductoActionListener {
+        void onVerDetalle(Producto producto);
         void onEditar(Producto producto);
         void onEliminar(Producto producto);
         void onAgregarCarrito(Producto producto);
+        void onAgregarStock(Producto producto);
     }
 
     private final Context context;
@@ -52,31 +54,76 @@ public class ProductoAdapter extends RecyclerView.Adapter<ProductoAdapter.Produc
     @Override
     public void onBindViewHolder(@NonNull ProductoViewHolder holder, int position) {
         Producto producto = productoList.get(position);
+        if (producto == null) return;
+
+        android.util.Log.d("ADISAN_STOCK_TRACE", "PRODUCTO ID=" + producto.getId() + ", stockUnidades=" + producto.getStockUnidadesVal() + ", unidadesPorPaquete=" + producto.getUnidadesPorPaqueteVal());
 
         holder.tvIdProducto.setText("ID: #" + producto.getProductoId());
         holder.tvNombre.setText(producto.getProductoNombre());
 
         if (producto.getActivo() == 1) {
             holder.tvEstado.setText("Activo");
-            holder.tvEstado.setTextColor(Color.parseColor("#059669"));
+            holder.tvEstado.setTextColor(Color.parseColor("#10B981"));
         } else {
             holder.tvEstado.setText("Inactivo");
-            holder.tvEstado.setTextColor(Color.parseColor("#DC2626"));
+            holder.tvEstado.setTextColor(Color.parseColor("#EF4444"));
         }
 
-        int stock = producto.getStock();
-        holder.tvStock.setText(stock + " un.");
+        int stock = producto.getStockUnidadesVal();
+        int unidadesPorPaquete = producto.getUnidadesPorPaqueteVal();
+
+        if (unidadesPorPaquete > 0) {
+            int paquetes = stock / unidadesPorPaquete;
+            int sueltas = stock % unidadesPorPaquete;
+
+            if (sueltas == 0) {
+                holder.tvStock.setText(stock + " unidades\n(" + paquetes + " paquetes)");
+            } else {
+                holder.tvStock.setText(
+                        stock + " unidades\n(" +
+                                paquetes + " paquetes + " +
+                                sueltas + " unidades)"
+                );
+            }
+        } else {
+            holder.tvStock.setText(stock + " unidades");
+        }
 
         if (stock <= 5) {
-            holder.tvStock.setTextColor(Color.parseColor("#DC2626"));
+            holder.tvStock.setTextColor(Color.parseColor("#EF4444"));
         } else if (stock <= 15) {
-            holder.tvStock.setTextColor(Color.parseColor("#D97706"));
+            holder.tvStock.setTextColor(Color.parseColor("#F59E0B"));
         } else {
-            holder.tvStock.setTextColor(Color.parseColor("#1E293B"));
+            holder.tvStock.setTextColor(Color.parseColor("#FFFFFF"));
         }
 
-        holder.tvPrecioCompra.setText(String.format(Locale.US, "S/ %.2f", producto.getPrecioCompraDouble()));
-        holder.tvPrecioVenta.setText(String.format(Locale.US, "S/ %.2f", producto.getPrecioVentaDouble()));
+        double precioCompraPaq = 0.0;
+        try {
+            precioCompraPaq = Double.parseDouble(producto.getPrecioCompraPaquete());
+        } catch (Exception ignored) {}
+
+        double precioVentaPaq = 0.0;
+        try {
+            precioVentaPaq = Double.parseDouble(producto.getPrecioVentaPaquete());
+        } catch (Exception ignored) {}
+
+        double precioVentaUnid = 0.0;
+        try {
+            precioVentaUnid = Double.parseDouble(producto.getPrecioVentaUnidad());
+        } catch (Exception ignored) {}
+
+        if (holder.tvPrecioCompra != null) {
+            holder.tvPrecioCompra.setText(String.format(Locale.US, "S/ %.2f", precioVentaPaq));
+        }
+        if (holder.tvPrecioVenta != null) {
+            holder.tvPrecioVenta.setText(String.format(Locale.US, "S/ %.2f", precioVentaUnid));
+        }
+
+        holder.itemView.setOnClickListener(v -> {
+            if (listener != null) {
+                listener.onVerDetalle(producto);
+            }
+        });
 
         if (holder.btnAgregarCarrito != null) {
             holder.btnAgregarCarrito.setOnClickListener(v -> {
@@ -101,6 +148,14 @@ public class ProductoAdapter extends RecyclerView.Adapter<ProductoAdapter.Produc
                 }
             });
         }
+
+        if (holder.btnAgregarStock != null) {
+            holder.btnAgregarStock.setOnClickListener(v -> {
+                if (listener != null) {
+                    listener.onAgregarStock(producto);
+                }
+            });
+        }
     }
 
     @Override
@@ -118,6 +173,7 @@ public class ProductoAdapter extends RecyclerView.Adapter<ProductoAdapter.Produc
         MaterialButton btnAgregarCarrito;
         MaterialButton btnEditar;
         MaterialButton btnEliminar;
+        MaterialButton btnAgregarStock;
 
         public ProductoViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -130,6 +186,7 @@ public class ProductoAdapter extends RecyclerView.Adapter<ProductoAdapter.Produc
             btnAgregarCarrito = itemView.findViewById(R.id.btnAgregarCarrito);
             btnEditar = itemView.findViewById(R.id.btnEditarProducto);
             btnEliminar = itemView.findViewById(R.id.btnEliminarProducto);
+            btnAgregarStock = itemView.findViewById(R.id.btnAgregarStock);
         }
     }
 }

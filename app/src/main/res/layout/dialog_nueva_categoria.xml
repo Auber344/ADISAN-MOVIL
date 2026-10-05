@@ -54,31 +54,6 @@
                 android:textSize="14sp" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- Factor (Unidades) -->
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/tilFactorCategoria"
-            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            app:boxCornerRadiusBottomEnd="10dp"
-            app:boxCornerRadiusBottomStart="10dp"
-            app:boxCornerRadiusTopEnd="10dp"
-            app:boxCornerRadiusTopStart="10dp"
-            app:boxStrokeColor="@color/input_stroke_color">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etFactorCategoria"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Factor de empaque (ej: 1 o 12)"
-                android:inputType="number"
-                android:maxLines="1"
-                android:text="1"
-                android:textColor="@color/text_primary"
-                android:textSize="14sp" />
-        </com.google.android.material.textfield.TextInputLayout>
-
         <!-- Botones de Acción -->
         <LinearLayout
             android:layout_width="match_parent"

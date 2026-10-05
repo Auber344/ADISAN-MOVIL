@@ -56,31 +56,63 @@ public class PedidosActivity extends AppCompatActivity {
     private RecyclerView rvPedidos;
     private PedidoAdapter adapter;
 
+    private MaterialButton chipTodosPed, chipPendientesPed, chipEnCaminoPed, chipEntregadosPed, chipCanceladosPed;
+    private List<Pedido> listaPedidosCompleta = new ArrayList<>();
+    private String filtroActual = "todos";
+
     private ImageView btnVolver;
     private BottomNavigationView bottomNavigation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_pedidos);
+        try {
+            setContentView(R.layout.activity_pedidos);
+        } catch (Throwable e) {
+            Toast.makeText(this, "CRASH setContentView: " + e.getMessage(), Toast.LENGTH_LONG).show();
+            return;
+        }
 
-        // 1. Inicializar vistas
-        initViews();
+        try {
+            initViews();
+        } catch (Throwable e) {
+            Toast.makeText(this, "CRASH initViews: " + e.getMessage(), Toast.LENGTH_LONG).show();
+            return;
+        }
 
-        // 2. Manejar insets para la barra de estado
-        setupWindowInsets();
+        try {
+            setupWindowInsets();
+        } catch (Throwable e) {
+            Toast.makeText(this, "CRASH setupWindowInsets: " + e.getMessage(), Toast.LENGTH_LONG).show();
+            return;
+        }
 
-        // 3. Configurar RecyclerView y Adapter
-        setupRecyclerView();
+        try {
+            setupRecyclerView();
+        } catch (Throwable e) {
+            Toast.makeText(this, "CRASH setupRecyclerView: " + e.getMessage(), Toast.LENGTH_LONG).show();
+            return;
+        }
 
-        // 4. Configurar listeners
-        setupListeners();
+        try {
+            setupListeners();
+        } catch (Throwable e) {
+            Toast.makeText(this, "CRASH setupListeners: " + e.getMessage(), Toast.LENGTH_LONG).show();
+            return;
+        }
 
-        // 5. Configurar títulos según el Rol del usuario
-        configurarTituloPorRol();
+        try {
+            configurarTituloPorRol();
+        } catch (Throwable e) {
+            Toast.makeText(this, "CRASH configurarTituloPorRol: " + e.getMessage(), Toast.LENGTH_LONG).show();
+            return;
+        }
 
-        // 6. Cargar pedidos desde el backend
-        cargarPedidos();
+        try {
+            cargarPedidos();
+        } catch (Throwable e) {
+            Toast.makeText(this, "CRASH cargarPedidos: " + e.getMessage(), Toast.LENGTH_LONG).show();
+        }
     }
 
     private void configurarTituloPorRol() {
@@ -110,6 +142,12 @@ public class PedidosActivity extends AppCompatActivity {
         rvPedidos = findViewById(R.id.rvPedidos);
         btnVolver = findViewById(R.id.btnVolver);
         bottomNavigation = findViewById(R.id.bottomNavigation);
+        
+        chipTodosPed = findViewById(R.id.chipTodosPed);
+        chipPendientesPed = findViewById(R.id.chipPendientesPed);
+        chipEnCaminoPed = findViewById(R.id.chipEnCaminoPed);
+        chipEntregadosPed = findViewById(R.id.chipEntregadosPed);
+        chipCanceladosPed = findViewById(R.id.chipCanceladosPed);
     }
 
     private void setupWindowInsets() {
@@ -129,8 +167,21 @@ public class PedidosActivity extends AppCompatActivity {
         adapter = new PedidoAdapter(this, new ArrayList<>());
         rvPedidos.setAdapter(adapter);
 
-        // Listener para acciones de Cambiar Estado y Cancelar
+        // Listener para acciones de Ver Detalle, Cambiar Estado y Cancelar
         adapter.setOnPedidoActionListener(new PedidoAdapter.OnPedidoActionListener() {
+            @Override
+            public void onVerDetalle(Pedido pedido) {
+                if (pedido != null && pedido.getId() > 0) {
+                    Intent intent = new Intent(PedidosActivity.this, PedidoDetalleActivity.class);
+                    intent.putExtra("pedido_id", pedido.getId());
+                    intent.putExtra("id", pedido.getId());
+                    intent.putExtra("id_pedido", pedido.getId());
+                    startActivity(intent);
+                } else {
+                    Toast.makeText(PedidosActivity.this, "Pedido inválido", Toast.LENGTH_SHORT).show();
+                }
+            }
+
             @Override
             public void onEditarEstado(Pedido pedido) {
                 mostrarDialogoCambiarEstado(pedido);
@@ -165,6 +216,23 @@ public class PedidosActivity extends AppCompatActivity {
             swipeRefresh.setOnRefreshListener(this::cargarPedidos);
         }
 
+        View.OnClickListener chipListener = v -> {
+            if (v == chipTodosPed) filtroActual = "todos";
+            else if (v == chipPendientesPed) filtroActual = "pendiente";
+            else if (v == chipEnCaminoPed) filtroActual = "en_camino";
+            else if (v == chipEntregadosPed) filtroActual = "entregado";
+            else if (v == chipCanceladosPed) filtroActual = "cancelado";
+            
+            actualizarEstiloChips((MaterialButton) v);
+            aplicarFiltroLocal();
+        };
+
+        if (chipTodosPed != null) chipTodosPed.setOnClickListener(chipListener);
+        if (chipPendientesPed != null) chipPendientesPed.setOnClickListener(chipListener);
+        if (chipEnCaminoPed != null) chipEnCaminoPed.setOnClickListener(chipListener);
+        if (chipEntregadosPed != null) chipEntregadosPed.setOnClickListener(chipListener);
+        if (chipCanceladosPed != null) chipCanceladosPed.setOnClickListener(chipListener);
+
         if (bottomNavigation != null) {
             bottomNavigation.setSelectedItemId(R.id.nav_pedidos);
             bottomNavigation.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
@@ -194,72 +262,98 @@ public class PedidosActivity extends AppCompatActivity {
     }
 
     private void cargarPedidos() {
-        if (swipeRefresh != null && !swipeRefresh.isRefreshing()) {
-            mostrarEstadoCarga();
-        }
+        try {
+            if (swipeRefresh != null && !swipeRefresh.isRefreshing()) {
+                mostrarEstadoCarga();
+            }
 
-        // 1. Probar endpoint envuelto { "data": [ ... ] }
-        ApiClient.getApiService().getPedidos().enqueue(new Callback<PedidoResponse>() {
-            @Override
-            public void onResponse(@NonNull Call<PedidoResponse> call, @NonNull Response<PedidoResponse> response) {
-                ocultarSwipeRefresh();
+            // 1. Probar endpoint envuelto { "data": [ ... ] }
+            ApiClient.getApiService().getPedidos().enqueue(new Callback<PedidoResponse>() {
+                @Override
+                public void onResponse(@NonNull Call<PedidoResponse> call, @NonNull Response<PedidoResponse> response) {
+                    try {
+                        ocultarSwipeRefresh();
 
-                if (response.code() == 401) {
-                    manejarSesionExpirada();
-                    return;
-                }
+                        if (response.code() == 401) {
+                            manejarSesionExpirada();
+                            return;
+                        }
 
-                if (response.isSuccessful() && response.body() != null) {
-                    PedidoResponse body = response.body();
-                    List<Pedido> lista = body.getData();
+                        if (response.isSuccessful() && response.body() != null) {
+                            PedidoResponse body = response.body();
+                            listaPedidosCompleta = body.getData() != null ? body.getData() : new ArrayList<>();
 
-                    if (lista != null && !lista.isEmpty()) {
-                        mostrarListaPedidos(lista);
-                    } else {
-                        mostrarEstadoVacio();
+                            if (!listaPedidosCompleta.isEmpty()) {
+                                aplicarFiltroLocal();
+                            } else {
+                                mostrarEstadoVacio();
+                            }
+                        } else {
+                            // Fallback a lista directa si el JSON es un arreglo [ {...} ]
+                            cargarPedidosListaDirecta();
+                        }
+                    } catch (Throwable e) {
+                        android.util.Log.e("CRASH_DEBUG", "CRASH in onResponse: " + e.getMessage(), e);
+                        Toast.makeText(PedidosActivity.this, "CRASH onResponse: " + e.getClass().getSimpleName() + " - " + e.getMessage(), Toast.LENGTH_LONG).show();
                     }
-                } else {
-                    // Fallback a lista directa si el JSON es un arreglo [ {...} ]
-                    cargarPedidosListaDirecta();
                 }
-            }
 
-            @Override
-            public void onFailure(@NonNull Call<PedidoResponse> call, @NonNull Throwable t) {
-                cargarPedidosListaDirecta();
-            }
-        });
+                @Override
+                public void onFailure(@NonNull Call<PedidoResponse> call, @NonNull Throwable t) {
+                    try {
+                        cargarPedidosListaDirecta();
+                    } catch (Throwable e) {
+                        Toast.makeText(PedidosActivity.this, "CRASH onFailure: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                    }
+                }
+            });
+        } catch (Throwable e) {
+            Toast.makeText(this, "CRASH cargarPedidos: " + e.getMessage(), Toast.LENGTH_LONG).show();
+        }
     }
 
     private void cargarPedidosListaDirecta() {
-        ApiClient.getApiService().getPedidosDirectList().enqueue(new Callback<List<Pedido>>() {
-            @Override
-            public void onResponse(@NonNull Call<List<Pedido>> call, @NonNull Response<List<Pedido>> response) {
-                ocultarSwipeRefresh();
+        try {
+            ApiClient.getApiService().getPedidosDirectList().enqueue(new Callback<List<Pedido>>() {
+                @Override
+                public void onResponse(@NonNull Call<List<Pedido>> call, @NonNull Response<List<Pedido>> response) {
+                    try {
+                        ocultarSwipeRefresh();
 
-                if (response.code() == 401) {
-                    manejarSesionExpirada();
-                    return;
-                }
+                        if (response.code() == 401) {
+                            manejarSesionExpirada();
+                            return;
+                        }
 
-                if (response.isSuccessful() && response.body() != null) {
-                    List<Pedido> lista = response.body();
-                    if (!lista.isEmpty()) {
-                        mostrarListaPedidos(lista);
-                    } else {
-                        mostrarEstadoVacio();
+                        if (response.isSuccessful() && response.body() != null) {
+                            listaPedidosCompleta = response.body();
+                            if (listaPedidosCompleta != null && !listaPedidosCompleta.isEmpty()) {
+                                aplicarFiltroLocal();
+                            } else {
+                                mostrarEstadoVacio();
+                            }
+                        } else {
+                            mostrarEstadoError("Error en el servidor (" + response.code() + ")");
+                        }
+                    } catch (Throwable e) {
+                        android.util.Log.e("CRASH_DEBUG", "CRASH in DirectList onResponse: " + e.getMessage(), e);
+                        Toast.makeText(PedidosActivity.this, "CRASH DirectList onResponse: " + e.getClass().getSimpleName() + " - " + e.getMessage(), Toast.LENGTH_LONG).show();
                     }
-                } else {
-                    mostrarEstadoError("Error en el servidor (" + response.code() + ")");
                 }
-            }
 
-            @Override
-            public void onFailure(@NonNull Call<List<Pedido>> call, @NonNull Throwable t) {
-                ocultarSwipeRefresh();
-                mostrarEstadoError("Error de conexión al servidor (10.0.2.2:3000). Verifica que el backend esté ejecutándose.");
-            }
-        });
+                @Override
+                public void onFailure(@NonNull Call<List<Pedido>> call, @NonNull Throwable t) {
+                    try {
+                        ocultarSwipeRefresh();
+                        mostrarEstadoError("Error de conexión al servidor (10.0.2.2:3000). Verifica que el backend esté ejecutándose.");
+                    } catch (Throwable e) {
+                        Toast.makeText(PedidosActivity.this, "CRASH DirectList onFailure: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                    }
+                }
+            });
+        } catch (Throwable e) {
+            Toast.makeText(this, "CRASH cargarPedidosListaDirecta: " + e.getMessage(), Toast.LENGTH_LONG).show();
+        }
     }
 
     // =======================================================
@@ -661,14 +755,98 @@ public class PedidosActivity extends AppCompatActivity {
     }
 
     // =======================================================
+    // DETALLE DE PEDIDO
+    // =======================================================
+
+    private void cargarDetalleYMostrar(int pedidoId) {
+        if (pbLoading != null) pbLoading.setVisibility(View.VISIBLE);
+
+        ApiClient.getApiService().getPedidoById(pedidoId).enqueue(new Callback<Pedido>() {
+            @Override
+            public void onResponse(@NonNull Call<Pedido> call, @NonNull Response<Pedido> response) {
+                if (pbLoading != null) pbLoading.setVisibility(View.GONE);
+
+                if (response.code() == 401) {
+                    manejarSesionExpirada();
+                    return;
+                }
+
+                if (response.isSuccessful() && response.body() != null) {
+                    Pedido pedidoCompleto = response.body();
+                    mostrarDialogoDetallePedido(pedidoCompleto);
+                } else {
+                    Toast.makeText(PedidosActivity.this, "No se pudo cargar el detalle del pedido", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<Pedido> call, @NonNull Throwable t) {
+                if (pbLoading != null) pbLoading.setVisibility(View.GONE);
+                Toast.makeText(PedidosActivity.this, "Error de conexión al cargar detalle del pedido", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void mostrarDialogoDetallePedido(Pedido pedido) {
+        if (pedido == null) return;
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_detalle_pedido, null);
+        builder.setView(dialogView);
+
+        AlertDialog dialog = builder.create();
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        }
+
+        TextView tvTitle = dialogView.findViewById(R.id.tvTitleDetallePedido);
+        TextView tvInfo = dialogView.findViewById(R.id.tvInfoDetallePedido);
+        RecyclerView rvDetalles = dialogView.findViewById(R.id.rvDetallesPedidoModal);
+        MaterialButton btnCerrar = dialogView.findViewById(R.id.btnCerrarDetallePedido);
+
+        if (tvTitle != null) {
+            tvTitle.setText("Pedido #" + pedido.getId());
+        }
+
+        if (tvInfo != null) {
+            String clienteStr = pedido.getCliente() != null ? pedido.getCliente() : "Venta directa";
+            String fechaStr = pedido.getFecha() != null ? pedido.getFecha() : "Pendiente";
+            String pagoStr = pedido.getMetodoPago() != null ? pedido.getMetodoPago() : "Efectivo";
+            String estadoStr = pedido.getEstado() != null ? pedido.getEstado() : "pendiente";
+            double totalVal = pedido.getTotalDouble();
+
+            String info = "Cliente: " + clienteStr +
+                    "\nFecha: " + fechaStr +
+                    "\nMétodo de Pago: " + pagoStr +
+                    "\nEstado: " + estadoStr.toUpperCase() +
+                    "\nTotal: S/ " + String.format(Locale.US, "%.2f", totalVal);
+            tvInfo.setText(info);
+        }
+
+        if (rvDetalles != null) {
+            rvDetalles.setLayoutManager(new LinearLayoutManager(this));
+            DetallePedidoAdapter detAdapter = new DetallePedidoAdapter(this, pedido.getDetalles());
+            rvDetalles.setAdapter(detAdapter);
+        }
+
+        if (btnCerrar != null) {
+            btnCerrar.setOnClickListener(v -> dialog.dismiss());
+        }
+
+        dialog.show();
+    }
+
+    // =======================================================
     // CAMBIAR ESTADO DE PEDIDO
     // =======================================================
 
     private void mostrarDialogoCambiarEstado(Pedido pedido) {
-        String[] estados = {"pendiente", "aceptado", "en_camino", "entregado", "cancelado"};
+        String[] estadosDisplay = {"Pendiente", "Aceptado", "En camino", "Entregado"};
+        String[] estadosValor = {"pendiente", "aceptado", "en_camino", "entregado"};
+        
         int seleccionActual = 0;
-        for (int i = 0; i < estados.length; i++) {
-            if (estados[i].equalsIgnoreCase(pedido.getEstado())) {
+        for (int i = 0; i < estadosValor.length; i++) {
+            if (estadosValor[i].equalsIgnoreCase(pedido.getEstado())) {
                 seleccionActual = i;
                 break;
             }
@@ -676,8 +854,8 @@ public class PedidosActivity extends AppCompatActivity {
 
         new AlertDialog.Builder(this)
                 .setTitle("Cambiar Estado del Pedido #" + pedido.getId())
-                .setSingleChoiceItems(estados, seleccionActual, (dialog, which) -> {
-                    String nuevoEstado = estados[which];
+                .setSingleChoiceItems(estadosDisplay, seleccionActual, (dialog, which) -> {
+                    String nuevoEstado = estadosValor[which];
                     dialog.dismiss();
                     ejecutarActualizarEstado(pedido.getId(), nuevoEstado);
                 })
@@ -688,8 +866,10 @@ public class PedidosActivity extends AppCompatActivity {
     private void ejecutarActualizarEstado(int pedidoId, String nuevoEstado) {
         mostrarEstadoCarga();
 
+        String estadoLower = nuevoEstado != null ? nuevoEstado.toLowerCase() : "pendiente";
+
         Pedido updateRequest = new Pedido();
-        updateRequest.setEstado(nuevoEstado);
+        updateRequest.setEstado(estadoLower);
 
         ApiClient.getApiService().editarPedido(pedidoId, updateRequest).enqueue(new Callback<PedidoResponse>() {
             @Override
@@ -700,10 +880,21 @@ public class PedidosActivity extends AppCompatActivity {
                 }
 
                 if (response.isSuccessful()) {
-                    Toast.makeText(PedidosActivity.this, "¡Estado actualizado a " + nuevoEstado.toUpperCase() + "!", Toast.LENGTH_SHORT).show();
+                    String displayStr = estadoLower.substring(0, 1).toUpperCase() + estadoLower.substring(1).replace("_", " ");
+                    Toast.makeText(PedidosActivity.this, "¡Estado actualizado a " + displayStr + "!", Toast.LENGTH_SHORT).show();
                     cargarPedidos();
                 } else {
-                    Toast.makeText(PedidosActivity.this, "Error al actualizar estado (" + response.code() + ")", Toast.LENGTH_SHORT).show();
+                    String errorMsg = "Error al actualizar estado (" + response.code() + ")";
+                    try {
+                        if (response.errorBody() != null) {
+                            String errStr = response.errorBody().string();
+                            PedidoResponse errRes = new com.google.gson.Gson().fromJson(errStr, PedidoResponse.class);
+                            if (errRes != null && errRes.getMessage() != null) {
+                                errorMsg = errRes.getMessage();
+                            }
+                        }
+                    } catch (Exception ignored) {}
+                    Toast.makeText(PedidosActivity.this, errorMsg, Toast.LENGTH_SHORT).show();
                     cargarPedidos();
                 }
             }
@@ -724,14 +915,56 @@ public class PedidosActivity extends AppCompatActivity {
         new AlertDialog.Builder(this)
                 .setTitle("Cancelar Pedido")
                 .setMessage("¿Estás seguro de cambiar a CANCELADO el pedido #" + pedido.getId() + "?")
-                .setPositiveButton("Confirmar", (dialog, which) -> ejecutarActualizarEstado(pedido.getId(), "cancelado"))
+                .setPositiveButton("Confirmar", (dialog, which) -> ejecutarActualizarEstado(pedido.getId(), "CANCELADO"))
                 .setNegativeButton("Volver", null)
                 .show();
     }
 
     // =======================================================
-    // MANEJO DE ESTADOS DE LA UI
+    // MANEJO DE ESTADOS DE LA UI Y FILTROS
     // =======================================================
+
+    private void aplicarFiltroLocal() {
+        if (listaPedidosCompleta == null || listaPedidosCompleta.isEmpty()) {
+            mostrarEstadoVacio();
+            return;
+        }
+
+        List<Pedido> filtrados = new ArrayList<>();
+        for (Pedido p : listaPedidosCompleta) {
+            String estadoStr = p.getEstado() != null ? p.getEstado().toLowerCase() : "pendiente";
+            if ("todos".equals(filtroActual)) {
+                filtrados.add(p);
+            } else if ("en_camino".equals(filtroActual) && ("en_camino".equals(estadoStr) || "en camino".equals(estadoStr))) {
+                filtrados.add(p);
+            } else if (filtroActual.equals(estadoStr)) {
+                filtrados.add(p);
+            }
+        }
+
+        if (filtrados.isEmpty()) {
+            mostrarEstadoVacio();
+        } else {
+            mostrarListaPedidos(filtrados);
+        }
+    }
+
+    private void actualizarEstiloChips(MaterialButton seleccionado) {
+        MaterialButton[] chips = {chipTodosPed, chipPendientesPed, chipEnCaminoPed, chipEntregadosPed, chipCanceladosPed};
+        for (MaterialButton c : chips) {
+            if (c == null) continue;
+            if (c == seleccionado) {
+                c.setBackgroundTintList(android.content.res.ColorStateList.valueOf(android.graphics.Color.parseColor("#F97316")));
+                c.setTextColor(android.graphics.Color.WHITE);
+                c.setStrokeWidth(0);
+            } else {
+                c.setBackgroundTintList(android.content.res.ColorStateList.valueOf(android.graphics.Color.parseColor("#1E293B")));
+                c.setTextColor(android.graphics.Color.parseColor("#94A3B8"));
+                c.setStrokeColor(android.content.res.ColorStateList.valueOf(android.graphics.Color.parseColor("#2E3D59")));
+                c.setStrokeWidth(1);
+            }
+        }
+    }
 
     private void mostrarEstadoCarga() {
         if (pbLoading != null) pbLoading.setVisibility(View.VISIBLE);

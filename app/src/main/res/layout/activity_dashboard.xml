@@ -12,7 +12,7 @@
         android:id="@+id/main"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/login_bg_dark">
+        android:background="#060A12">
 
         <!-- ScrollView principal para diseño totalmente responsive -->
         <ScrollView
@@ -36,20 +36,19 @@
                 <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="20dp">
+                    android:layout_marginBottom="22dp">
 
-                    <!-- Botón Menú Hamburguesa 3 Líneas (Top Izquierda) -->
+                    <!-- Botón Menú Hamburguesa Naranja (Top Izquierda) -->
                     <com.google.android.material.card.MaterialCardView
                         android:id="@+id/btnMenuHamburguesa"
                         android:layout_width="44dp"
                         android:layout_height="44dp"
                         android:layout_centerVertical="true"
-                        android:layout_marginEnd="10dp"
-                        app:cardBackgroundColor="@color/login_card_dark"
-                        app:cardCornerRadius="12dp"
+                        android:layout_marginEnd="12dp"
+                        app:cardBackgroundColor="#F97316"
+                        app:cardCornerRadius="14dp"
                         app:cardElevation="2dp"
-                        app:strokeColor="@color/login_card_border"
-                        app:strokeWidth="1dp">
+                        app:strokeWidth="0dp">
 
                         <ImageView
                             android:layout_width="24dp"
@@ -66,8 +65,8 @@
                         android:layout_height="44dp"
                         android:layout_centerVertical="true"
                         android:layout_toEndOf="@id/btnMenuHamburguesa"
-                        app:cardBackgroundColor="@color/login_accent_blue"
-                        app:cardCornerRadius="12dp"
+                        app:cardBackgroundColor="#2563EB"
+                        app:cardCornerRadius="14dp"
                         app:cardElevation="2dp"
                         app:strokeWidth="0dp">
 
@@ -85,7 +84,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_centerVertical="true"
-                        android:layout_marginStart="12dp"
+                        android:layout_marginStart="10dp"
                         android:layout_toEndOf="@id/cardLogoContainer"
                         android:orientation="vertical">
 
@@ -95,25 +94,27 @@
                             android:letterSpacing="0.04"
                             android:text="ADISAN"
                             android:textColor="@color/white"
-                            android:textSize="19sp"
+                            android:textSize="18sp"
                             android:textStyle="bold" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Calidad que impulsa"
+                            android:letterSpacing="0.08"
+                            android:text="DISTRIBUCIONES"
+                            android:textAllCaps="true"
                             android:textColor="@color/login_text_muted"
-                            android:textSize="11sp" />
+                            android:textSize="9sp" />
                     </LinearLayout>
 
-                    <!-- Avatar Circular -->
+                    <!-- Avatar Circular Azul -->
                     <com.google.android.material.card.MaterialCardView
                         android:id="@+id/cardAvatarContainer"
                         android:layout_width="42dp"
                         android:layout_height="42dp"
                         android:layout_alignParentEnd="true"
                         android:layout_centerVertical="true"
-                        app:cardBackgroundColor="@color/login_accent_blue"
+                        app:cardBackgroundColor="#2563EB"
                         app:cardCornerRadius="21dp"
                         app:cardElevation="2dp"
                         app:strokeWidth="0dp">
@@ -127,8 +128,8 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
                                 android:contentDescription="Avatar"
-                                android:padding="8dp"
-                                android:src="@drawable/ic_avatar"
+                                android:padding="10dp"
+                                android:src="@drawable/ic_user"
                                 app:tint="@color/white" />
 
                             <TextView
@@ -136,7 +137,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="center"
-                                android:text="K"
+                                android:text="A"
                                 android:textColor="@color/white"
                                 android:textSize="16sp"
                                 android:textStyle="bold"
@@ -151,10 +152,10 @@
                         android:layout_centerVertical="true"
                         android:layout_marginEnd="10dp"
                         android:layout_toStartOf="@id/cardAvatarContainer"
-                        app:cardBackgroundColor="@color/login_card_dark"
+                        app:cardBackgroundColor="#121824"
                         app:cardCornerRadius="21dp"
                         app:cardElevation="2dp"
-                        app:strokeColor="@color/login_card_border"
+                        app:strokeColor="#1E293B"
                         app:strokeWidth="1dp">
 
                         <FrameLayout
@@ -163,54 +164,206 @@
 
                             <ImageView
                                 android:id="@+id/btnNotifications"
-                                android:layout_width="22dp"
-                                android:layout_height="22dp"
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
                                 android:layout_gravity="center"
                                 android:contentDescription="Notificaciones"
                                 android:src="@drawable/ic_notifications"
-                                app:tint="@color/login_text_light" />
+                                app:tint="@color/white" />
 
-                            <!-- Indicador de Notificación activa -->
+                            <!-- Indicador de Notificación activa (Rojo) -->
                             <View
                                 android:layout_width="8dp"
                                 android:layout_height="8dp"
                                 android:layout_gravity="top|end"
-                                android:layout_marginTop="8dp"
-                                android:layout_marginEnd="8dp"
+                                android:layout_marginTop="9dp"
+                                android:layout_marginEnd="9dp"
                                 android:background="@drawable/ic_warning"
-                                android:backgroundTint="@color/accent_red" />
+                                android:backgroundTint="#EF4444" />
                         </FrameLayout>
                     </com.google.android.material.card.MaterialCardView>
 
                 </RelativeLayout>
 
-                <!-- GREETING Y FECHA DINÁMICA -->
-                <TextView
-                    android:id="@+id/tvGreeting"
-                    android:layout_width="wrap_content"
+                <!-- GREETING Y FECHA DINÁMICA (Badge superior derecho) -->
+                <RelativeLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Hola, KIRA 👋"
-                    android:textColor="@color/white"
-                    android:textSize="24sp"
-                    android:textStyle="bold" />
+                    android:layout_marginBottom="16dp">
 
-                <TextView
-                    android:id="@+id/tvSubGreeting"
-                    android:layout_width="wrap_content"
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentStart="true"
+                        android:layout_centerVertical="true"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/tvGreeting"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Hola, admin 👋"
+                            android:textColor="@color/white"
+                            android:textSize="24sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/tvSubGreeting"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:text="¿Qué deseas hacer hoy?"
+                            android:textColor="@color/login_text_muted"
+                            android:textSize="13sp" />
+                    </LinearLayout>
+
+                    <!-- Fecha Badge Estilo Referencia -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        app:cardBackgroundColor="#121824"
+                        app:cardCornerRadius="12dp"
+                        app:cardElevation="0dp"
+                        app:strokeColor="#1E293B"
+                        app:strokeWidth="1dp">
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal"
+                            android:paddingHorizontal="12dp"
+                            android:paddingVertical="8dp">
+
+                            <ImageView
+                                android:layout_width="14dp"
+                                android:layout_height="14dp"
+                                android:layout_marginEnd="6dp"
+                                android:src="@drawable/ic_truck"
+                                app:tint="@color/login_text_muted" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="2 Oct 2026"
+                                android:textColor="@color/white"
+                                android:textSize="12sp"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+
+                </RelativeLayout>
+
+                <!-- BANNER PRINCIPAL (Tu negocio en movimiento) -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="2dp"
-                    android:layout_marginBottom="20dp"
-                    android:text="Todo bajo control • Lunes, 21 de septiembre"
-                    android:textColor="@color/login_text_muted"
-                    android:textSize="13sp" />
+                    android:layout_marginBottom="22dp"
+                    app:cardBackgroundColor="#0F172A"
+                    app:cardCornerRadius="20dp"
+                    app:cardElevation="6dp"
+                    app:strokeColor="#1E3A8A"
+                    app:strokeWidth="1dp">
 
-                <!-- 2. RESUMEN PRINCIPAL - METRICAS TARJETAS REALES (GRID 2 COLUMNAS) -->
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="140dp"
+                        android:padding="16dp">
 
-                <!-- Fila 1: Productos y Usuarios -->
+                        <LinearLayout
+                            android:layout_width="200dp"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentStart="true"
+                            android:layout_centerVertical="true"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:lineSpacingExtra="-2dp"
+                                android:text="Tu negocio\nen movimiento"
+                                android:textColor="@color/white"
+                                android:textSize="20sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="6dp"
+                                android:lineSpacingExtra="1dp"
+                                android:text="Productos, pedidos y entregas siempre bajo control."
+                                android:textColor="#94A3B8"
+                                android:textSize="11sp" />
+
+                            <!-- Puntos indicadores -->
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="12dp"
+                                android:orientation="horizontal">
+
+                                <View
+                                    android:layout_width="16dp"
+                                    android:layout_height="4dp"
+                                    android:layout_marginEnd="4dp"
+                                    android:background="@drawable/bg_login_button" />
+
+                                <View
+                                    android:layout_width="6dp"
+                                    android:layout_height="4dp"
+                                    android:layout_marginEnd="4dp"
+                                    android:background="#334155" />
+
+                                <View
+                                    android:layout_width="6dp"
+                                    android:layout_height="4dp"
+                                    android:background="#334155" />
+                            </LinearLayout>
+                        </LinearLayout>
+
+                        <!-- Imagen Camión / Gráfico de Referencia -->
+                        <ImageView
+                            android:layout_width="140dp"
+                            android:layout_height="100dp"
+                            android:layout_alignParentEnd="true"
+                            android:layout_alignParentBottom="true"
+                            android:contentDescription="Camión"
+                            android:scaleType="centerInside"
+                            android:src="@drawable/ic_truck"
+                            app:tint="#3B82F6" />
+
+                        <com.google.android.material.card.MaterialCardView
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:layout_alignParentEnd="true"
+                            android:layout_alignParentBottom="true"
+                            android:layout_marginEnd="8dp"
+                            android:layout_marginBottom="8dp"
+                            app:cardBackgroundColor="#2563EB"
+                            app:cardCornerRadius="16dp"
+                            app:cardElevation="0dp"
+                            app:strokeWidth="0dp">
+
+                            <ImageView
+                                android:layout_width="16dp"
+                                android:layout_height="16dp"
+                                android:layout_gravity="center"
+                                android:src="@drawable/ic_chevron_right"
+                                app:tint="@color/white" />
+                        </com.google.android.material.card.MaterialCardView>
+
+                    </RelativeLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- 2. RESUMEN PRINCIPAL - METRICAS TARJETAS (GRID 2 COLUMNAS) -->
+
+                <!-- Fila 1: Productos (cardProductos) y Inventario (cardStockBajo) -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="12dp"
+                    android:layout_marginBottom="14dp"
                     android:orientation="horizontal">
 
                     <!-- Card 1: Productos -->
@@ -218,12 +371,12 @@
                         android:id="@+id/cardProductos"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginEnd="6dp"
+                        android:layout_marginEnd="7dp"
                         android:layout_weight="1"
-                        app:cardBackgroundColor="@color/login_card_dark"
-                        app:cardCornerRadius="18dp"
+                        app:cardBackgroundColor="#101725"
+                        app:cardCornerRadius="20dp"
                         app:cardElevation="4dp"
-                        app:strokeColor="@color/login_card_border"
+                        app:strokeColor="#1E293B"
                         app:strokeWidth="1dp">
 
                         <LinearLayout
@@ -237,10 +390,10 @@
                                 android:layout_height="wrap_content">
 
                                 <com.google.android.material.card.MaterialCardView
-                                    android:layout_width="40dp"
-                                    android:layout_height="40dp"
-                                    app:cardBackgroundColor="#162B54"
-                                    app:cardCornerRadius="12dp"
+                                    android:layout_width="42dp"
+                                    android:layout_height="42dp"
+                                    app:cardBackgroundColor="#0D2247"
+                                    app:cardCornerRadius="14dp"
                                     app:cardElevation="0dp"
                                     app:strokeWidth="0dp">
 
@@ -249,26 +402,26 @@
                                         android:layout_height="22dp"
                                         android:layout_gravity="center"
                                         android:src="@drawable/ic_box"
-                                        app:tint="@color/login_accent_blue" />
+                                        app:tint="#3B82F6" />
                                 </com.google.android.material.card.MaterialCardView>
 
                                 <ImageView
-                                    android:layout_width="18dp"
-                                    android:layout_height="18dp"
+                                    android:layout_width="16dp"
+                                    android:layout_height="16dp"
                                     android:layout_alignParentEnd="true"
                                     android:layout_centerVertical="true"
                                     android:src="@drawable/ic_chevron_right"
-                                    app:tint="@color/login_text_muted" />
+                                    app:tint="#64748B" />
                             </RelativeLayout>
 
                             <TextView
                                 android:id="@+id/tvValProductos"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_marginTop="14dp"
-                                android:text="4"
+                                android:layout_marginTop="16dp"
+                                android:text="12"
                                 android:textColor="@color/white"
-                                android:textSize="24sp"
+                                android:textSize="26sp"
                                 android:textStyle="bold" />
 
                             <TextView
@@ -276,24 +429,32 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="2dp"
                                 android:text="Productos"
-                                android:textColor="@color/login_text_muted"
-                                android:textSize="12sp"
+                                android:textColor="@color/white"
+                                android:textSize="14sp"
                                 android:textStyle="bold" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="1dp"
+                                android:text="Gestiona tu catálogo"
+                                android:textColor="#64748B"
+                                android:textSize="11sp" />
 
                         </LinearLayout>
                     </com.google.android.material.card.MaterialCardView>
 
-                    <!-- Card 2: Usuarios -->
+                    <!-- Card 2: Inventario -->
                     <com.google.android.material.card.MaterialCardView
-                        android:id="@+id/cardUsuarios"
+                        android:id="@+id/cardStockBajo"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="6dp"
+                        android:layout_marginStart="7dp"
                         android:layout_weight="1"
-                        app:cardBackgroundColor="@color/login_card_dark"
-                        app:cardCornerRadius="18dp"
+                        app:cardBackgroundColor="#101725"
+                        app:cardCornerRadius="20dp"
                         app:cardElevation="4dp"
-                        app:strokeColor="@color/login_card_border"
+                        app:strokeColor="#1E293B"
                         app:strokeWidth="1dp">
 
                         <LinearLayout
@@ -307,10 +468,10 @@
                                 android:layout_height="wrap_content">
 
                                 <com.google.android.material.card.MaterialCardView
-                                    android:layout_width="40dp"
-                                    android:layout_height="40dp"
-                                    app:cardBackgroundColor="#201B4B"
-                                    app:cardCornerRadius="12dp"
+                                    android:layout_width="42dp"
+                                    android:layout_height="42dp"
+                                    app:cardBackgroundColor="#062E29"
+                                    app:cardCornerRadius="14dp"
                                     app:cardElevation="0dp"
                                     app:strokeWidth="0dp">
 
@@ -318,48 +479,56 @@
                                         android:layout_width="22dp"
                                         android:layout_height="22dp"
                                         android:layout_gravity="center"
-                                        android:src="@drawable/ic_users"
-                                        app:tint="#8B5CF6" />
+                                        android:src="@drawable/ic_chart_growth"
+                                        app:tint="#10B981" />
                                 </com.google.android.material.card.MaterialCardView>
 
                                 <ImageView
-                                    android:layout_width="18dp"
-                                    android:layout_height="18dp"
+                                    android:layout_width="16dp"
+                                    android:layout_height="16dp"
                                     android:layout_alignParentEnd="true"
                                     android:layout_centerVertical="true"
                                     android:src="@drawable/ic_chevron_right"
-                                    app:tint="@color/login_text_muted" />
+                                    app:tint="#64748B" />
                             </RelativeLayout>
 
                             <TextView
-                                android:id="@+id/tvValUsuarios"
+                                android:id="@+id/tvValStockBajo"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_marginTop="14dp"
-                                android:text="5"
+                                android:layout_marginTop="16dp"
+                                android:text="0"
                                 android:textColor="@color/white"
-                                android:textSize="24sp"
+                                android:textSize="26sp"
                                 android:textStyle="bold" />
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="2dp"
-                                android:text="Usuarios"
-                                android:textColor="@color/login_text_muted"
-                                android:textSize="12sp"
+                                android:text="Inventario"
+                                android:textColor="@color/white"
+                                android:textSize="14sp"
                                 android:textStyle="bold" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="1dp"
+                                android:text="Control de stock"
+                                android:textColor="#64748B"
+                                android:textSize="11sp" />
 
                         </LinearLayout>
                     </com.google.android.material.card.MaterialCardView>
 
                 </LinearLayout>
 
-                <!-- Fila 2: Pedidos y Ventas -->
+                <!-- Fila 2: Pedidos (cardPedidos) y Compras (cardEnCamino) -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="12dp"
+                    android:layout_marginBottom="14dp"
                     android:orientation="horizontal">
 
                     <!-- Card 3: Pedidos -->
@@ -367,12 +536,12 @@
                         android:id="@+id/cardPedidos"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginEnd="6dp"
+                        android:layout_marginEnd="7dp"
                         android:layout_weight="1"
-                        app:cardBackgroundColor="@color/login_card_dark"
-                        app:cardCornerRadius="18dp"
+                        app:cardBackgroundColor="#101725"
+                        app:cardCornerRadius="20dp"
                         app:cardElevation="4dp"
-                        app:strokeColor="@color/login_card_border"
+                        app:strokeColor="#1E293B"
                         app:strokeWidth="1dp">
 
                         <LinearLayout
@@ -386,10 +555,10 @@
                                 android:layout_height="wrap_content">
 
                                 <com.google.android.material.card.MaterialCardView
-                                    android:layout_width="40dp"
-                                    android:layout_height="40dp"
-                                    app:cardBackgroundColor="#3B220C"
-                                    app:cardCornerRadius="12dp"
+                                    android:layout_width="42dp"
+                                    android:layout_height="42dp"
+                                    app:cardBackgroundColor="#3D230C"
+                                    app:cardCornerRadius="14dp"
                                     app:cardElevation="0dp"
                                     app:strokeWidth="0dp">
 
@@ -402,22 +571,22 @@
                                 </com.google.android.material.card.MaterialCardView>
 
                                 <ImageView
-                                    android:layout_width="18dp"
-                                    android:layout_height="18dp"
+                                    android:layout_width="16dp"
+                                    android:layout_height="16dp"
                                     android:layout_alignParentEnd="true"
                                     android:layout_centerVertical="true"
                                     android:src="@drawable/ic_chevron_right"
-                                    app:tint="@color/login_text_muted" />
+                                    app:tint="#64748B" />
                             </RelativeLayout>
 
                             <TextView
                                 android:id="@+id/tvValPedidos"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_marginTop="14dp"
-                                android:text="7"
+                                android:layout_marginTop="16dp"
+                                android:text="8"
                                 android:textColor="@color/white"
-                                android:textSize="24sp"
+                                android:textSize="26sp"
                                 android:textStyle="bold" />
 
                             <TextView
@@ -425,173 +594,32 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="2dp"
                                 android:text="Pedidos"
-                                android:textColor="@color/login_text_muted"
-                                android:textSize="12sp"
-                                android:textStyle="bold" />
-
-                        </LinearLayout>
-                    </com.google.android.material.card.MaterialCardView>
-
-                    <!-- Card 4: Ventas -->
-                    <com.google.android.material.card.MaterialCardView
-                        android:id="@+id/cardVentas"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="6dp"
-                        android:layout_weight="1"
-                        app:cardBackgroundColor="@color/login_card_dark"
-                        app:cardCornerRadius="18dp"
-                        app:cardElevation="4dp"
-                        app:strokeColor="@color/login_card_border"
-                        app:strokeWidth="1dp">
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            android:padding="16dp">
-
-                            <RelativeLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content">
-
-                                <com.google.android.material.card.MaterialCardView
-                                    android:layout_width="40dp"
-                                    android:layout_height="40dp"
-                                    app:cardBackgroundColor="#062E29"
-                                    app:cardCornerRadius="12dp"
-                                    app:cardElevation="0dp"
-                                    app:strokeWidth="0dp">
-
-                                    <ImageView
-                                        android:layout_width="22dp"
-                                        android:layout_height="22dp"
-                                        android:layout_gravity="center"
-                                        android:src="@drawable/ic_dollar"
-                                        app:tint="#10B981" />
-                                </com.google.android.material.card.MaterialCardView>
-
-                                <ImageView
-                                    android:layout_width="18dp"
-                                    android:layout_height="18dp"
-                                    android:layout_alignParentEnd="true"
-                                    android:layout_centerVertical="true"
-                                    android:src="@drawable/ic_chevron_right"
-                                    app:tint="@color/login_text_muted" />
-                            </RelativeLayout>
-
-                            <TextView
-                                android:id="@+id/tvValVentas"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="14dp"
-                                android:text="S/ 67.30"
                                 android:textColor="@color/white"
-                                android:textSize="20sp"
+                                android:textSize="14sp"
                                 android:textStyle="bold" />
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_marginTop="2dp"
-                                android:text="Ventas"
-                                android:textColor="@color/login_text_muted"
-                                android:textSize="12sp"
-                                android:textStyle="bold" />
+                                android:layout_marginTop="1dp"
+                                android:text="Historial y catálogo"
+                                android:textColor="#64748B"
+                                android:textSize="11sp" />
 
                         </LinearLayout>
                     </com.google.android.material.card.MaterialCardView>
 
-                </LinearLayout>
-
-                <!-- Fila 3: Stock bajo y En camino -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="20dp"
-                    android:orientation="horizontal">
-
-                    <!-- Card 5: Stock bajo -->
-                    <com.google.android.material.card.MaterialCardView
-                        android:id="@+id/cardStockBajo"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="6dp"
-                        android:layout_weight="1"
-                        app:cardBackgroundColor="@color/login_card_dark"
-                        app:cardCornerRadius="18dp"
-                        app:cardElevation="4dp"
-                        app:strokeColor="@color/login_card_border"
-                        app:strokeWidth="1dp">
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            android:padding="16dp">
-
-                            <RelativeLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content">
-
-                                <com.google.android.material.card.MaterialCardView
-                                    android:layout_width="40dp"
-                                    android:layout_height="40dp"
-                                    app:cardBackgroundColor="#3B141E"
-                                    app:cardCornerRadius="12dp"
-                                    app:cardElevation="0dp"
-                                    app:strokeWidth="0dp">
-
-                                    <ImageView
-                                        android:layout_width="22dp"
-                                        android:layout_height="22dp"
-                                        android:layout_gravity="center"
-                                        android:src="@drawable/ic_warning"
-                                        app:tint="#EF4444" />
-                                </com.google.android.material.card.MaterialCardView>
-
-                                <ImageView
-                                    android:layout_width="18dp"
-                                    android:layout_height="18dp"
-                                    android:layout_alignParentEnd="true"
-                                    android:layout_centerVertical="true"
-                                    android:src="@drawable/ic_chevron_right"
-                                    app:tint="@color/login_text_muted" />
-                            </RelativeLayout>
-
-                            <TextView
-                                android:id="@+id/tvValStockBajo"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="14dp"
-                                android:text="0"
-                                android:textColor="@color/white"
-                                android:textSize="24sp"
-                                android:textStyle="bold" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="2dp"
-                                android:text="Stock bajo"
-                                android:textColor="@color/login_text_muted"
-                                android:textSize="12sp"
-                                android:textStyle="bold" />
-
-                        </LinearLayout>
-                    </com.google.android.material.card.MaterialCardView>
-
-                    <!-- Card 6: En camino -->
+                    <!-- Card 4: Compras -->
                     <com.google.android.material.card.MaterialCardView
                         android:id="@+id/cardEnCamino"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="6dp"
+                        android:layout_marginStart="7dp"
                         android:layout_weight="1"
-                        app:cardBackgroundColor="@color/login_card_dark"
-                        app:cardCornerRadius="18dp"
+                        app:cardBackgroundColor="#101725"
+                        app:cardCornerRadius="20dp"
                         app:cardElevation="4dp"
-                        app:strokeColor="@color/login_card_border"
+                        app:strokeColor="#1E293B"
                         app:strokeWidth="1dp">
 
                         <LinearLayout
@@ -605,10 +633,10 @@
                                 android:layout_height="wrap_content">
 
                                 <com.google.android.material.card.MaterialCardView
-                                    android:layout_width="40dp"
-                                    android:layout_height="40dp"
-                                    app:cardBackgroundColor="#0B2E38"
-                                    app:cardCornerRadius="12dp"
+                                    android:layout_width="42dp"
+                                    android:layout_height="42dp"
+                                    app:cardBackgroundColor="#3B151C"
+                                    app:cardCornerRadius="14dp"
                                     app:cardElevation="0dp"
                                     app:strokeWidth="0dp">
 
@@ -617,441 +645,229 @@
                                         android:layout_height="22dp"
                                         android:layout_gravity="center"
                                         android:src="@drawable/ic_truck"
-                                        app:tint="#14B8A6" />
+                                        app:tint="#EF4444" />
                                 </com.google.android.material.card.MaterialCardView>
 
                                 <ImageView
-                                    android:layout_width="18dp"
-                                    android:layout_height="18dp"
+                                    android:layout_width="16dp"
+                                    android:layout_height="16dp"
                                     android:layout_alignParentEnd="true"
                                     android:layout_centerVertical="true"
                                     android:src="@drawable/ic_chevron_right"
-                                    app:tint="@color/login_text_muted" />
+                                    app:tint="#64748B" />
                             </RelativeLayout>
 
                             <TextView
                                 android:id="@+id/tvValEnCamino"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_marginTop="14dp"
-                                android:text="1"
+                                android:layout_marginTop="16dp"
+                                android:text="0"
                                 android:textColor="@color/white"
-                                android:textSize="24sp"
+                                android:textSize="26sp"
                                 android:textStyle="bold" />
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="2dp"
-                                android:text="En camino"
-                                android:textColor="@color/login_text_muted"
-                                android:textSize="12sp"
+                                android:text="Compras"
+                                android:textColor="@color/white"
+                                android:textSize="14sp"
                                 android:textStyle="bold" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="1dp"
+                                android:text="Registra compras"
+                                android:textColor="#64748B"
+                                android:textSize="11sp" />
 
                         </LinearLayout>
                     </com.google.android.material.card.MaterialCardView>
 
                 </LinearLayout>
 
-                <!-- 3. SECCIÓN RESUMEN MONETARIO (BANNER) -->
-                <com.google.android.material.card.MaterialCardView
-                    android:id="@+id/cardVentasPorProducto"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="20dp"
-                    app:cardBackgroundColor="@color/login_card_dark"
-                    app:cardCornerRadius="18dp"
-                    app:cardElevation="4dp"
-                    app:strokeColor="@color/login_card_border"
-                    app:strokeWidth="1dp">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center_vertical"
-                        android:orientation="horizontal"
-                        android:padding="18dp">
-
-                        <com.google.android.material.card.MaterialCardView
-                            android:layout_width="40dp"
-                            android:layout_height="40dp"
-                            app:cardBackgroundColor="#162B54"
-                            app:cardCornerRadius="12dp"
-                            app:cardElevation="0dp"
-                            app:strokeWidth="0dp">
-
-                            <ImageView
-                                android:layout_width="22dp"
-                                android:layout_height="22dp"
-                                android:layout_gravity="center"
-                                android:src="@drawable/ic_chart_growth"
-                                app:tint="@color/login_accent_blue" />
-                        </com.google.android.material.card.MaterialCardView>
-
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="12dp"
-                            android:layout_weight="1"
-                            android:text="Total Acumulado de Ventas"
-                            android:textColor="@color/white"
-                            android:textSize="15sp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:id="@+id/tvTotalVendido"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginEnd="8dp"
-                            android:text="S/ 67.30"
-                            android:textColor="@color/login_accent_bright"
-                            android:textSize="18sp"
-                            android:textStyle="bold" />
-
-                        <ImageView
-                            android:layout_width="18dp"
-                            android:layout_height="18dp"
-                            android:src="@drawable/ic_chevron_right"
-                            app:tint="@color/login_text_muted" />
-
-                    </LinearLayout>
-                </com.google.android.material.card.MaterialCardView>
-
-                <!-- 4. SECCIÓN ALERTAS DE SISTEMA -->
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="12dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentStart="true"
-                        android:layout_centerVertical="true"
-                        android:text="Alertas"
-                        android:textColor="@color/white"
-                        android:textSize="18sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentEnd="true"
-                        android:layout_centerVertical="true"
-                        android:text="Ver todas >"
-                        android:textColor="@color/login_accent_bright"
-                        android:textSize="13sp"
-                        android:textStyle="bold" />
-                </RelativeLayout>
-
-                <com.google.android.material.card.MaterialCardView
-                    android:id="@+id/cardAlerts"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="20dp"
-                    app:cardBackgroundColor="@color/login_card_dark"
-                    app:cardCornerRadius="18dp"
-                    app:cardElevation="4dp"
-                    app:strokeColor="@color/login_card_border"
-                    app:strokeWidth="1dp">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:padding="16dp">
-
-                        <!-- Alerta 1: Stock bajo -->
-                        <RelativeLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content">
-
-                            <com.google.android.material.card.MaterialCardView
-                                android:id="@+id/cardAlertIcon1"
-                                android:layout_width="38dp"
-                                android:layout_height="38dp"
-                                app:cardBackgroundColor="#3B141E"
-                                app:cardCornerRadius="10dp"
-                                app:cardElevation="0dp"
-                                app:strokeWidth="0dp">
-
-                                <ImageView
-                                    android:layout_width="20dp"
-                                    android:layout_height="20dp"
-                                    android:layout_gravity="center"
-                                    android:src="@drawable/ic_warning"
-                                    app:tint="#EF4444" />
-                            </com.google.android.material.card.MaterialCardView>
-
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_centerVertical="true"
-                                android:layout_marginStart="12dp"
-                                android:layout_toStartOf="@id/ivChevronAlert1"
-                                android:layout_toEndOf="@id/cardAlertIcon1"
-                                android:orientation="vertical">
-
-                                <TextView
-                                    android:id="@+id/tvAlertStockBajoTitle"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="Inventario de Productos"
-                                    android:textColor="@color/white"
-                                    android:textSize="14sp"
-                                    android:textStyle="bold" />
-
-                                <TextView
-                                    android:id="@+id/tvAlertStockBajoText"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginTop="1dp"
-                                    android:text="Sin productos con stock bajo"
-                                    android:textColor="@color/login_text_muted"
-                                    android:textSize="12sp" />
-                            </LinearLayout>
-
-                            <ImageView
-                                android:id="@+id/ivChevronAlert1"
-                                android:layout_width="18dp"
-                                android:layout_height="18dp"
-                                android:layout_alignParentEnd="true"
-                                android:layout_centerVertical="true"
-                                android:src="@drawable/ic_chevron_right"
-                                app:tint="@color/login_text_muted" />
-                        </RelativeLayout>
-
-                        <View
-                            android:layout_width="match_parent"
-                            android:layout_height="1dp"
-                            android:layout_marginVertical="12dp"
-                            android:background="@color/login_card_border" />
-
-                        <!-- Alerta 2: Pedidos en camino -->
-                        <RelativeLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content">
-
-                            <com.google.android.material.card.MaterialCardView
-                                android:id="@+id/cardAlertIcon2"
-                                android:layout_width="38dp"
-                                android:layout_height="38dp"
-                                app:cardBackgroundColor="#0B2E38"
-                                app:cardCornerRadius="10dp"
-                                app:cardElevation="0dp"
-                                app:strokeWidth="0dp">
-
-                                <ImageView
-                                    android:layout_width="20dp"
-                                    android:layout_height="20dp"
-                                    android:layout_gravity="center"
-                                    android:src="@drawable/ic_truck"
-                                    app:tint="#14B8A6" />
-                            </com.google.android.material.card.MaterialCardView>
-
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_centerVertical="true"
-                                android:layout_marginStart="12dp"
-                                android:layout_toStartOf="@id/ivChevronAlert2"
-                                android:layout_toEndOf="@id/cardAlertIcon2"
-                                android:orientation="vertical">
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="Logística y Entregas"
-                                    android:textColor="@color/white"
-                                    android:textSize="14sp"
-                                    android:textStyle="bold" />
-
-                                <TextView
-                                    android:id="@+id/tvAlertEnCaminoText"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginTop="1dp"
-                                    android:text="1 pedido actualmente en ruta de despacho"
-                                    android:textColor="@color/login_text_muted"
-                                    android:textSize="12sp" />
-                            </LinearLayout>
-
-                            <ImageView
-                                android:id="@+id/ivChevronAlert2"
-                                android:layout_width="18dp"
-                                android:layout_height="18dp"
-                                android:layout_alignParentEnd="true"
-                                android:layout_centerVertical="true"
-                                android:src="@drawable/ic_chevron_right"
-                                app:tint="@color/login_text_muted" />
-                        </RelativeLayout>
-
-                    </LinearLayout>
-                </com.google.android.material.card.MaterialCardView>
-
-                <!-- 5. ACCESOS RÁPIDOS (PRODUCTOS, PEDIDOS, VENTAS, PROVEEDORES) -->
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="12dp"
-                    android:text="Accesos Rápidos"
-                    android:textColor="@color/white"
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
-
+                <!-- Fila 3: Ofertas (cardQuickOfertas) y Usuarios (cardUsuarios) -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
                     android:orientation="horizontal">
 
-                    <!-- Acceso 1: Productos -->
-                    <com.google.android.material.card.MaterialCardView
-                        android:id="@+id/cardQuickProductos"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="4dp"
-                        android:layout_weight="1"
-                        app:cardBackgroundColor="@color/login_card_dark"
-                        app:cardCornerRadius="14dp"
-                        app:cardElevation="2dp"
-                        app:strokeColor="@color/login_card_border"
-                        app:strokeWidth="1dp">
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:gravity="center"
-                            android:orientation="vertical"
-                            android:padding="14dp">
-
-                            <ImageView
-                                android:layout_width="26dp"
-                                android:layout_height="26dp"
-                                android:src="@drawable/ic_box"
-                                app:tint="@color/login_accent_blue" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="8dp"
-                                android:text="Productos"
-                                android:textColor="@color/login_text_light"
-                                android:textSize="11sp"
-                                android:textStyle="bold" />
-                        </LinearLayout>
-                    </com.google.android.material.card.MaterialCardView>
-
-                    <!-- Acceso 2: Pedidos -->
-                    <com.google.android.material.card.MaterialCardView
-                        android:id="@+id/cardQuickPedidos"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginHorizontal="4dp"
-                        android:layout_weight="1"
-                        app:cardBackgroundColor="@color/login_card_dark"
-                        app:cardCornerRadius="14dp"
-                        app:cardElevation="2dp"
-                        app:strokeColor="@color/login_card_border"
-                        app:strokeWidth="1dp">
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:gravity="center"
-                            android:orientation="vertical"
-                            android:padding="14dp">
-
-                            <ImageView
-                                android:layout_width="26dp"
-                                android:layout_height="26dp"
-                                android:src="@drawable/ic_shopping_cart"
-                                app:tint="#F59E0B" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="8dp"
-                                android:text="Pedidos"
-                                android:textColor="@color/login_text_light"
-                                android:textSize="11sp"
-                                android:textStyle="bold" />
-                        </LinearLayout>
-                    </com.google.android.material.card.MaterialCardView>
-
-                    <!-- Acceso 3: Ventas -->
+                    <!-- Card 5: Ofertas -->
                     <com.google.android.material.card.MaterialCardView
                         android:id="@+id/cardQuickOfertas"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginHorizontal="4dp"
+                        android:layout_marginEnd="7dp"
                         android:layout_weight="1"
-                        app:cardBackgroundColor="@color/login_card_dark"
-                        app:cardCornerRadius="14dp"
-                        app:cardElevation="2dp"
-                        app:strokeColor="@color/login_card_border"
+                        app:cardBackgroundColor="#101725"
+                        app:cardCornerRadius="20dp"
+                        app:cardElevation="4dp"
+                        app:strokeColor="#1E293B"
                         app:strokeWidth="1dp">
 
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:gravity="center"
                             android:orientation="vertical"
-                            android:padding="14dp">
+                            android:padding="16dp">
 
-                            <ImageView
-                                android:layout_width="26dp"
-                                android:layout_height="26dp"
-                                android:src="@drawable/ic_dollar"
-                                app:tint="#10B981" />
+                            <RelativeLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content">
+
+                                <com.google.android.material.card.MaterialCardView
+                                    android:layout_width="42dp"
+                                    android:layout_height="42dp"
+                                    app:cardBackgroundColor="#241445"
+                                    app:cardCornerRadius="14dp"
+                                    app:cardElevation="0dp"
+                                    app:strokeWidth="0dp">
+
+                                    <ImageView
+                                        android:layout_width="22dp"
+                                        android:layout_height="22dp"
+                                        android:layout_gravity="center"
+                                        android:src="@drawable/ic_tag"
+                                        app:tint="#8B5CF6" />
+                                </com.google.android.material.card.MaterialCardView>
+
+                                <ImageView
+                                    android:layout_width="16dp"
+                                    android:layout_height="16dp"
+                                    android:layout_alignParentEnd="true"
+                                    android:layout_centerVertical="true"
+                                    android:src="@drawable/ic_chevron_right"
+                                    app:tint="#64748B" />
+                            </RelativeLayout>
+
+                            <TextView
+                                android:id="@+id/tvValOfertas"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="16dp"
+                                android:text="0"
+                                android:textColor="@color/white"
+                                android:textSize="26sp"
+                                android:textStyle="bold" />
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_marginTop="8dp"
-                                android:text="Ventas"
-                                android:textColor="@color/login_text_light"
-                                android:textSize="11sp"
+                                android:layout_marginTop="2dp"
+                                android:text="Ofertas"
+                                android:textColor="@color/white"
+                                android:textSize="14sp"
                                 android:textStyle="bold" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="1dp"
+                                android:text="Crea y gestiona"
+                                android:textColor="#64748B"
+                                android:textSize="11sp" />
+
                         </LinearLayout>
                     </com.google.android.material.card.MaterialCardView>
 
-                    <!-- Acceso 4: Proveedores -->
+                    <!-- Card 6: Usuarios -->
                     <com.google.android.material.card.MaterialCardView
-                        android:id="@+id/cardQuickProveedores"
+                        android:id="@+id/cardUsuarios"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="4dp"
+                        android:layout_marginStart="7dp"
                         android:layout_weight="1"
-                        app:cardBackgroundColor="@color/login_card_dark"
-                        app:cardCornerRadius="14dp"
-                        app:cardElevation="2dp"
-                        app:strokeColor="@color/login_card_border"
+                        app:cardBackgroundColor="#101725"
+                        app:cardCornerRadius="20dp"
+                        app:cardElevation="4dp"
+                        app:strokeColor="#1E293B"
                         app:strokeWidth="1dp">
 
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:gravity="center"
                             android:orientation="vertical"
-                            android:padding="14dp">
+                            android:padding="16dp">
 
-                            <ImageView
-                                android:layout_width="26dp"
-                                android:layout_height="26dp"
-                                android:src="@drawable/ic_truck"
-                                app:tint="#8B5CF6" />
+                            <RelativeLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content">
+
+                                <com.google.android.material.card.MaterialCardView
+                                    android:layout_width="42dp"
+                                    android:layout_height="42dp"
+                                    app:cardBackgroundColor="#0B2F38"
+                                    app:cardCornerRadius="14dp"
+                                    app:cardElevation="0dp"
+                                    app:strokeWidth="0dp">
+
+                                    <ImageView
+                                        android:layout_width="22dp"
+                                        android:layout_height="22dp"
+                                        android:layout_gravity="center"
+                                        android:src="@drawable/ic_users"
+                                        app:tint="#14B8A6" />
+                                </com.google.android.material.card.MaterialCardView>
+
+                                <ImageView
+                                    android:layout_width="16dp"
+                                    android:layout_height="16dp"
+                                    android:layout_alignParentEnd="true"
+                                    android:layout_centerVertical="true"
+                                    android:src="@drawable/ic_chevron_right"
+                                    app:tint="#64748B" />
+                            </RelativeLayout>
+
+                            <TextView
+                                android:id="@+id/tvValUsuarios"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="16dp"
+                                android:text="1"
+                                android:textColor="@color/white"
+                                android:textSize="26sp"
+                                android:textStyle="bold" />
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_marginTop="8dp"
-                                android:text="Proveedores"
-                                android:textColor="@color/login_text_light"
-                                android:textSize="11sp"
+                                android:layout_marginTop="2dp"
+                                android:text="Usuarios"
+                                android:textColor="@color/white"
+                                android:textSize="14sp"
                                 android:textStyle="bold" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="1dp"
+                                android:text="Gestiona usuarios"
+                                android:textColor="#64748B"
+                                android:textSize="11sp" />
+
                         </LinearLayout>
                     </com.google.android.material.card.MaterialCardView>
 
+                </LinearLayout>
+
+                <!-- Hidden views for existing IDs to ensure 100% logic safety -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:visibility="gone"
+                    android:orientation="horizontal">
+                    <TextView android:id="@+id/tvValVentas" android:layout_width="wrap_content" android:layout_height="wrap_content" />
+                    <TextView android:id="@+id/tvTotalVendido" android:layout_width="wrap_content" android:layout_height="wrap_content" />
+                    <TextView android:id="@+id/tvAlertStockBajoText" android:layout_width="wrap_content" android:layout_height="wrap_content" />
+                    <TextView android:id="@+id/tvAlertEnCaminoText" android:layout_width="wrap_content" android:layout_height="wrap_content" />
+                    <com.google.android.material.card.MaterialCardView android:id="@+id/cardVentas" android:layout_width="wrap_content" android:layout_height="wrap_content" />
+                    <com.google.android.material.card.MaterialCardView android:id="@+id/cardQuickProductos" android:layout_width="wrap_content" android:layout_height="wrap_content" />
+                    <com.google.android.material.card.MaterialCardView android:id="@+id/cardQuickPedidos" android:layout_width="wrap_content" android:layout_height="wrap_content" />
+                    <com.google.android.material.card.MaterialCardView android:id="@+id/cardQuickProveedores" android:layout_width="wrap_content" android:layout_height="wrap_content" />
                 </LinearLayout>
 
             </LinearLayout>
@@ -1062,7 +878,7 @@
             android:id="@+id/bottomNavigation"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/login_card_dark"
+            android:background="#101725"
             app:elevation="12dp"
             app:itemIconTint="@color/bottom_nav_dark_colors"
             app:itemRippleColor="#1F0084FF"
@@ -1080,7 +896,7 @@
         android:layout_width="290dp"
         android:layout_height="match_parent"
         android:layout_gravity="start"
-        android:background="@color/login_bg_dark">
+        android:background="#060A12">
 
         <include layout="@layout/layout_sidebar_dashboard" />
 

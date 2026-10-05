@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -50,6 +51,7 @@ public class ProductosActivity extends AppCompatActivity {
     private MaterialButton btnCrearPrimerProducto;
     private MaterialButton btnNuevoProductoHeader;
     private MaterialButton btnVerCarrito;
+    private MaterialButton btnVerInventario;
 
     private SwipeRefreshLayout swipeRefresh;
     private RecyclerView rvProductos;
@@ -61,25 +63,30 @@ public class ProductosActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_productos);
+        try {
+            setContentView(R.layout.activity_productos);
 
-        // 1. Inicializar vistas
-        initViews();
+            // 1. Inicializar vistas
+            initViews();
 
-        // 2. Manejar insets para que el header respete la barra de estado superior
-        setupWindowInsets();
+            // 2. Manejar insets para que el header respete la barra de estado superior
+            setupWindowInsets();
 
-        // 3. Configurar RecyclerView y Adapter
-        setupRecyclerView();
+            // 3. Configurar RecyclerView y Adapter
+            setupRecyclerView();
 
-        // 4. Configurar listeners
-        setupListeners();
+            // 4. Configurar listeners
+            setupListeners();
 
-        // 5. Configurar títulos según el Rol del usuario
-        configurarTituloPorRol();
+            // 5. Configurar títulos según el Rol del usuario
+            configurarTituloPorRol();
 
-        // 6. Cargar productos desde el backend
-        cargarProductos();
+            // 6. Cargar productos desde el backend
+            cargarProductos();
+        } catch (Exception e) {
+            Toast.makeText(this, "Error al abrir Productos: " + e.getMessage(), Toast.LENGTH_LONG).show();
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -112,6 +119,7 @@ public class ProductosActivity extends AppCompatActivity {
         btnCrearPrimerProducto = findViewById(R.id.btnCrearPrimerProducto);
         btnNuevoProductoHeader = findViewById(R.id.btnNuevoProductoHeader);
         btnVerCarrito = findViewById(R.id.btnVerCarrito);
+        btnVerInventario = findViewById(R.id.btnVerInventario);
 
         swipeRefresh = findViewById(R.id.swipeRefresh);
         rvProductos = findViewById(R.id.rvProductos);
@@ -136,8 +144,15 @@ public class ProductosActivity extends AppCompatActivity {
         adapter = new ProductoAdapter(this, new ArrayList<>());
         rvProductos.setAdapter(adapter);
 
-        // Listener para acciones de Carrito, Editar y Eliminar
+        // Listener para acciones de Ver Detalle, Carrito, Editar y Eliminar
         adapter.setOnProductoActionListener(new ProductoAdapter.OnProductoActionListener() {
+            @Override
+            public void onVerDetalle(Producto producto) {
+                Intent intent = new Intent(ProductosActivity.this, ProductoDetalleActivity.class);
+                intent.putExtra("producto_json", new Gson().toJson(producto));
+                startActivity(intent);
+            }
+
             @Override
             public void onEditar(Producto producto) {
                 mostrarDialogoFormularioProducto(producto);
@@ -150,12 +165,16 @@ public class ProductosActivity extends AppCompatActivity {
 
             @Override
             public void onAgregarCarrito(Producto producto) {
-                if (producto.getStock() <= 0) {
+                if (producto.getStockUnidadesVal() <= 0) {
                     Toast.makeText(ProductosActivity.this, "Producto sin stock disponible", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                CarritoManager.getInstance().agregarProducto(producto, 1);
-                Toast.makeText(ProductosActivity.this, "¡" + producto.getProductoNombre() + " agregado al carrito!", Toast.LENGTH_SHORT).show();
+                mostrarDialogoTipoVenta(producto);
+            }
+
+            @Override
+            public void onAgregarStock(Producto producto) {
+                mostrarDialogoAgregarStock(producto);
             }
         });
     }
@@ -172,6 +191,13 @@ public class ProductosActivity extends AppCompatActivity {
         if (btnVerCarrito != null) {
             btnVerCarrito.setOnClickListener(v -> {
                 Intent intent = new Intent(ProductosActivity.this, CarritoActivity.class);
+                startActivity(intent);
+            });
+        }
+
+        if (btnVerInventario != null) {
+            btnVerInventario.setOnClickListener(v -> {
+                Intent intent = new Intent(ProductosActivity.this, InventarioActivity.class);
                 startActivity(intent);
             });
         }
@@ -222,10 +248,10 @@ public class ProductosActivity extends AppCompatActivity {
             mostrarEstadoCarga();
         }
 
-        // 1. Probar endpoint envuelto { "data": [ ... ] }
         ApiClient.getApiService().getProductos().enqueue(new Callback<ProductoResponse>() {
             @Override
             public void onResponse(@NonNull Call<ProductoResponse> call, @NonNull Response<ProductoResponse> response) {
+                android.util.Log.d("ADISAN_PRODUCTOS_TRACE", "ADISAN_PRODUCTOS_TRACE: HTTP code = " + response.code());
                 ocultarSwipeRefresh();
 
                 if (response.code() == 401) {
@@ -233,57 +259,269 @@ public class ProductosActivity extends AppCompatActivity {
                     return;
                 }
 
+                List<Producto> lista = new ArrayList<>();
                 if (response.isSuccessful() && response.body() != null) {
-                    ProductoResponse body = response.body();
-                    List<Producto> lista = body.getData();
-
-                    if (lista != null && !lista.isEmpty()) {
-                        mostrarListaProductos(lista);
-                    } else {
-                        mostrarEstadoVacio();
+                    android.util.Log.d("ADISAN_PRODUCTOS_TRACE", "ADISAN_PRODUCTOS_TRACE: response.body() is not null");
+                    try {
+                        lista = response.body().getData();
+                        if (lista == null) {
+                            android.util.Log.e("ADISAN_PRODUCTOS_TRACE", "ADISAN_PRODUCTOS_TRACE: response.body().getData() is NULL!");
+                        } else {
+                            android.util.Log.d("ADISAN_PRODUCTOS_TRACE", "ADISAN_PRODUCTOS_TRACE: getData() size = " + lista.size());
+                            for (Producto p : lista) {
+                                if (p.getId() == 7) {
+                                    android.util.Log.d("ADISAN_PRODUCTOS_TRACE", "ADISAN_PRODUCTOS_TRACE: Producto ID 7 found: id=" + p.getId() + ", nombre=" + p.getNombre() + ", stockUnidadesVal=" + p.getStockUnidadesVal() + ", catId=" + p.getCategoriaId() + ", upp=" + p.getUnidadesPorPaqueteVal() + ", pCompra=" + p.getPrecioCompraPaquete() + ", pVentaPaq=" + p.getPrecioVentaPaquete() + ", pVentaUnid=" + p.getPrecioVentaUnidad());
+                                }
+                            }
+                        }
+                    } catch (Exception e) {
+                        android.util.Log.e("ADISAN_PRODUCTOS_TRACE", "ADISAN_PRODUCTOS_TRACE: EXCEPTION en onResponse: " + e.getMessage(), e);
                     }
                 } else {
-                    // Fallback a lista directa si el JSON es un arreglo [ {...} ]
-                    cargarProductosListaDirecta();
+                    android.util.Log.e("ADISAN_PRODUCTOS_TRACE", "ADISAN_PRODUCTOS_TRACE: response not successful or body is null. code=" + response.code());
+                }
+
+                if (lista != null && !lista.isEmpty()) {
+                    android.util.Log.d("ADISAN_PRODUCTOS_TRACE", "ADISAN_PRODUCTOS_TRACE: llamando a mostrarListaProductos()");
+                    mostrarListaProductos(lista);
+                } else {
+                    android.util.Log.d("ADISAN_PRODUCTOS_TRACE", "ADISAN_PRODUCTOS_TRACE: lista vacía, llamando a cargarProductosDirecto()");
+                    cargarProductosDirecto();
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<ProductoResponse> call, @NonNull Throwable t) {
-                cargarProductosListaDirecta();
+                android.util.Log.e("ADISAN_PRODUCTOS_TRACE", "ADISAN_PRODUCTOS_TRACE: FAILURE: " + t.getMessage(), t);
+                cargarProductosDirecto();
             }
         });
     }
 
-    private void cargarProductosListaDirecta() {
+    private void cargarProductosDirecto() {
         ApiClient.getApiService().getProductosDirectList().enqueue(new Callback<List<Producto>>() {
             @Override
             public void onResponse(@NonNull Call<List<Producto>> call, @NonNull Response<List<Producto>> response) {
+                android.util.Log.d("ADISAN_STOCK_TRACE", "TRACE 1B (getProductosDirectList response): code=" + response.code());
                 ocultarSwipeRefresh();
-
-                if (response.code() == 401) {
-                    manejarSesionExpirada();
-                    return;
+                List<Producto> lista = new ArrayList<>();
+                if (response.isSuccessful() && response.body() != null) {
+                    lista = response.body();
+                    for (Producto p : lista) {
+                        if (p.getId() == 7) {
+                            android.util.Log.d("ADISAN_STOCK_TRACE", "TRACE 2B (DirectList after response): id=" + p.getId() + ", nombre=" + p.getNombre() + ", getStockVal=" + p.getStockUnidadesVal());
+                        }
+                    }
                 }
 
-                if (response.isSuccessful() && response.body() != null) {
-                    List<Producto> lista = response.body();
-                    if (!lista.isEmpty()) {
-                        mostrarListaProductos(lista);
-                    } else {
-                        mostrarEstadoVacio();
-                    }
+                if (lista != null && !lista.isEmpty()) {
+                    mostrarListaProductos(lista);
                 } else {
-                    mostrarEstadoError("Error en el servidor (" + response.code() + ")");
+                    mostrarEstadoVacio();
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<List<Producto>> call, @NonNull Throwable t) {
                 ocultarSwipeRefresh();
-                mostrarEstadoError("Error de conexión al servidor (10.0.2.2:3000). Verifica que el backend esté ejecutándose.");
+                if (t instanceof java.io.IOException) {
+                    mostrarEstadoError("Error de conexión al servidor (10.0.2.2:3000).");
+                } else {
+                    mostrarEstadoVacio();
+                }
             }
         });
+    }
+
+    // =======================================================
+    // DIÁLOGO PARA AUMENTAR STOCK
+    // =======================================================
+    private void mostrarDialogoAgregarStock(Producto producto) {
+        com.google.android.material.bottomsheet.BottomSheetDialog bottomSheetDialog = 
+                new com.google.android.material.bottomsheet.BottomSheetDialog(this);
+        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_agregar_stock, null);
+        bottomSheetDialog.setContentView(dialogView);
+
+        View bottomSheet = (View) dialogView.getParent();
+        if (bottomSheet != null) {
+            bottomSheet.setBackgroundResource(android.R.color.transparent);
+        }
+
+        TextView tvNombre = dialogView.findViewById(R.id.tvNombreProductoStock);
+        TextView tvStockActual = dialogView.findViewById(R.id.tvStockActualDialog);
+        android.widget.EditText etCantidad = dialogView.findViewById(R.id.etCantidadAgregar);
+        android.widget.ImageButton btnCerrar = dialogView.findViewById(R.id.btnCerrarDialogStock);
+        com.google.android.material.button.MaterialButton btnCancelar = dialogView.findViewById(R.id.btnCancelarStock);
+        com.google.android.material.button.MaterialButton btnGuardar = dialogView.findViewById(R.id.btnGuardarStock);
+
+        if (tvNombre != null) tvNombre.setText(producto.getProductoNombre());
+        if (tvStockActual != null) tvStockActual.setText(String.valueOf(producto.getStock()));
+
+        if (btnCerrar != null) btnCerrar.setOnClickListener(v -> bottomSheetDialog.dismiss());
+        if (btnCancelar != null) btnCancelar.setOnClickListener(v -> bottomSheetDialog.dismiss());
+
+        if (btnGuardar != null) {
+            btnGuardar.setOnClickListener(v -> {
+                String cantidadStr = etCantidad != null && etCantidad.getText() != null ? etCantidad.getText().toString().trim() : "";
+                if (cantidadStr.isEmpty()) {
+                    Toast.makeText(ProductosActivity.this, "Ingrese una cantidad válida", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                int cantidadAgregar = 0;
+                try {
+                    cantidadAgregar = Integer.parseInt(cantidadStr);
+                } catch (NumberFormatException e) {
+                    Toast.makeText(ProductosActivity.this, "Cantidad inválida", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                
+                if (cantidadAgregar <= 0) {
+                    Toast.makeText(ProductosActivity.this, "La cantidad debe ser mayor a 0", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                int nuevoStock = producto.getStock() + cantidadAgregar;
+                producto.setStock(nuevoStock);
+                if (adapter != null) adapter.notifyDataSetChanged();
+                
+                ejecutarActualizacionStock(producto.getProductoId(), producto, bottomSheetDialog, btnGuardar);
+            });
+        }
+
+        bottomSheetDialog.show();
+    }
+
+    private void ejecutarActualizacionStock(int id, Producto productoRequest, com.google.android.material.bottomsheet.BottomSheetDialog dialog, MaterialButton btnGuardar) {
+        if (btnGuardar != null) btnGuardar.setEnabled(false);
+        
+        ApiClient.getApiService().editarProducto(id, productoRequest).enqueue(new Callback<ProductoResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<ProductoResponse> call, @NonNull Response<ProductoResponse> response) {
+                if (btnGuardar != null) btnGuardar.setEnabled(true);
+
+                if (response.code() == 401) {
+                    if (dialog != null && dialog.isShowing()) dialog.dismiss();
+                    manejarSesionExpirada();
+                    return;
+                }
+
+                if (response.isSuccessful() && response.body() != null) {
+                    ProductoResponse body = response.body();
+                    if (body.isSuccess() || body.getMessage() == null || body.getMessage().toLowerCase().contains("éxito") || body.getMessage().toLowerCase().contains("correctamente")) {
+                        Toast.makeText(ProductosActivity.this, "¡Stock añadido correctamente!", Toast.LENGTH_SHORT).show();
+                        if (dialog != null && dialog.isShowing()) dialog.dismiss();
+                        cargarProductos();
+                    } else {
+                        String msg = body.getMessage() != null ? body.getMessage() : "Error al actualizar stock";
+                        Toast.makeText(ProductosActivity.this, msg, Toast.LENGTH_LONG).show();
+                        cargarProductos();
+                    }
+                } else {
+                    String msg = "Error al actualizar stock (" + response.code() + ")";
+                    Toast.makeText(ProductosActivity.this, msg, Toast.LENGTH_LONG).show();
+                    if (dialog != null && dialog.isShowing()) dialog.dismiss();
+                    cargarProductos();
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<ProductoResponse> call, @NonNull Throwable t) {
+                if (btnGuardar != null) btnGuardar.setEnabled(true);
+                Toast.makeText(ProductosActivity.this, "Error de conexión: " + t.getMessage(), Toast.LENGTH_LONG).show();
+                if (dialog != null && dialog.isShowing()) dialog.dismiss();
+                cargarProductos();
+            }
+        });
+    }
+
+    private void mostrarDialogoTipoVenta(Producto producto) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_tipo_venta, null);
+        builder.setView(dialogView);
+
+        AlertDialog dialog = builder.create();
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        }
+
+        android.widget.RadioGroup rgTipoVenta = dialogView.findViewById(R.id.rgTipoVenta);
+        android.widget.RadioButton rbPaquete = dialogView.findViewById(R.id.rbPaquete);
+        android.widget.RadioButton rbUnidad = dialogView.findViewById(R.id.rbUnidad);
+        android.widget.RadioButton rbMixta = dialogView.findViewById(R.id.rbMixta);
+
+        TextInputLayout tilPaquetes = dialogView.findViewById(R.id.tilCantidadPaquetesCart);
+        TextInputLayout tilUnidades = dialogView.findViewById(R.id.tilCantidadUnidadesCart);
+        TextInputEditText etPaquetes = dialogView.findViewById(R.id.etCantidadPaquetesCart);
+        TextInputEditText etUnidades = dialogView.findViewById(R.id.etCantidadUnidadesCart);
+
+        MaterialButton btnCancelar = dialogView.findViewById(R.id.btnCancelarTipoVenta);
+        MaterialButton btnAgregar = dialogView.findViewById(R.id.btnAgregarAlCarritoFinal);
+
+        if (rgTipoVenta != null) {
+            rgTipoVenta.setOnCheckedChangeListener((group, checkedId) -> {
+                if (checkedId == R.id.rbPaquete) {
+                    if (tilPaquetes != null) tilPaquetes.setVisibility(View.VISIBLE);
+                    if (tilUnidades != null) tilUnidades.setVisibility(View.GONE);
+                } else if (checkedId == R.id.rbUnidad) {
+                    if (tilPaquetes != null) tilPaquetes.setVisibility(View.GONE);
+                    if (tilUnidades != null) tilUnidades.setVisibility(View.VISIBLE);
+                } else {
+                    if (tilPaquetes != null) tilPaquetes.setVisibility(View.VISIBLE);
+                    if (tilUnidades != null) tilUnidades.setVisibility(View.VISIBLE);
+                }
+            });
+        }
+
+        if (btnCancelar != null) btnCancelar.setOnClickListener(v -> dialog.dismiss());
+
+        if (btnAgregar != null) {
+            btnAgregar.setOnClickListener(v -> {
+                String tipoVenta = "PAQUETE";
+                int cantPaq = 0;
+                int cantUnid = 0;
+
+                if (rbUnidad != null && rbUnidad.isChecked()) {
+                    tipoVenta = "UNIDAD";
+                } else if (rbMixta != null && rbMixta.isChecked()) {
+                    tipoVenta = "MIXTA";
+                } else {
+                    tipoVenta = "PAQUETE";
+                }
+
+                if (tipoVenta.equals("PAQUETE") || tipoVenta.equals("MIXTA")) {
+                    String paqStr = etPaquetes != null && etPaquetes.getText() != null ? etPaquetes.getText().toString().trim() : "0";
+                    try {
+                        cantPaq = Integer.parseInt(paqStr);
+                    } catch (Exception ignored) {}
+                }
+
+                if (tipoVenta.equals("UNIDAD") || tipoVenta.equals("MIXTA")) {
+                    String unidStr = etUnidades != null && etUnidades.getText() != null ? etUnidades.getText().toString().trim() : "0";
+                    try {
+                        cantUnid = Integer.parseInt(unidStr);
+                    } catch (Exception ignored) {}
+                }
+
+                if (tipoVenta.equals("PAQUETE") && cantPaq <= 0) {
+                    Toast.makeText(this, "Ingresa cantidad de paquetes válida", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                if (tipoVenta.equals("UNIDAD") && cantUnid <= 0) {
+                    Toast.makeText(this, "Ingresa cantidad de unidades válida", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                if (tipoVenta.equals("MIXTA") && cantPaq <= 0 && cantUnid <= 0) {
+                    Toast.makeText(this, "Ingresa al menos paquetes o unidades", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                CarritoManager.getInstance().agregarProducto(producto, tipoVenta, cantPaq, cantUnid);
+                Toast.makeText(this, "¡" + producto.getProductoNombre() + " agregado al carrito!", Toast.LENGTH_SHORT).show();
+                dialog.dismiss();
+            });
+        }
+
+        dialog.show();
     }
 
     // =======================================================
@@ -301,49 +539,66 @@ public class ProductosActivity extends AppCompatActivity {
         if (dialog.getWindow() != null) {
             dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
         }
+        dialog.setCanceledOnTouchOutside(false);
 
         TextView tvTitle = dialogView.findViewById(R.id.tvDialogTitle);
         TextView tvSubtitle = dialogView.findViewById(R.id.tvDialogSubtitle);
 
-        Spinner spinnerProveedor = dialogView.findViewById(R.id.spinnerProveedor);
-        Spinner spinnerCategoria = dialogView.findViewById(R.id.spinnerCategoria);
+        AutoCompleteTextView actvProveedor = dialogView.findViewById(R.id.actvProveedor);
+        AutoCompleteTextView actvCategoria = dialogView.findViewById(R.id.actvCategoria);
+        TextInputLayout tilProveedor = dialogView.findViewById(R.id.tilProveedor);
+        TextInputLayout tilCategoria = dialogView.findViewById(R.id.tilCategoria);
         MaterialButton btnCrearCategoria = dialogView.findViewById(R.id.btnCrearCategoria);
 
         TextInputLayout tilNombre = dialogView.findViewById(R.id.tilNombre);
-        TextInputLayout tilStock = dialogView.findViewById(R.id.tilStock);
-        TextInputLayout tilPrecioCompra = dialogView.findViewById(R.id.tilPrecioCompra);
-        TextInputLayout tilPrecioVenta = dialogView.findViewById(R.id.tilPrecioVenta);
+        TextInputLayout tilUnidadesPorPaquete = dialogView.findViewById(R.id.tilUnidadesPorPaquete);
+        TextInputLayout tilPrecioCompraPaquete = dialogView.findViewById(R.id.tilPrecioCompraPaquete);
+        TextInputLayout tilPrecioVentaPaquete = dialogView.findViewById(R.id.tilPrecioVentaPaquete);
+        TextInputLayout tilPrecioVentaUnidad = dialogView.findViewById(R.id.tilPrecioVentaUnidad);
 
         TextInputEditText etNombre = dialogView.findViewById(R.id.etNombre);
-        TextInputEditText etStock = dialogView.findViewById(R.id.etStock);
-        TextInputEditText etFactor = dialogView.findViewById(R.id.etFactor);
-        TextInputEditText etPrecioCompra = dialogView.findViewById(R.id.etPrecioCompra);
-        TextInputEditText etPrecioVenta = dialogView.findViewById(R.id.etPrecioVenta);
+        TextInputEditText etUnidadesPorPaquete = dialogView.findViewById(R.id.etUnidadesPorPaquete);
+        TextInputEditText etPrecioCompraPaquete = dialogView.findViewById(R.id.etPrecioCompraPaquete);
+        TextInputEditText etPrecioVentaPaquete = dialogView.findViewById(R.id.etPrecioVentaPaquete);
+        TextInputEditText etPrecioVentaUnidad = dialogView.findViewById(R.id.etPrecioVentaUnidad);
 
         MaterialButton btnCancelar = dialogView.findViewById(R.id.btnCancelarDialog);
         MaterialButton btnGuardar = dialogView.findViewById(R.id.btnGuardarDialog);
 
-        // Cargar Proveedores y Categorías en los Spinners
-        cargarProveedoresEnSpinner(spinnerProveedor, productoExistente);
-        cargarCategoriasEnSpinner(spinnerCategoria, productoExistente);
+        final Proveedor[] selectedProv = {null};
+        final Categoria[] selectedCat = {null};
+
+        if (actvProveedor != null) {
+            actvProveedor.setOnItemClickListener((parent, view, position, id) -> {
+                selectedProv[0] = (Proveedor) parent.getItemAtPosition(position);
+            });
+        }
+
+        if (actvCategoria != null) {
+            actvCategoria.setOnItemClickListener((parent, view, position, id) -> {
+                selectedCat[0] = (Categoria) parent.getItemAtPosition(position);
+            });
+        }
+
+        // Cargar Proveedores y Categorías en AutoCompleteTextViews
+        cargarProveedoresEnAutocomplete(actvProveedor, tilProveedor, productoExistente);
+        cargarCategoriasEnAutocomplete(actvCategoria, tilCategoria, productoExistente, null);
 
         if (btnCrearCategoria != null) {
-            btnCrearCategoria.setOnClickListener(v -> mostrarDialogoNuevaCategoria(spinnerCategoria));
+            btnCrearCategoria.setOnClickListener(v -> mostrarDialogoNuevaCategoriaParaAutocomplete(actvCategoria, tilCategoria, productoExistente));
         }
 
         if (esEdicion) {
-            if (tvTitle != null) tvTitle.setText("Editar Producto");
+            if (tvTitle != null) tvTitle.setText("Editar producto");
             if (tvSubtitle != null) tvSubtitle.setText("Modifica los datos del producto #" + productoExistente.getProductoId());
 
             if (etNombre != null) etNombre.setText(productoExistente.getProductoNombre());
-            if (etStock != null) etStock.setText(String.valueOf(productoExistente.getStock()));
-            if (etFactor != null && productoExistente.getFactor() != null) {
-                etFactor.setText(String.valueOf(productoExistente.getFactor()));
-            }
-            if (etPrecioCompra != null) etPrecioCompra.setText(productoExistente.getPrecioCompra());
-            if (etPrecioVenta != null) etPrecioVenta.setText(productoExistente.getPrecioVenta());
+            if (etUnidadesPorPaquete != null) etUnidadesPorPaquete.setText(String.valueOf(productoExistente.getUnidadesPorPaqueteVal()));
+            if (etPrecioCompraPaquete != null) etPrecioCompraPaquete.setText(productoExistente.getPrecioCompraPaquete());
+            if (etPrecioVentaPaquete != null) etPrecioVentaPaquete.setText(productoExistente.getPrecioVentaPaquete());
+            if (etPrecioVentaUnidad != null) etPrecioVentaUnidad.setText(productoExistente.getPrecioVentaUnidad());
         } else {
-            if (tvTitle != null) tvTitle.setText("Nuevo Producto");
+            if (tvTitle != null) tvTitle.setText("Nuevo producto");
             if (tvSubtitle != null) tvSubtitle.setText("Ingresa los datos para registrar un nuevo producto");
         }
 
@@ -354,15 +609,20 @@ public class ProductosActivity extends AppCompatActivity {
         if (btnGuardar != null) {
             btnGuardar.setOnClickListener(v -> {
                 if (tilNombre != null) tilNombre.setError(null);
-                if (tilStock != null) tilStock.setError(null);
-                if (tilPrecioCompra != null) tilPrecioCompra.setError(null);
-                if (tilPrecioVenta != null) tilPrecioVenta.setError(null);
+                if (tilProveedor != null) tilProveedor.setError(null);
+                if (tilCategoria != null) tilCategoria.setError(null);
+                if (tilUnidadesPorPaquete != null) tilUnidadesPorPaquete.setError(null);
+                if (tilPrecioCompraPaquete != null) tilPrecioCompraPaquete.setError(null);
+                if (tilPrecioVentaPaquete != null) tilPrecioVentaPaquete.setError(null);
+                if (tilPrecioVentaUnidad != null) tilPrecioVentaUnidad.setError(null);
 
                 String nombre = etNombre != null && etNombre.getText() != null ? etNombre.getText().toString().trim() : "";
-                String stockStr = etStock != null && etStock.getText() != null ? etStock.getText().toString().trim() : "";
-                String factorStr = etFactor != null && etFactor.getText() != null ? etFactor.getText().toString().trim() : "";
-                String precioCompraStr = etPrecioCompra != null && etPrecioCompra.getText() != null ? etPrecioCompra.getText().toString().trim() : "";
-                String precioVentaStr = etPrecioVenta != null && etPrecioVenta.getText() != null ? etPrecioVenta.getText().toString().trim() : "";
+                String provText = actvProveedor != null && actvProveedor.getText() != null ? actvProveedor.getText().toString().trim() : "";
+                String catText = actvCategoria != null && actvCategoria.getText() != null ? actvCategoria.getText().toString().trim() : "";
+                String unidadesStr = etUnidadesPorPaquete != null && etUnidadesPorPaquete.getText() != null ? etUnidadesPorPaquete.getText().toString().trim() : "";
+                String precioCompraPaqueteStr = etPrecioCompraPaquete != null && etPrecioCompraPaquete.getText() != null ? etPrecioCompraPaquete.getText().toString().trim() : "";
+                String precioVentaPaqueteStr = etPrecioVentaPaquete != null && etPrecioVentaPaquete.getText() != null ? etPrecioVentaPaquete.getText().toString().trim() : "";
+                String precioVentaUnidadStr = etPrecioVentaUnidad != null && etPrecioVentaUnidad.getText() != null ? etPrecioVentaUnidad.getText().toString().trim() : "";
 
                 boolean esValido = true;
 
@@ -371,51 +631,80 @@ public class ProductosActivity extends AppCompatActivity {
                     esValido = false;
                 }
 
-                if (TextUtils.isEmpty(stockStr)) {
-                    if (tilStock != null) tilStock.setError("Ingresa el stock");
+                // Resolver Proveedor
+                Proveedor proveedorSeleccionado = selectedProv[0];
+                ArrayAdapter<Proveedor> provAdapter = actvProveedor != null && actvProveedor.getAdapter() instanceof ArrayAdapter ? (ArrayAdapter<Proveedor>) actvProveedor.getAdapter() : null;
+                if (proveedorSeleccionado == null && provAdapter != null) {
+                    for (int i = 0; i < provAdapter.getCount(); i++) {
+                        Proveedor p = provAdapter.getItem(i);
+                        if (p != null && (p.getNombreEmpresa().equalsIgnoreCase(provText) || p.toString().equalsIgnoreCase(provText))) {
+                            proveedorSeleccionado = p;
+                            break;
+                        }
+                    }
+                }
+                if (proveedorSeleccionado == null && provAdapter != null && provAdapter.getCount() > 0) {
+                    proveedorSeleccionado = provAdapter.getItem(0);
+                }
+                if (proveedorSeleccionado == null) {
+                    if (tilProveedor != null) tilProveedor.setError("Selecciona un proveedor válido");
                     esValido = false;
                 }
 
-                if (TextUtils.isEmpty(precioCompraStr)) {
-                    if (tilPrecioCompra != null) tilPrecioCompra.setError("Ingresa precio de compra");
+                // Resolver Categoría
+                Categoria categoriaSeleccionada = selectedCat[0];
+                ArrayAdapter<Categoria> catAdapter = actvCategoria != null && actvCategoria.getAdapter() instanceof ArrayAdapter ? (ArrayAdapter<Categoria>) actvCategoria.getAdapter() : null;
+                if (categoriaSeleccionada == null && catAdapter != null) {
+                    for (int i = 0; i < catAdapter.getCount(); i++) {
+                        Categoria c = catAdapter.getItem(i);
+                        if (c != null && (c.getNombre().equalsIgnoreCase(catText) || c.toString().equalsIgnoreCase(catText))) {
+                            categoriaSeleccionada = c;
+                            break;
+                        }
+                    }
+                }
+                if (categoriaSeleccionada == null && catAdapter != null && catAdapter.getCount() > 0) {
+                    categoriaSeleccionada = catAdapter.getItem(0);
+                }
+                if (categoriaSeleccionada == null) {
+                    if (tilCategoria != null) tilCategoria.setError("Selecciona una categoría válida");
                     esValido = false;
                 }
 
-                if (TextUtils.isEmpty(precioVentaStr)) {
-                    if (tilPrecioVenta != null) tilPrecioVenta.setError("Ingresa precio de venta");
+                if (TextUtils.isEmpty(unidadesStr)) {
+                    if (tilUnidadesPorPaquete != null) tilUnidadesPorPaquete.setError("Ingresa unidades por paquete");
+                    esValido = false;
+                }
+
+                if (TextUtils.isEmpty(precioCompraPaqueteStr)) {
+                    if (tilPrecioCompraPaquete != null) tilPrecioCompraPaquete.setError("Ingresa precio compra paquete");
+                    esValido = false;
+                }
+
+                if (TextUtils.isEmpty(precioVentaPaqueteStr)) {
+                    if (tilPrecioVentaPaquete != null) tilPrecioVentaPaquete.setError("Ingresa precio venta paquete");
+                    esValido = false;
+                }
+
+                if (TextUtils.isEmpty(precioVentaUnidadStr)) {
+                    if (tilPrecioVentaUnidad != null) tilPrecioVentaUnidad.setError("Ingresa precio venta unidad");
                     esValido = false;
                 }
 
                 if (esValido) {
-                    int stock = Integer.parseInt(stockStr);
-                    int factor = !TextUtils.isEmpty(factorStr) ? Integer.parseInt(factorStr) : 1;
-
-                    // Obtener Proveedor y Categoría seleccionados
-                    int proveedorId = 1;
-                    if (spinnerProveedor != null && spinnerProveedor.getSelectedItem() instanceof Proveedor) {
-                        Proveedor pSel = (Proveedor) spinnerProveedor.getSelectedItem();
-                        proveedorId = pSel.getId();
-                    }
-
-                    int categoriaId = 1;
-                    if (spinnerCategoria != null && spinnerCategoria.getSelectedItem() instanceof Categoria) {
-                        Categoria cSel = (Categoria) spinnerCategoria.getSelectedItem();
-                        categoriaId = cSel.getId();
-                    }
+                    int unidadesPorPaquete = Integer.parseInt(unidadesStr);
+                    int proveedorId = proveedorSeleccionado != null ? proveedorSeleccionado.getId() : 1;
+                    int categoriaId = categoriaSeleccionada != null ? categoriaSeleccionada.getId() : 1;
 
                     Producto productoRequest = esEdicion ? productoExistente : new Producto();
                     productoRequest.setProductoNombre(nombre);
-                    productoRequest.setStock(stock);
-                    productoRequest.setFactor(factor);
-                    productoRequest.setPrecioCompra(precioCompraStr);
-                    productoRequest.setPrecioVenta(precioVentaStr);
+                    productoRequest.setUnidadesPorPaquete(unidadesPorPaquete);
+                    productoRequest.setPrecioCompraPaquete(precioCompraPaqueteStr);
+                    productoRequest.setPrecioVentaPaquete(precioVentaPaqueteStr);
+                    productoRequest.setPrecioVentaUnidad(precioVentaUnidadStr);
                     productoRequest.setActivo(1);
                     productoRequest.setProveedorId(proveedorId);
                     productoRequest.setCategoriaId(categoriaId);
-                    if (!esEdicion) {
-                        productoRequest.setPresentacionId(1);
-                        productoRequest.setNivel(1);
-                    }
 
                     if (esEdicion) {
                         ejecutarEditarProducto(productoExistente.getProductoId(), productoRequest, dialog, btnGuardar);
@@ -429,7 +718,7 @@ public class ProductosActivity extends AppCompatActivity {
         dialog.show();
     }
 
-    private void cargarProveedoresEnSpinner(Spinner spinnerProveedor, Producto productoExistente) {
+    private void cargarProveedoresEnAutocomplete(AutoCompleteTextView actvProveedor, TextInputLayout tilProveedor, Producto productoExistente) {
         ApiClient.getApiService().getProveedores().enqueue(new Callback<ProveedorResponse>() {
             @Override
             public void onResponse(@NonNull Call<ProveedorResponse> call, @NonNull Response<ProveedorResponse> response) {
@@ -439,38 +728,34 @@ public class ProductosActivity extends AppCompatActivity {
                 }
 
                 if (lista.isEmpty()) {
-                    cargarProveedoresDirecto(spinnerProveedor, productoExistente);
+                    ApiClient.getApiService().getProveedoresDirectList().enqueue(new Callback<List<Proveedor>>() {
+                        @Override
+                        public void onResponse(@NonNull Call<List<Proveedor>> call2, @NonNull Response<List<Proveedor>> response2) {
+                            List<Proveedor> lista2 = new ArrayList<>();
+                            if (response2.isSuccessful() && response2.body() != null) {
+                                lista2 = response2.body();
+                            }
+                            configurarAutoCompleteProveedores(actvProveedor, tilProveedor, lista2, productoExistente);
+                        }
+
+                        @Override
+                        public void onFailure(@NonNull Call<List<Proveedor>> call2, @NonNull Throwable t2) {
+                            configurarAutoCompleteProveedores(actvProveedor, tilProveedor, new ArrayList<>(), productoExistente);
+                        }
+                    });
                 } else {
-                    configurarSpinnerProveedores(spinnerProveedor, lista, productoExistente);
+                    configurarAutoCompleteProveedores(actvProveedor, tilProveedor, lista, productoExistente);
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<ProveedorResponse> call, @NonNull Throwable t) {
-                cargarProveedoresDirecto(spinnerProveedor, productoExistente);
+                configurarAutoCompleteProveedores(actvProveedor, tilProveedor, new ArrayList<>(), productoExistente);
             }
         });
     }
 
-    private void cargarProveedoresDirecto(Spinner spinnerProveedor, Producto productoExistente) {
-        ApiClient.getApiService().getProveedoresDirectList().enqueue(new Callback<List<Proveedor>>() {
-            @Override
-            public void onResponse(@NonNull Call<List<Proveedor>> call, @NonNull Response<List<Proveedor>> response) {
-                List<Proveedor> lista = new ArrayList<>();
-                if (response.isSuccessful() && response.body() != null) {
-                    lista = response.body();
-                }
-                configurarSpinnerProveedores(spinnerProveedor, lista, productoExistente);
-            }
-
-            @Override
-            public void onFailure(@NonNull Call<List<Proveedor>> call, @NonNull Throwable t) {
-                configurarSpinnerProveedores(spinnerProveedor, new ArrayList<>(), productoExistente);
-            }
-        });
-    }
-
-    private void configurarSpinnerProveedores(Spinner spinnerProveedor, List<Proveedor> proveedores, Producto productoExistente) {
+    private void configurarAutoCompleteProveedores(AutoCompleteTextView actvProveedor, TextInputLayout tilProveedor, List<Proveedor> proveedores, Producto productoExistente) {
         if (proveedores.isEmpty()) {
             Proveedor pDefault = new Proveedor();
             pDefault.setId(1);
@@ -478,72 +763,94 @@ public class ProductosActivity extends AppCompatActivity {
             proveedores.add(pDefault);
         }
 
-        ArrayAdapter<Proveedor> adapterProv = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, proveedores);
-        adapterProv.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        if (spinnerProveedor != null) {
-            spinnerProveedor.setAdapter(adapterProv);
+        ArrayAdapter<Proveedor> adapterProv = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, proveedores);
+        if (actvProveedor != null) {
+            actvProveedor.setAdapter(adapterProv);
+            actvProveedor.setThreshold(1);
+            actvProveedor.setOnClickListener(v -> actvProveedor.showDropDown());
 
             if (productoExistente != null) {
-                for (int i = 0; i < proveedores.size(); i++) {
-                    if (proveedores.get(i).getId() == productoExistente.getProveedorId()) {
-                        spinnerProveedor.setSelection(i);
+                for (Proveedor p : proveedores) {
+                    if (p.getId() == productoExistente.getProveedorId()) {
+                        actvProveedor.setText(p.getNombreEmpresa(), false);
                         break;
                     }
                 }
+            } else if (!proveedores.isEmpty()) {
+                actvProveedor.setText(proveedores.get(0).getNombreEmpresa(), false);
             }
         }
     }
 
-    private void cargarCategoriasEnSpinner(Spinner spinnerCategoria, Producto productoExistente) {
-        ApiClient.getApiService().getCategorias().enqueue(new Callback<List<Categoria>>() {
+    private void cargarCategoriasEnAutocomplete(AutoCompleteTextView actvCategoria, TextInputLayout tilCategoria, Producto productoExistente, Categoria categoriaASeleccionar) {
+        ApiClient.getApiService().getCategoriasElement().enqueue(new Callback<com.google.gson.JsonElement>() {
             @Override
-            public void onResponse(@NonNull Call<List<Categoria>> call, @NonNull Response<List<Categoria>> response) {
+            public void onResponse(@NonNull Call<com.google.gson.JsonElement> call, @NonNull Response<com.google.gson.JsonElement> response) {
                 List<Categoria> lista = new ArrayList<>();
                 if (response.isSuccessful() && response.body() != null) {
-                    lista = response.body();
+                    try {
+                        com.google.gson.JsonElement json = response.body();
+                        if (json.isJsonArray()) {
+                            java.lang.reflect.Type listType = new com.google.gson.reflect.TypeToken<List<Categoria>>() {}.getType();
+                            lista = new Gson().fromJson(json, listType);
+                        } else if (json.isJsonObject()) {
+                            com.google.gson.JsonObject obj = json.getAsJsonObject();
+                            com.google.gson.JsonElement dataEl = null;
+                            if (obj.has("data")) dataEl = obj.get("data");
+                            else if (obj.has("categorias")) dataEl = obj.get("categorias");
+                            else if (obj.has("items")) dataEl = obj.get("items");
+
+                            if (dataEl != null && dataEl.isJsonArray()) {
+                                java.lang.reflect.Type listType = new com.google.gson.reflect.TypeToken<List<Categoria>>() {}.getType();
+                                lista = new Gson().fromJson(dataEl, listType);
+                            }
+                        }
+                    } catch (Exception ignored) {}
                 }
-                configurarSpinnerCategorias(spinnerCategoria, lista, productoExistente, null);
+                configurarAutoCompleteCategorias(actvCategoria, tilCategoria, lista, productoExistente, categoriaASeleccionar);
             }
 
             @Override
-            public void onFailure(@NonNull Call<List<Categoria>> call, @NonNull Throwable t) {
-                configurarSpinnerCategorias(spinnerCategoria, new ArrayList<>(), productoExistente, null);
+            public void onFailure(@NonNull Call<com.google.gson.JsonElement> call, @NonNull Throwable t) {
+                configurarAutoCompleteCategorias(actvCategoria, tilCategoria, new ArrayList<>(), productoExistente, categoriaASeleccionar);
             }
         });
     }
 
-    private void configurarSpinnerCategorias(Spinner spinnerCategoria, List<Categoria> categorias, Producto productoExistente, Categoria categoriaASeleccionar) {
+    private void configurarAutoCompleteCategorias(AutoCompleteTextView actvCategoria, TextInputLayout tilCategoria, List<Categoria> categorias, Producto productoExistente, Categoria categoriaASeleccionar) {
         if (categorias.isEmpty()) {
             Categoria cDefault = new Categoria("Bebidas", 1);
             cDefault.setId(1);
             categorias.add(cDefault);
         }
 
-        ArrayAdapter<Categoria> adapterCat = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, categorias);
-        adapterCat.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        if (spinnerCategoria != null) {
-            spinnerCategoria.setAdapter(adapterCat);
+        ArrayAdapter<Categoria> adapterCat = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, categorias);
+        if (actvCategoria != null) {
+            actvCategoria.setAdapter(adapterCat);
+            actvCategoria.setThreshold(1);
+            actvCategoria.setOnClickListener(v -> actvCategoria.showDropDown());
 
             if (categoriaASeleccionar != null) {
-                for (int i = 0; i < categorias.size(); i++) {
-                    if (categorias.get(i).getNombre().equalsIgnoreCase(categoriaASeleccionar.getNombre())) {
-                        spinnerCategoria.setSelection(i);
+                for (Categoria c : categorias) {
+                    if (c.getNombre().equalsIgnoreCase(categoriaASeleccionar.getNombre())) {
+                        actvCategoria.setText(c.getNombre(), false);
                         break;
                     }
                 }
             } else if (productoExistente != null) {
-                for (int i = 0; i < categorias.size(); i++) {
-                    if (categorias.get(i).getId() == productoExistente.getCategoriaId()) {
-                        spinnerCategoria.setSelection(i);
+                for (Categoria c : categorias) {
+                    if (c.getId() == productoExistente.getCategoriaId()) {
+                        actvCategoria.setText(c.getNombre(), false);
                         break;
                     }
                 }
+            } else if (!categorias.isEmpty()) {
+                actvCategoria.setText(categorias.get(0).getNombre(), false);
             }
         }
     }
 
-    // Modal para registrar nueva categoría
-    private void mostrarDialogoNuevaCategoria(Spinner spinnerCategoria) {
+    private void mostrarDialogoNuevaCategoriaParaAutocomplete(AutoCompleteTextView actvCategoria, TextInputLayout tilCategoria, Producto productoExistente) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_nueva_categoria, null);
         builder.setView(dialogView);
@@ -554,81 +861,47 @@ public class ProductosActivity extends AppCompatActivity {
         }
 
         TextInputLayout tilNombre = dialogView.findViewById(R.id.tilNombreCategoria);
-        TextInputLayout tilFactor = dialogView.findViewById(R.id.tilFactorCategoria);
-
         TextInputEditText etNombre = dialogView.findViewById(R.id.etNombreCategoria);
-        TextInputEditText etFactor = dialogView.findViewById(R.id.etFactorCategoria);
-
         MaterialButton btnCancelar = dialogView.findViewById(R.id.btnCancelarCategoria);
         MaterialButton btnGuardar = dialogView.findViewById(R.id.btnGuardarCategoria);
 
-        if (btnCancelar != null) {
-            btnCancelar.setOnClickListener(v -> dialogCat.dismiss());
-        }
+        if (btnCancelar != null) btnCancelar.setOnClickListener(v -> dialogCat.dismiss());
 
         if (btnGuardar != null) {
             btnGuardar.setOnClickListener(v -> {
                 if (tilNombre != null) tilNombre.setError(null);
-                if (tilFactor != null) tilFactor.setError(null);
-
-                String nombre = etNombre != null && etNombre.getText() != null ? etNombre.getText().toString().trim() : "";
-                String factorStr = etFactor != null && etFactor.getText() != null ? etFactor.getText().toString().trim() : "1";
-
-                boolean esValido = true;
-
-                if (TextUtils.isEmpty(nombre)) {
+                String nombreCat = etNombre != null && etNombre.getText() != null ? etNombre.getText().toString().trim() : "";
+                if (TextUtils.isEmpty(nombreCat)) {
                     if (tilNombre != null) tilNombre.setError("Ingresa el nombre de la categoría");
-                    esValido = false;
+                    return;
                 }
 
-                int factor = 1;
-                try {
-                    factor = Integer.parseInt(factorStr);
-                    if (factor < 1) {
-                        if (tilFactor != null) tilFactor.setError("El factor debe ser mayor a 0");
-                        esValido = false;
+                if (btnGuardar != null) btnGuardar.setEnabled(false);
+                Categoria nuevaCat = new Categoria(nombreCat, 1);
+
+                ApiClient.getApiService().crearCategoria(nuevaCat).enqueue(new Callback<CategoriaResponse>() {
+                    @Override
+                    public void onResponse(@NonNull Call<CategoriaResponse> call, @NonNull Response<CategoriaResponse> response) {
+                        if (btnGuardar != null) btnGuardar.setEnabled(true);
+                        if (response.isSuccessful()) {
+                            Toast.makeText(ProductosActivity.this, "¡Categoría registrada correctamente!", Toast.LENGTH_SHORT).show();
+                            if (dialogCat != null && dialogCat.isShowing()) dialogCat.dismiss();
+                            cargarCategoriasEnAutocomplete(actvCategoria, tilCategoria, productoExistente, nuevaCat);
+                        } else {
+                            Toast.makeText(ProductosActivity.this, "Error al crear categoría (" + response.code() + ")", Toast.LENGTH_SHORT).show();
+                        }
                     }
-                } catch (Exception e) {
-                    if (tilFactor != null) tilFactor.setError("Ingresa un número válido");
-                    esValido = false;
-                }
 
-                if (esValido) {
-                    Categoria nuevaCat = new Categoria(nombre, factor);
-                    ejecutarCrearCategoria(nuevaCat, dialogCat, btnGuardar, spinnerCategoria);
-                }
+                    @Override
+                    public void onFailure(@NonNull Call<CategoriaResponse> call, @NonNull Throwable t) {
+                        if (btnGuardar != null) btnGuardar.setEnabled(true);
+                        Toast.makeText(ProductosActivity.this, "Error de conexión", Toast.LENGTH_SHORT).show();
+                    }
+                });
             });
         }
 
         dialogCat.show();
-    }
-
-    private void ejecutarCrearCategoria(Categoria nuevaCategoria, AlertDialog dialogCat, MaterialButton btnGuardar, Spinner spinnerCategoria) {
-        if (btnGuardar != null) btnGuardar.setEnabled(false);
-
-        ApiClient.getApiService().crearCategoria(nuevaCategoria).enqueue(new Callback<CategoriaResponse>() {
-            @Override
-            public void onResponse(@NonNull Call<CategoriaResponse> call, @NonNull Response<CategoriaResponse> response) {
-                if (btnGuardar != null) btnGuardar.setEnabled(true);
-
-                if (response.isSuccessful()) {
-                    Toast.makeText(ProductosActivity.this, "¡Categoría registrada correctamente!", Toast.LENGTH_SHORT).show();
-                    if (dialogCat != null && dialogCat.isShowing()) dialogCat.dismiss();
-
-                    // Recargar categorías en el Spinner y auto-seleccionar la nueva
-                    cargarCategoriasEnSpinner(spinnerCategoria, null);
-                } else {
-                    String msg = "Error al crear categoría (" + response.code() + ")";
-                    Toast.makeText(ProductosActivity.this, msg, Toast.LENGTH_LONG).show();
-                }
-            }
-
-            @Override
-            public void onFailure(@NonNull Call<CategoriaResponse> call, @NonNull Throwable t) {
-                if (btnGuardar != null) btnGuardar.setEnabled(true);
-                Toast.makeText(ProductosActivity.this, "Error de conexión al crear categoría", Toast.LENGTH_LONG).show();
-            }
-        });
     }
 
     private void ejecutarCrearProducto(Producto producto, AlertDialog dialog, MaterialButton btnGuardar) {
@@ -783,14 +1056,17 @@ public class ProductosActivity extends AppCompatActivity {
         if (rvProductos != null && productos != null) {
             rvProductos.setVisibility(View.VISIBLE);
 
+            List<Producto> listaMutable = new ArrayList<>(productos);
+            android.util.Log.d("ADISAN_PRODUCTOS_DEBUG", "cantidad enviada al adapter = " + listaMutable.size());
+
             // Ordenar por ID descendente para que el nuevo producto creado aparezca primero en la parte superior
-            Collections.sort(productos, (p1, p2) -> Integer.compare(p2.getProductoId(), p1.getProductoId()));
+            Collections.sort(listaMutable, (p1, p2) -> Integer.compare(p2.getProductoId(), p1.getProductoId()));
 
             if (adapter == null) {
-                adapter = new ProductoAdapter(this, productos);
+                adapter = new ProductoAdapter(this, listaMutable);
                 rvProductos.setAdapter(adapter);
             } else {
-                adapter.setProductos(productos);
+                adapter.setProductos(listaMutable);
             }
             rvProductos.scrollToPosition(0);
         }

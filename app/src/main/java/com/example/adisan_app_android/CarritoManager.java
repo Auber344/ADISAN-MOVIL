@@ -19,38 +19,36 @@ public class CarritoManager {
         return items;
     }
 
-    public void agregarProducto(Producto producto, int cantidad) {
-        if (producto == null || cantidad <= 0) return;
+    public void agregarProducto(Producto producto, String tipoVenta, int cantidadPaquetes, int cantidadUnidades) {
+        if (producto == null) return;
 
         for (ItemCarrito item : items) {
-            if (item.getProductoId() == producto.getProductoId()) {
-                int nuevaCantidad = item.getCantidad() + cantidad;
-                if (nuevaCantidad > producto.getStock()) {
-                    nuevaCantidad = producto.getStock();
-                }
-                item.setCantidad(nuevaCantidad);
+            if (!item.isOferta() && item.getProductoId() == producto.getProductoId() && item.getTipoVenta().equalsIgnoreCase(tipoVenta)) {
+                item.setCantidadPaquetes(item.getCantidadPaquetes() + cantidadPaquetes);
+                item.setCantidadUnidades(item.getCantidadUnidades() + cantidadUnidades);
                 return;
             }
         }
 
-        int cantidadInicial = Math.min(cantidad, producto.getStock());
-        if (cantidadInicial > 0) {
-            items.add(new ItemCarrito(producto, cantidadInicial));
-        }
+        items.add(new ItemCarrito(producto, tipoVenta, cantidadPaquetes, cantidadUnidades));
     }
 
-    public void cambiarCantidad(int position, int nuevaCantidad) {
-        if (position >= 0 && position < items.size()) {
-            if (nuevaCantidad <= 0) {
-                items.remove(position);
-            } else {
-                ItemCarrito item = items.get(position);
-                if (nuevaCantidad > item.getStock()) {
-                    nuevaCantidad = item.getStock();
-                }
-                item.setCantidad(nuevaCantidad);
+    public void agregarOferta(Oferta oferta, int cantidadOfertas) {
+        if (oferta == null || cantidadOfertas <= 0) return;
+
+        for (ItemCarrito item : items) {
+            if (item.isOferta() && item.getOfertaId() == oferta.getId()) {
+                item.setCantidadOfertas(item.getCantidadOfertas() + cantidadOfertas);
+                return;
             }
         }
+
+        items.add(new ItemCarrito(oferta, cantidadOfertas));
+    }
+
+    // Legacy support method
+    public void agregarProducto(Producto producto, int cantidad) {
+        agregarProducto(producto, "UNIDAD", 0, cantidad);
     }
 
     public void eliminarItem(int position) {
@@ -70,7 +68,11 @@ public class CarritoManager {
     public int obtenerCantidadTotalItems() {
         int count = 0;
         for (ItemCarrito item : items) {
-            count += item.getCantidad();
+            if (item.isOferta()) {
+                count += item.getCantidadOfertas();
+            } else {
+                count += (item.getCantidadPaquetes() + item.getCantidadUnidades());
+            }
         }
         return count;
     }

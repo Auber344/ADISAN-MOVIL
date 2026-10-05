@@ -166,6 +166,7 @@ public class DashboardActivity extends AppCompatActivity {
         View navInicio = findViewById(R.id.navSidebarInicio);
         View navProductos = findViewById(R.id.navSidebarProductos);
         View navPedidos = findViewById(R.id.navSidebarPedidos);
+        View navProveedores = findViewById(R.id.navSidebarProveedores);
         View navUsuarios = findViewById(R.id.navSidebarUsuarios);
         View navReportes = findViewById(R.id.navSidebarReportes);
         View navConfiguracion = findViewById(R.id.navSidebarConfiguracion);
@@ -202,6 +203,14 @@ public class DashboardActivity extends AppCompatActivity {
             navPedidos.setOnClickListener(v -> {
                 if (drawerLayout != null) drawerLayout.closeDrawer(GravityCompat.START);
                 Intent intent = new Intent(DashboardActivity.this, PedidosActivity.class);
+                startActivity(intent);
+            });
+        }
+
+        if (navProveedores != null) {
+            navProveedores.setOnClickListener(v -> {
+                if (drawerLayout != null) drawerLayout.closeDrawer(GravityCompat.START);
+                Intent intent = new Intent(DashboardActivity.this, ProveedoresActivity.class);
                 startActivity(intent);
             });
         }
@@ -293,6 +302,48 @@ public class DashboardActivity extends AppCompatActivity {
                         Toast.LENGTH_SHORT).show();
             }
         });
+
+        cargarConteoComprasDashboard();
+    }
+
+    private void cargarConteoComprasDashboard() {
+        ApiClient.getApiService().getCompras().enqueue(new Callback<CompraResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<CompraResponse> call, @NonNull Response<CompraResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    List<Compra> lista = response.body().getData();
+                    if (lista != null && tvValEnCamino != null) {
+                        tvValEnCamino.setText(String.format(Locale.getDefault(), "%,d", lista.size()));
+                    } else {
+                        cargarConteoComprasDashboardDirect();
+                    }
+                } else {
+                    cargarConteoComprasDashboardDirect();
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<CompraResponse> call, @NonNull Throwable t) {
+                cargarConteoComprasDashboardDirect();
+            }
+        });
+    }
+
+    private void cargarConteoComprasDashboardDirect() {
+        ApiClient.getApiService().getComprasDirectList().enqueue(new Callback<List<Compra>>() {
+            @Override
+            public void onResponse(@NonNull Call<List<Compra>> call, @NonNull Response<List<Compra>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    List<Compra> lista = response.body();
+                    if (lista != null && tvValEnCamino != null) {
+                        tvValEnCamino.setText(String.format(Locale.getDefault(), "%,d", lista.size()));
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<List<Compra>> call, @NonNull Throwable t) {}
+        });
     }
 
     private void actualizarMetricas(DashboardResponse data) {
@@ -371,19 +422,22 @@ public class DashboardActivity extends AppCompatActivity {
                 if (id == R.id.cardQuickProductos || id == R.id.cardProductos) {
                     Intent intent = new Intent(DashboardActivity.this, ProductosActivity.class);
                     startActivity(intent);
-                } else if (id == R.id.cardQuickPedidos || id == R.id.cardPedidos || id == R.id.cardQuickOfertas || id == R.id.cardVentas) {
+                } else if (id == R.id.cardStockBajo) {
+                    Intent intent = new Intent(DashboardActivity.this, InventarioActivity.class);
+                    startActivity(intent);
+                } else if (id == R.id.cardQuickPedidos || id == R.id.cardPedidos || id == R.id.cardVentas) {
                     Intent intent = new Intent(DashboardActivity.this, PedidosActivity.class);
+                    startActivity(intent);
+                } else if (id == R.id.cardEnCamino) {
+                    Intent intent = new Intent(DashboardActivity.this, ComprasActivity.class);
+                    startActivity(intent);
+                } else if (id == R.id.cardQuickOfertas) {
+                    Intent intent = new Intent(DashboardActivity.this, OfertasActivity.class);
                     startActivity(intent);
                 } else if (id == R.id.cardQuickProveedores) {
                     mostrarDialogoListaProveedores();
                 } else if (id == R.id.cardUsuarios) {
                     mostrarDialogoListaUsuarios();
-                } else if (id == R.id.cardStockBajo) {
-                    Intent intent = new Intent(DashboardActivity.this, ProductosActivity.class);
-                    startActivity(intent);
-                } else if (id == R.id.cardEnCamino) {
-                    Intent intent = new Intent(DashboardActivity.this, PedidosActivity.class);
-                    startActivity(intent);
                 }
             }
         };
@@ -710,6 +764,7 @@ public class DashboardActivity extends AppCompatActivity {
         TextInputLayout tilCorreo = dialogView.findViewById(R.id.tilCorreoUsuario);
         TextInputLayout tilUsername = dialogView.findViewById(R.id.tilUsuarioName);
         TextInputLayout tilPassword = dialogView.findViewById(R.id.tilPasswordUsuario);
+        TextInputLayout tilConfirmPassword = dialogView.findViewById(R.id.tilConfirmPasswordUsuario);
 
         TextInputEditText etNombres = dialogView.findViewById(R.id.etNombresUsuario);
         TextInputEditText etApellidos = dialogView.findViewById(R.id.etApellidosUsuario);
@@ -719,6 +774,7 @@ public class DashboardActivity extends AppCompatActivity {
         TextInputEditText etCorreo = dialogView.findViewById(R.id.etCorreoUsuario);
         TextInputEditText etUsername = dialogView.findViewById(R.id.etUsername);
         TextInputEditText etPassword = dialogView.findViewById(R.id.etPasswordUsuario);
+        TextInputEditText etConfirmPassword = dialogView.findViewById(R.id.etConfirmPasswordUsuario);
         Spinner spinnerRol = dialogView.findViewById(R.id.spinnerRolUsuario);
         TextInputEditText etDireccion = dialogView.findViewById(R.id.etDireccionUsuario);
 
@@ -749,6 +805,7 @@ public class DashboardActivity extends AppCompatActivity {
 
             // En edición, la contraseña no es obligatoria
             if (tilPassword != null) tilPassword.setVisibility(View.GONE);
+            if (tilConfirmPassword != null) tilConfirmPassword.setVisibility(View.GONE);
 
             // Seleccionar Rol actual
             if (spinnerRol != null && usuarioExistente.getRol() != null) {
@@ -774,6 +831,7 @@ public class DashboardActivity extends AppCompatActivity {
                 if (tilCorreo != null) tilCorreo.setError(null);
                 if (tilUsername != null) tilUsername.setError(null);
                 if (tilPassword != null) tilPassword.setError(null);
+                if (tilConfirmPassword != null) tilConfirmPassword.setError(null);
 
                 String nombres = etNombres != null && etNombres.getText() != null ? etNombres.getText().toString().trim() : "";
                 String apellidos = etApellidos != null && etApellidos.getText() != null ? etApellidos.getText().toString().trim() : "";
@@ -783,6 +841,7 @@ public class DashboardActivity extends AppCompatActivity {
                 String correo = etCorreo != null && etCorreo.getText() != null ? etCorreo.getText().toString().trim() : "";
                 String username = etUsername != null && etUsername.getText() != null ? etUsername.getText().toString().trim() : "";
                 String password = etPassword != null && etPassword.getText() != null ? etPassword.getText().toString().trim() : "";
+                String confirmPassword = etConfirmPassword != null && etConfirmPassword.getText() != null ? etConfirmPassword.getText().toString().trim() : "";
                 String rolSeleccionado = spinnerRol != null && spinnerRol.getSelectedItem() != null ? spinnerRol.getSelectedItem().toString().toLowerCase() : "cliente";
                 String direccion = etDireccion != null && etDireccion.getText() != null ? etDireccion.getText().toString().trim() : "";
 
@@ -818,9 +877,18 @@ public class DashboardActivity extends AppCompatActivity {
                     esValido = false;
                 }
 
-                if (!esEdicion && (TextUtils.isEmpty(password) || password.length() < 8)) {
-                    if (tilPassword != null) tilPassword.setError("La contraseña debe tener al menos 8 caracteres");
-                    esValido = false;
+                if (!esEdicion) {
+                    if (TextUtils.isEmpty(password) || password.length() < 8) {
+                        if (tilPassword != null) tilPassword.setError("La contraseña debe tener al menos 8 caracteres");
+                        esValido = false;
+                    }
+                    if (TextUtils.isEmpty(confirmPassword)) {
+                        if (tilConfirmPassword != null) tilConfirmPassword.setError("Confirma la contraseña");
+                        esValido = false;
+                    } else if (!password.equals(confirmPassword)) {
+                        if (tilConfirmPassword != null) tilConfirmPassword.setError("Las contraseñas no coinciden");
+                        esValido = false;
+                    }
                 }
 
                 if (esValido) {
@@ -1016,42 +1084,8 @@ public class DashboardActivity extends AppCompatActivity {
     // =======================================================
 
     private void mostrarDialogoListaProveedores() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_lista_proveedores, null);
-        builder.setView(dialogView);
-
-        AlertDialog dialogLista = builder.create();
-        if (dialogLista.getWindow() != null) {
-            dialogLista.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
-        }
-
-        ProgressBar pbLoading = dialogView.findViewById(R.id.pbLoadingProveedores);
-        LinearLayout layoutVacio = dialogView.findViewById(R.id.layoutProveedoresVacio);
-        RecyclerView rvProveedores = dialogView.findViewById(R.id.rvProveedores);
-        MaterialButton btnNuevo = dialogView.findViewById(R.id.btnNuevoProveedorDialog);
-        MaterialButton btnCerrar = dialogView.findViewById(R.id.btnCerrarListaProveedores);
-
-        if (rvProveedores != null) {
-            rvProveedores.setLayoutManager(new LinearLayoutManager(this));
-        }
-
-        ProveedorAdapter adapter = new ProveedorAdapter(this, new ArrayList<>());
-        if (rvProveedores != null) {
-            rvProveedores.setAdapter(adapter);
-        }
-
-        if (btnCerrar != null) {
-            btnCerrar.setOnClickListener(v -> dialogLista.dismiss());
-        }
-
-        if (btnNuevo != null) {
-            btnNuevo.setOnClickListener(v -> mostrarDialogoNuevoProveedor(pbLoading, layoutVacio, rvProveedores, adapter));
-        }
-
-        // Cargar proveedores desde MySQL
-        cargarProveedoresEnDialogo(pbLoading, layoutVacio, rvProveedores, adapter);
-
-        dialogLista.show();
+        Intent intent = new Intent(DashboardActivity.this, ProveedoresActivity.class);
+        startActivity(intent);
     }
 
     private void cargarProveedoresEnDialogo(ProgressBar pbLoading, LinearLayout layoutVacio, RecyclerView rvProveedores, ProveedorAdapter adapter) {

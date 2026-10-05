@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="10dp"
+    app:cardBackgroundColor="#101725"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="2dp"
+    app:strokeColor="#1E293B"
+    app:strokeWidth="1dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="14dp">
+
+        <!-- Icono Principal (Izquierda) -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cardIconTimeline"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            app:cardBackgroundColor="#062E29"
+            app:cardCornerRadius="14dp"
+            app:cardElevation="0dp"
+            app:strokeWidth="0dp">
+
+            <ImageView
+                android:id="@+id/ivMovimientoIcon"
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:layout_gravity="center"
+                android:contentDescription="Icono Movimiento"
+                android:src="@drawable/ic_shopping_cart"
+                app:tint="#10B981" />
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Bloque Central (Título, Referencia, Involucrado) -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="8dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvTipoMovimiento"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Compra"
+                android:textColor="#10B981"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvSubtituloReferencia"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:text="Compra #1"
+                android:textColor="#CBD5E1"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/tvDetalleInvolucrado"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:text="Proveedor: Distribuidora ABC"
+                android:textColor="#64748B"
+                android:textSize="11sp" />
+        </LinearLayout>
+
+        <!-- Bloque Derecha (Badge Cantidad, Stock Transición, Fecha/Hora) -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="end"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvCantidadBadge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="#062E29"
+                android:paddingHorizontal="8dp"
+                android:paddingVertical="3dp"
+                android:text="+ 120 un."
+                android:textColor="#10B981"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvStockTransicion"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="3dp"
+                android:text="Stock: 0 → 120"
+                android:textColor="#94A3B8"
+                android:textSize="11sp" />
+
+            <TextView
+                android:id="@+id/tvFechaMovimiento"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="3dp"
+                android:text="05 oct. 2026"
+                android:textColor="#94A3B8"
+                android:textSize="11sp" />
+
+            <TextView
+                android:id="@+id/tvHoraMovimiento"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:text="10:30 a. m."
+                android:textColor="#64748B"
+                android:textSize="10sp" />
+        </LinearLayout>
+
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>
