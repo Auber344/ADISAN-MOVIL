@@ -211,6 +211,46 @@ public class InventarioActivity extends AppCompatActivity {
                     if (lista != null && !lista.isEmpty()) {
                         procesarInventarioCargado(lista);
                     } else {
+                        cargarInventarioDesdeProductos();
+                    }
+                } else {
+                    cargarInventarioDesdeProductos();
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<List<Inventario>> call, @NonNull Throwable t) {
+                if (swipeRefresh != null) swipeRefresh.setRefreshing(false);
+                if (pbLoading != null) pbLoading.setVisibility(View.GONE);
+                cargarInventarioDesdeProductos();
+            }
+        });
+    }
+
+    private void cargarInventarioDesdeProductos() {
+        ApiClient.getApiService().getProductos().enqueue(new Callback<ProductoResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<ProductoResponse> call, @NonNull Response<ProductoResponse> response) {
+                if (swipeRefresh != null) swipeRefresh.setRefreshing(false);
+                if (pbLoading != null) pbLoading.setVisibility(View.GONE);
+
+                if (response.isSuccessful() && response.body() != null && response.body().getData() != null) {
+                    List<Producto> prods = response.body().getData();
+                    List<Inventario> listInv = new ArrayList<>();
+                    for (Producto p : prods) {
+                        if (p == null) continue;
+                        Inventario inv = new Inventario();
+                        inv.setId(p.getProductoId());
+                        inv.setProductoId(p.getProductoId());
+                        inv.setProductoNombre(p.getProductoNombre());
+                        inv.setStockUnidades(p.getStockUnidadesVal());
+                        inv.setUnidadesPorPaquete(p.getUnidadesPorPaqueteVal());
+                        inv.setCategoria("CATEGORÍA #" + p.getCategoriaId());
+                        listInv.add(inv);
+                    }
+                    if (!listInv.isEmpty()) {
+                        procesarInventarioCargado(listInv);
+                    } else {
                         mostrarEstadoVacio();
                     }
                 } else {
@@ -219,7 +259,7 @@ public class InventarioActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(@NonNull Call<List<Inventario>> call, @NonNull Throwable t) {
+            public void onFailure(@NonNull Call<ProductoResponse> call, @NonNull Throwable t) {
                 if (swipeRefresh != null) swipeRefresh.setRefreshing(false);
                 if (pbLoading != null) pbLoading.setVisibility(View.GONE);
                 mostrarEstadoVacio();

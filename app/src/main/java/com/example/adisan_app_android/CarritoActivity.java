@@ -388,7 +388,9 @@ public class CarritoActivity extends AppCompatActivity {
             }
         }
 
-        PedidoRequest pedidoRequest = new PedidoRequest(clienteId, metodoPagoSeleccionado, itemsRequest);
+        double totalVentaVal = CarritoManager.getInstance().obtenerTotal();
+        String totalStr = String.format(Locale.US, "%.2f", totalVentaVal);
+        PedidoRequest pedidoRequest = new PedidoRequest(clienteId, metodoPagoSeleccionado, totalStr, itemsRequest);
 
         if (btnConfirmarPedidoFinal != null) btnConfirmarPedidoFinal.setEnabled(false);
 

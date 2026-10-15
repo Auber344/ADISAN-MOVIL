@@ -56,6 +56,22 @@ public class ProductosActivity extends AppCompatActivity {
     private SwipeRefreshLayout swipeRefresh;
     private RecyclerView rvProductos;
     private ProductoAdapter adapter;
+    private List<Producto> listaProductosActuales = new ArrayList<>();
+
+    private final androidx.activity.result.ActivityResultLauncher<Intent> detalleActivityLauncher =
+            registerForActivityResult(new androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult(), result -> {
+                if (result.getResultCode() == RESULT_OK && result.getData() != null) {
+                    int editId = result.getData().getIntExtra("editar_producto_id", 0);
+                    if (editId > 0) {
+                        for (Producto p : listaProductosActuales) {
+                            if (p != null && p.getProductoId() == editId) {
+                                mostrarDialogoFormularioProducto(p);
+                                break;
+                            }
+                        }
+                    }
+                }
+            });
 
     private ImageView btnVolver;
     private BottomNavigationView bottomNavigation;
@@ -150,7 +166,7 @@ public class ProductosActivity extends AppCompatActivity {
             public void onVerDetalle(Producto producto) {
                 Intent intent = new Intent(ProductosActivity.this, ProductoDetalleActivity.class);
                 intent.putExtra("producto_json", new Gson().toJson(producto));
-                startActivity(intent);
+                detalleActivityLauncher.launch(intent);
             }
 
             @Override
@@ -877,7 +893,7 @@ public class ProductosActivity extends AppCompatActivity {
                 }
 
                 if (btnGuardar != null) btnGuardar.setEnabled(false);
-                Categoria nuevaCat = new Categoria(nombreCat, 1);
+                Categoria nuevaCat = new Categoria(nombreCat);
 
                 ApiClient.getApiService().crearCategoria(nuevaCat).enqueue(new Callback<CategoriaResponse>() {
                     @Override
@@ -1057,6 +1073,7 @@ public class ProductosActivity extends AppCompatActivity {
             rvProductos.setVisibility(View.VISIBLE);
 
             List<Producto> listaMutable = new ArrayList<>(productos);
+            listaProductosActuales = new ArrayList<>(productos);
             android.util.Log.d("ADISAN_PRODUCTOS_DEBUG", "cantidad enviada al adapter = " + listaMutable.size());
 
             // Ordenar por ID descendente para que el nuevo producto creado aparezca primero en la parte superior

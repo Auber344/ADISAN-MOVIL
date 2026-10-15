@@ -59,53 +59,7 @@
                             app:tint="@color/white" />
                     </com.google.android.material.card.MaterialCardView>
 
-                    <com.google.android.material.card.MaterialCardView
-                        android:id="@+id/cardLogoContainer"
-                        android:layout_width="44dp"
-                        android:layout_height="44dp"
-                        android:layout_centerVertical="true"
-                        android:layout_toEndOf="@id/btnMenuHamburguesa"
-                        app:cardBackgroundColor="#2563EB"
-                        app:cardCornerRadius="14dp"
-                        app:cardElevation="2dp"
-                        app:strokeWidth="0dp">
 
-                        <ImageView
-                            android:id="@+id/ivHeaderLogo"
-                            android:layout_width="28dp"
-                            android:layout_height="28dp"
-                            android:layout_gravity="center"
-                            android:contentDescription="@string/company_name"
-                            android:src="@drawable/ic_adisan_logo"
-                            app:tint="@color/white" />
-                    </com.google.android.material.card.MaterialCardView>
-
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"
-                        android:layout_marginStart="10dp"
-                        android:layout_toEndOf="@id/cardLogoContainer"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:letterSpacing="0.04"
-                            android:text="ADISAN"
-                            android:textColor="@color/white"
-                            android:textSize="18sp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:letterSpacing="0.08"
-                            android:text="DISTRIBUCIONES"
-                            android:textAllCaps="true"
-                            android:textColor="@color/login_text_muted"
-                            android:textSize="9sp" />
-                    </LinearLayout>
 
                     <!-- Avatar Circular Azul -->
                     <com.google.android.material.card.MaterialCardView
@@ -774,9 +728,9 @@
                         </LinearLayout>
                     </com.google.android.material.card.MaterialCardView>
 
-                    <!-- Card 6: Usuarios -->
+                    <!-- Card 6: Reportes financieros -->
                     <com.google.android.material.card.MaterialCardView
-                        android:id="@+id/cardUsuarios"
+                        android:id="@+id/cardReportesFinancieros"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="7dp"
@@ -800,7 +754,7 @@
                                 <com.google.android.material.card.MaterialCardView
                                     android:layout_width="42dp"
                                     android:layout_height="42dp"
-                                    app:cardBackgroundColor="#0B2F38"
+                                    app:cardBackgroundColor="#062E29"
                                     app:cardCornerRadius="14dp"
                                     app:cardElevation="0dp"
                                     app:strokeWidth="0dp">
@@ -809,8 +763,8 @@
                                         android:layout_width="22dp"
                                         android:layout_height="22dp"
                                         android:layout_gravity="center"
-                                        android:src="@drawable/ic_users"
-                                        app:tint="#14B8A6" />
+                                        android:src="@drawable/ic_chart_growth"
+                                        app:tint="#10B981" />
                                 </com.google.android.material.card.MaterialCardView>
 
                                 <ImageView
@@ -823,11 +777,11 @@
                             </RelativeLayout>
 
                             <TextView
-                                android:id="@+id/tvValUsuarios"
+                                android:id="@+id/tvValReportes"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="16dp"
-                                android:text="1"
+                                android:text="S/"
                                 android:textColor="@color/white"
                                 android:textSize="26sp"
                                 android:textStyle="bold" />
@@ -836,7 +790,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="2dp"
-                                android:text="Usuarios"
+                                android:text="Reportes financieros"
                                 android:textColor="@color/white"
                                 android:textSize="14sp"
                                 android:textStyle="bold" />
@@ -845,7 +799,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="1dp"
-                                android:text="Gestiona usuarios"
+                                android:text="Consulta ingresos y ganancias"
                                 android:textColor="#64748B"
                                 android:textSize="11sp" />
 
@@ -860,10 +814,12 @@
                     android:layout_height="0dp"
                     android:visibility="gone"
                     android:orientation="horizontal">
+                    <TextView android:id="@+id/tvValUsuarios" android:layout_width="wrap_content" android:layout_height="wrap_content" />
                     <TextView android:id="@+id/tvValVentas" android:layout_width="wrap_content" android:layout_height="wrap_content" />
                     <TextView android:id="@+id/tvTotalVendido" android:layout_width="wrap_content" android:layout_height="wrap_content" />
                     <TextView android:id="@+id/tvAlertStockBajoText" android:layout_width="wrap_content" android:layout_height="wrap_content" />
                     <TextView android:id="@+id/tvAlertEnCaminoText" android:layout_width="wrap_content" android:layout_height="wrap_content" />
+                    <com.google.android.material.card.MaterialCardView android:id="@+id/cardUsuarios" android:layout_width="wrap_content" android:layout_height="wrap_content" />
                     <com.google.android.material.card.MaterialCardView android:id="@+id/cardVentas" android:layout_width="wrap_content" android:layout_height="wrap_content" />
                     <com.google.android.material.card.MaterialCardView android:id="@+id/cardQuickProductos" android:layout_width="wrap_content" android:layout_height="wrap_content" />
                     <com.google.android.material.card.MaterialCardView android:id="@+id/cardQuickPedidos" android:layout_width="wrap_content" android:layout_height="wrap_content" />

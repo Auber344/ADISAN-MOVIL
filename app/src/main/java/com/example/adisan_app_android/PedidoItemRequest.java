@@ -4,8 +4,8 @@ import com.google.gson.annotations.SerializedName;
 
 public class PedidoItemRequest {
 
-    @SerializedName(value = "product_id", alternate = {"producto_id"})
-    private Integer productId;
+    @SerializedName(value = "producto_id", alternate = {"product_id", "id_producto"})
+    private Integer productoId;
 
     @SerializedName("tipo_venta")
     private String tipoVenta; // 'PAQUETE', 'UNIDAD', 'MIXTA'
@@ -25,8 +25,8 @@ public class PedidoItemRequest {
     @SerializedName(value = "cantidad_ofertas", alternate = {"cantidad_oferta", "cantidad"})
     private Integer cantidadOfertas;
 
-    public PedidoItemRequest(int productId, String tipoVenta, int cantidadPaquetes, int cantidadUnidades) {
-        this.productId = productId;
+    public PedidoItemRequest(int productoId, String tipoVenta, int cantidadPaquetes, int cantidadUnidades) {
+        this.productoId = productoId;
         this.tipoVenta = tipoVenta;
         this.cantidadPaquetes = cantidadPaquetes;
         this.cantidadUnidades = cantidadUnidades;
@@ -39,18 +39,18 @@ public class PedidoItemRequest {
         this.tipo = tipo != null ? tipo : "OFERTA";
         this.ofertaId = ofertaId;
         this.cantidadOfertas = cantidadOfertas;
-        this.productId = null;
+        this.productoId = null;
         this.tipoVenta = null;
         this.cantidadPaquetes = 0;
         this.cantidadUnidades = 0;
     }
 
-    public int getProductId() {
-        return productId != null ? productId : 0;
+    public int getProductoId() {
+        return productoId != null ? productoId : 0;
     }
 
-    public void setProductId(int productId) {
-        this.productId = productId;
+    public void setProductoId(int productoId) {
+        this.productoId = productoId;
     }
 
     public String getTipoVenta() {

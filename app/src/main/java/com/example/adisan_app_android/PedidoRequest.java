@@ -11,12 +11,23 @@ public class PedidoRequest {
     @SerializedName("metodo_pago")
     private String metodoPago;
 
-    @SerializedName("items")
+    @SerializedName("total")
+    private String total;
+
+    @SerializedName(value = "items", alternate = {"carrito", "detalles"})
     private List<PedidoItemRequest> items;
+
+    public PedidoRequest(Integer clienteId, String metodoPago, String total, List<PedidoItemRequest> items) {
+        this.clienteId = clienteId;
+        this.metodoPago = metodoPago;
+        this.total = total;
+        this.items = items;
+    }
 
     public PedidoRequest(Integer clienteId, String metodoPago, List<PedidoItemRequest> items) {
         this.clienteId = clienteId;
         this.metodoPago = metodoPago;
+        this.total = "0.00";
         this.items = items;
     }
 
@@ -34,6 +45,14 @@ public class PedidoRequest {
 
     public void setMetodoPago(String metodoPago) {
         this.metodoPago = metodoPago;
+    }
+
+    public String getTotal() {
+        return total != null ? total : "0.00";
+    }
+
+    public void setTotal(String total) {
+        this.total = total;
     }
 
     public List<PedidoItemRequest> getItems() {

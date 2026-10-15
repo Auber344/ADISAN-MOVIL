@@ -682,38 +682,31 @@ public class PedidosActivity extends AppCompatActivity {
                     return;
                 }
 
-                // Construir Pedido con cliente_id real y estado inicial 'pendiente'
-                Pedido pedidoRequest = new Pedido();
-                pedidoRequest.setClienteId(clienteId);
-                pedidoRequest.setTotal(String.format(Locale.US, "%.2f", totalCalculado));
-                pedidoRequest.setMetodoPago(metodoPago);
-                pedidoRequest.setEstado("pendiente");
-
-                List<DetallePedido> carritoList = new ArrayList<>();
+                List<PedidoItemRequest> itemsRequest = new ArrayList<>();
                 for (int i = 0; i < productos.size(); i++) {
                     int cant = cantidades[i];
                     if (cant > 0) {
                         Producto prod = productos.get(i);
-                        DetallePedido item = new DetallePedido();
-                        item.setProductoId(prod.getProductoId());
-                        item.setPresentacionId(prod.getPresentacionId());
-                        item.setCantidad(cant);
-                        item.setPrecio(prod.getPrecioVenta());
-                        item.setSubtotal(String.format(Locale.US, "%.2f", cant * prod.getPrecioVentaDouble()));
-                        carritoList.add(item);
+                        itemsRequest.add(new PedidoItemRequest(
+                                prod.getProductoId(),
+                                "PAQUETE",
+                                cant,
+                                0
+                        ));
                     }
                 }
-                pedidoRequest.setDetalles(carritoList);
+                String totalStr = String.format(Locale.US, "%.2f", totalCalculado);
+                PedidoRequest pedidoRequest = new PedidoRequest(clienteId, metodoPago, totalStr, itemsRequest);
 
-                ejecutarCrearPedido(pedidoRequest, dialog, btnGuardar);
+                ejecutarCrearPedidoNuevo(pedidoRequest, dialog, btnGuardar);
             });
         }
     }
 
-    private void ejecutarCrearPedido(Pedido pedido, AlertDialog dialog, MaterialButton btnGuardar) {
+    private void ejecutarCrearPedidoNuevo(PedidoRequest request, AlertDialog dialog, MaterialButton btnGuardar) {
         if (btnGuardar != null) btnGuardar.setEnabled(false);
 
-        ApiClient.getApiService().crearPedido(pedido).enqueue(new Callback<PedidoResponse>() {
+        ApiClient.getApiService().crearPedidoNuevo(request).enqueue(new Callback<PedidoResponse>() {
             @Override
             public void onResponse(@NonNull Call<PedidoResponse> call, @NonNull Response<PedidoResponse> response) {
                 if (btnGuardar != null) btnGuardar.setEnabled(true);
@@ -725,7 +718,7 @@ public class PedidosActivity extends AppCompatActivity {
                 }
 
                 if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
-                    Toast.makeText(PedidosActivity.this, "¡Pedido registrado con estado PENDIENTE!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(PedidosActivity.this, "¡Pedido registrado correctamente!", Toast.LENGTH_SHORT).show();
                     if (dialog != null && dialog.isShowing()) dialog.dismiss();
                     cargarPedidos();
                 } else {
@@ -739,8 +732,7 @@ public class PedidosActivity extends AppCompatActivity {
                             if (errRes != null && errRes.getMessage() != null) {
                                 msg = errRes.getMessage();
                             }
-                        } catch (Exception ignored) {
-                        }
+                        } catch (Exception ignored) {}
                     }
                     Toast.makeText(PedidosActivity.this, msg, Toast.LENGTH_LONG).show();
                 }
@@ -749,7 +741,7 @@ public class PedidosActivity extends AppCompatActivity {
             @Override
             public void onFailure(@NonNull Call<PedidoResponse> call, @NonNull Throwable t) {
                 if (btnGuardar != null) btnGuardar.setEnabled(true);
-                Toast.makeText(PedidosActivity.this, "Error de conexión al registrar pedido", Toast.LENGTH_LONG).show();
+                Toast.makeText(PedidosActivity.this, "Error de conexión al crear pedido: " + t.getMessage(), Toast.LENGTH_LONG).show();
             }
         });
     }

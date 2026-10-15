@@ -33,56 +33,7 @@
             app:layout_constraintTop_toTopOf="parent"
             app:tint="@color/white" />
 
-        <!-- Logo ADISAN -->
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/cardLogoContainer"
-            android:layout_width="44dp"
-            android:layout_height="44dp"
-            android:layout_marginStart="12dp"
-            app:cardBackgroundColor="#2563EB"
-            app:cardCornerRadius="14dp"
-            app:cardElevation="2dp"
-            app:strokeWidth="0dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@id/btnVolver"
-            app:layout_constraintTop_toTopOf="parent">
 
-            <ImageView
-                android:layout_width="28dp"
-                android:layout_height="28dp"
-                android:layout_gravity="center"
-                android:contentDescription="@string/company_name"
-                android:src="@drawable/ic_adisan_logo"
-                app:tint="@color/white" />
-        </com.google.android.material.card.MaterialCardView>
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:orientation="vertical"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@id/cardLogoContainer"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:letterSpacing="0.04"
-                android:text="ADISAN"
-                android:textColor="@color/white"
-                android:textSize="18sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:letterSpacing="0.08"
-                android:text="DISTRIBUCIONES"
-                android:textAllCaps="true"
-                android:textColor="@color/login_text_muted"
-                android:textSize="9sp" />
-        </LinearLayout>
 
         <!-- Botón Inventario -->
         <com.google.android.material.button.MaterialButton

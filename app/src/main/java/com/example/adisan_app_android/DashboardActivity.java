@@ -71,8 +71,8 @@ public class DashboardActivity extends AppCompatActivity {
     private MaterialCardView cardStockBajo;
     private MaterialCardView cardEnCamino;
 
-    // Accesos rápidos y Logo Header
-    private MaterialCardView cardLogoContainer;
+    // Accesos rápidos
+    private MaterialCardView cardReportesFinancieros;
     private MaterialCardView cardQuickProductos;
     private MaterialCardView cardQuickPedidos;
     private MaterialCardView cardQuickOfertas;
@@ -134,7 +134,7 @@ public class DashboardActivity extends AppCompatActivity {
         cardStockBajo = findViewById(R.id.cardStockBajo);
         cardEnCamino = findViewById(R.id.cardEnCamino);
 
-        cardLogoContainer = findViewById(R.id.cardLogoContainer);
+        cardReportesFinancieros = findViewById(R.id.cardReportesFinancieros);
         cardQuickProductos = findViewById(R.id.cardQuickProductos);
         cardQuickPedidos = findViewById(R.id.cardQuickPedidos);
         cardQuickOfertas = findViewById(R.id.cardQuickOfertas);
@@ -146,7 +146,7 @@ public class DashboardActivity extends AppCompatActivity {
     }
 
     private void setupSidebar() {
-        // Abrir Sidebar al tocar el botón de menú hamburguesa de 3 líneas o el logo en el header
+        // Abrir Sidebar al tocar el botón de menú hamburguesa
         View.OnClickListener openSidebarListener = v -> {
             if (drawerLayout != null) {
                 drawerLayout.openDrawer(GravityCompat.START);
@@ -155,10 +155,6 @@ public class DashboardActivity extends AppCompatActivity {
 
         View btnMenuHamburguesa = findViewById(R.id.btnMenuHamburguesa);
         if (btnMenuHamburguesa != null) btnMenuHamburguesa.setOnClickListener(openSidebarListener);
-
-        if (cardLogoContainer != null) cardLogoContainer.setOnClickListener(openSidebarListener);
-        ImageView ivHeaderLogo = findViewById(R.id.ivHeaderLogo);
-        if (ivHeaderLogo != null) ivHeaderLogo.setOnClickListener(openSidebarListener);
 
         // Vistas dentro del Sidebar
         ImageView btnCerrarSidebar = findViewById(R.id.btnCerrarSidebar);
@@ -225,7 +221,8 @@ public class DashboardActivity extends AppCompatActivity {
         if (navReportes != null) {
             navReportes.setOnClickListener(v -> {
                 if (drawerLayout != null) drawerLayout.closeDrawer(GravityCompat.START);
-                mostrarDialogoListaProveedores();
+                Intent intent = new Intent(DashboardActivity.this, ReportesFinancierosActivity.class);
+                startActivity(intent);
             });
         }
 
@@ -304,6 +301,7 @@ public class DashboardActivity extends AppCompatActivity {
         });
 
         cargarConteoComprasDashboard();
+        cargarConteoInventarioDisponibleDashboard();
     }
 
     private void cargarConteoComprasDashboard() {
@@ -346,6 +344,55 @@ public class DashboardActivity extends AppCompatActivity {
         });
     }
 
+    private void cargarConteoInventarioDisponibleDashboard() {
+        ApiClient.getApiService().getInventarioDirectList().enqueue(new Callback<List<Inventario>>() {
+            @Override
+            public void onResponse(@NonNull Call<List<Inventario>> call, @NonNull Response<List<Inventario>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    procesarStockDisponible(response.body());
+                } else {
+                    cargarConteoInventarioDisponibleWrapped();
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<List<Inventario>> call, @NonNull Throwable t) {
+                cargarConteoInventarioDisponibleWrapped();
+            }
+        });
+    }
+
+    private void cargarConteoInventarioDisponibleWrapped() {
+        ApiClient.getApiService().getInventario().enqueue(new Callback<InventarioResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<InventarioResponse> call, @NonNull Response<InventarioResponse> response) {
+                if (response.isSuccessful() && response.body() != null && response.body().getData() != null) {
+                    procesarStockDisponible(response.body().getData());
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<InventarioResponse> call, @NonNull Throwable t) {}
+        });
+    }
+
+    private void procesarStockDisponible(List<Inventario> lista) {
+        if (lista == null) return;
+        java.util.Set<Integer> productosConStock = new java.util.HashSet<>();
+        for (Inventario inv : lista) {
+            if (inv != null && inv.getStockUnidades() > 0) {
+                int pid = inv.getProductoId() > 0 ? inv.getProductoId() : inv.getId();
+                if (pid > 0) {
+                    productosConStock.add(pid);
+                }
+            }
+        }
+        int cantidadDisponible = productosConStock.size();
+        if (tvValStockBajo != null) {
+            tvValStockBajo.setText(String.format(Locale.getDefault(), "%,d", cantidadDisponible));
+        }
+    }
+
     private void actualizarMetricas(DashboardResponse data) {
         if (tvValProductos != null) {
             tvValProductos.setText(String.format(Locale.getDefault(), "%,d", data.getProductos()));
@@ -359,9 +406,7 @@ public class DashboardActivity extends AppCompatActivity {
         if (tvValVentas != null) {
             tvValVentas.setText(String.format(Locale.US, "S/ %,.2f", data.getVentas()));
         }
-        if (tvValStockBajo != null) {
-            tvValStockBajo.setText(String.format(Locale.getDefault(), "%,d", data.getStockBajo()));
-        }
+        cargarConteoInventarioDisponibleDashboard();
         if (tvValEnCamino != null) {
             tvValEnCamino.setText(String.format(Locale.getDefault(), "%,d", data.getEnCamino()));
         }
@@ -434,6 +479,9 @@ public class DashboardActivity extends AppCompatActivity {
                 } else if (id == R.id.cardQuickOfertas) {
                     Intent intent = new Intent(DashboardActivity.this, OfertasActivity.class);
                     startActivity(intent);
+                } else if (id == R.id.cardReportesFinancieros) {
+                    Intent intent = new Intent(DashboardActivity.this, ReportesFinancierosActivity.class);
+                    startActivity(intent);
                 } else if (id == R.id.cardQuickProveedores) {
                     mostrarDialogoListaProveedores();
                 } else if (id == R.id.cardUsuarios) {
@@ -448,6 +496,7 @@ public class DashboardActivity extends AppCompatActivity {
         if (cardVentas != null) cardVentas.setOnClickListener(quickAccessListener);
         if (cardStockBajo != null) cardStockBajo.setOnClickListener(quickAccessListener);
         if (cardEnCamino != null) cardEnCamino.setOnClickListener(quickAccessListener);
+        if (cardReportesFinancieros != null) cardReportesFinancieros.setOnClickListener(quickAccessListener);
 
         if (cardQuickProductos != null) cardQuickProductos.setOnClickListener(quickAccessListener);
         if (cardQuickPedidos != null) cardQuickPedidos.setOnClickListener(quickAccessListener);

@@ -66,6 +66,14 @@ public class Compra {
         this.total = total;
     }
 
+    public double getTotalDouble() {
+        try {
+            return total != null ? Double.parseDouble(total) : 0.0;
+        } catch (Exception e) {
+            return 0.0;
+        }
+    }
+
     public String getFecha() {
         return fecha != null ? fecha : "";
     }

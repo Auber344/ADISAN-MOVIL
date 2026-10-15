@@ -455,12 +455,14 @@ public class CompraFormularioActivity extends AppCompatActivity {
                     return;
                 }
 
-                if (response.isSuccessful()) {
+                if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
                     Toast.makeText(CompraFormularioActivity.this, "¡Compra registrada exitosamente!", Toast.LENGTH_SHORT).show();
                     finish();
                 } else {
                     String msg = "Error al registrar compra (" + response.code() + ")";
-                    if (response.errorBody() != null) {
+                    if (response.body() != null && response.body().getMessage() != null) {
+                        msg = response.body().getMessage();
+                    } else if (response.errorBody() != null) {
                         try {
                             String errStr = response.errorBody().string();
                             CompraResponse errRes = new Gson().fromJson(errStr, CompraResponse.class);

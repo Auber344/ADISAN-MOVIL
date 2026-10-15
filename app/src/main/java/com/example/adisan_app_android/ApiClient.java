@@ -74,7 +74,7 @@ public class ApiClient {
                 public String read(JsonReader in) throws IOException {
                     if (in.peek() == JsonToken.NULL) {
                         in.nextNull();
-                        return "0.00";
+                        return null;
                     }
                     if (in.peek() == JsonToken.STRING) {
                         return in.nextString();
@@ -87,7 +87,7 @@ public class ApiClient {
                         return String.valueOf(in.nextBoolean());
                     }
                     in.skipValue();
-                    return "0.00";
+                    return null;
                 }
             };
 

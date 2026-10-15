@@ -26,6 +26,10 @@ public class Inventario {
         return categoria != null && !categoria.isEmpty() ? categoria : "GENERAL";
     }
 
+    public void setCategoria(String categoria) {
+        this.categoria = categoria;
+    }
+
     public int getId() {
         return id;
     }

@@ -593,7 +593,7 @@ public class PedidoDetalleActivity extends AppCompatActivity {
                             }
                         }
                     } catch (Exception ignored) {}
-                    
+
                     restaurarModalPorError(dialog, errorMsg);
                 }
             }
