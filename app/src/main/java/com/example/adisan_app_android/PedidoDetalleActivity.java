@@ -177,11 +177,34 @@ public class PedidoDetalleActivity extends AppCompatActivity {
                 if (response.isSuccessful() && response.body() != null) {
                     try {
                         com.google.gson.JsonElement elem = response.body();
-                        com.google.gson.JsonObject pedidoObj = elem.isJsonObject() ? elem.getAsJsonObject() : new com.google.gson.JsonObject();
-                        if (pedidoObj.has("data") && pedidoObj.get("data").isJsonObject()) {
-                            pedidoObj = pedidoObj.getAsJsonObject("data");
-                        } else if (pedidoObj.has("pedido") && pedidoObj.get("pedido").isJsonObject()) {
-                            pedidoObj = pedidoObj.getAsJsonObject("pedido");
+                        com.google.gson.JsonObject rootObj = elem.isJsonObject() ? elem.getAsJsonObject() : new com.google.gson.JsonObject();
+
+                        com.google.gson.JsonObject pedidoObj = new com.google.gson.JsonObject();
+
+                        // 1. Copiar atributos del pedido (si viene en 'data', 'pedido' o directo en la raíz)
+                        if (rootObj.has("data") && rootObj.get("data").isJsonObject()) {
+                            com.google.gson.JsonObject dataChild = rootObj.getAsJsonObject("data");
+                            for (String key : dataChild.keySet()) {
+                                pedidoObj.add(key, dataChild.get(key));
+                            }
+                        } else if (rootObj.has("pedido") && rootObj.get("pedido").isJsonObject()) {
+                            com.google.gson.JsonObject pedidoChild = rootObj.getAsJsonObject("pedido");
+                            for (String key : pedidoChild.keySet()) {
+                                pedidoObj.add(key, pedidoChild.get(key));
+                            }
+                        } else {
+                            for (String key : rootObj.keySet()) {
+                                pedidoObj.add(key, rootObj.get(key));
+                            }
+                        }
+
+                        // 2. Unificar los detalles: si no existen 'detalles' en pedidoObj, agregar la lista 'items' o 'detalles' de la raíz
+                        if (!pedidoObj.has("detalles") || pedidoObj.get("detalles").isJsonNull()) {
+                            if (rootObj.has("items") && rootObj.get("items").isJsonArray()) {
+                                pedidoObj.add("detalles", rootObj.getAsJsonArray("items"));
+                            } else if (rootObj.has("detalles") && rootObj.get("detalles").isJsonArray()) {
+                                pedidoObj.add("detalles", rootObj.getAsJsonArray("detalles"));
+                            }
                         }
 
                         pedidoActual = new com.google.gson.Gson().fromJson(pedidoObj, Pedido.class);

@@ -682,7 +682,7 @@
                     </RelativeLayout>
 
                     <RelativeLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="8dp">
-                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Unidades" android:textColor="#94A3B8" android:textSize="13sp" />
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Unidades sueltas" android:textColor="#94A3B8" android:textSize="13sp" />
                         <TextView android:id="@+id/tvResumenUnidadesVal" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_alignParentEnd="true" android:text="3" android:textColor="@color/white" android:textSize="13sp" android:textStyle="bold" />
                     </RelativeLayout>
 

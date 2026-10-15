@@ -33,6 +33,19 @@ public class CarritoManager {
         items.add(new ItemCarrito(producto, tipoVenta, cantidadPaquetes, cantidadUnidades));
     }
 
+    public boolean contieneProducto(int productoId) {
+        for (ItemCarrito item : items) {
+            if (!item.isOferta() && item.getProductoId() == productoId) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public int obtenerCantidadProductosDistintos() {
+        return items.size();
+    }
+
     public void agregarOferta(Oferta oferta, int cantidadOfertas) {
         if (oferta == null || cantidadOfertas <= 0) return;
 

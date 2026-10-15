@@ -508,7 +508,7 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="Unidades"
+                            android:text="Unidades sueltas"
                             android:textColor="#94A3B8"
                             android:textSize="13sp" />
 
