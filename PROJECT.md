@@ -1,6 +1,6 @@
 # 📦 Proyecto ADISAN
 
-**ADISAN** es una aplicación móvil nativa para Android orientada a la logística y distribución comercial. Permite gestionar de manera integral ventas, pedidos, el catálogo de productos y la base de clientes.
+**ADISAN** es una aplicación móvil nativa para Android orientada a la logística y distribución comercial. Permite gestionar de manera integral ventas, pedidos, compras, inventario, ofertas, el catálogo de productos y la base de clientes.
 
 ---
 
@@ -9,50 +9,61 @@
 *   **Plataforma:** Android Nativo
 *   **Lenguaje:** Java Puro (Sin Kotlin)
 *   **Interfaz de Usuario:** Android XML Layouts + Material Design 3 (Sin Jetpack Compose)
-*   **SDK:** Min SDK 24 / Target SDK 34+
-*   **Consumo de API:** Retrofit 2 + Gson Converter + OkHttp 3
-*   **Backend:** Node.js + Express + MySQL 8.0 (Despliegue local en `http://10.0.2.2:3000/`)
+*   **SDK:** Min SDK 24 / Target SDK 37
+*   **Backend:** Firebase, sin servidor propio
+    *   **Firebase Authentication** (correo y contraseña)
+    *   **Cloud Firestore** (base de datos, región `southamerica-east1`)
+*   **Proyecto Firebase:** `adisan-app-pe` (plan Spark gratuito)
 
 ---
 
 ## ⚙️ Reglas de Negocio y Arquitectura
 
-*   **Autenticación y Seguridad:** Basada en JWT (JSON Web Token). El token se almacena localmente en `SharedPreferences("AdisanPrefs")` y se inyecta de forma automática en cada petición HTTP mediante un `Interceptor` de OkHttp configurado en `ApiClient.java`.
-*   **Modelo Unificado de Ventas:** La base de datos no separa las "ventas" de los "pedidos". Toda transacción comercial se procesa mediante la tabla `pedidos` y `detalle_pedido`. Las ventas cerradas se identifican por tener el estado `entregado` (o `completado`).
-*   **Venta Directa de Mostrador:** Permite realizar ventas rápidas en el local. En este caso, el `cliente_id` es nulo, el pedido nace con estado `entregado` de inmediato, y la interfaz lo presenta bajo el nombre de "Venta Mostrador".
-*   **Interfaz Dinámica Basada en Roles:** La interfaz adapta sus etiquetas y permisos de acuerdo al rol del usuario en sesión (`CLIENTE`, `VENDEDOR`, `ADMIN`).
-*   **Carrito de Compras en Memoria:** Se gestiona mediante el patrón de diseño *Singleton* a través de la clase `CarritoManager.java`, lo cual garantiza un estado seguro para los hilos (thread-safe) y persistencia en memoria durante el flujo entre vistas.
+*   **Autenticación:** el usuario entra con su correo y contraseña de Firebase Auth. Su perfil y rol viven en `usuarios/{uid}` de Firestore. Tras el login se guardan `token` (uid), `usuario`, `rol` e `id` en `SharedPreferences("AdisanPrefs")`, que es lo que leen las pantallas.
+*   **Capa de datos:** `ApiClient.getApiService()` devuelve `FirebaseApiService`, que implementa la interfaz `ApiService` sobre Firestore. Las pantallas siguen usando `Call` / `Callback` / `Response`; `FirebaseCall` adapta las tareas de Firebase a esos tipos.
+*   **Control de acceso:** como no hay servidor, los permisos por rol se aplican en las reglas de Firestore (`firebase/firestore.rules`).
+*   **Stock consistente:** pedidos, compras, ajustes de inventario y cancelaciones se ejecutan en transacciones de Firestore, que validan el stock y registran cada movimiento en `movimientos_inventario`.
+*   **Modelo Unificado de Ventas:** no hay "ventas" separadas de los "pedidos". Toda transacción comercial es un documento de `pedidos` con sus detalles embebidos. Las ventas cerradas tienen estado `entregado` (o `completado`).
+*   **Venta Directa de Mostrador:** venta rápida en el local. El `cliente_id` es nulo, el pedido nace con estado `entregado` y la interfaz lo presenta como "Venta Mostrador".
+*   **Cancelación:** al cancelar un pedido las unidades vuelven al inventario (movimiento `REVERSIÓN`). Los pedidos no se borran.
+*   **Interfaz Dinámica Basada en Roles:** la interfaz adapta etiquetas y permisos según el rol (`cliente`, `vendedor`, `chofer`, `admin`).
+*   **Carrito de Compras en Memoria:** Singleton thread-safe `CarritoManager.java`.
 
 ---
 
-## 🗄️ Estructura de Base de Datos Principal
+## 🗄️ Colecciones de Firestore
 
-*   **`usuarios`**: Gestión de credenciales, roles (`admin`, `vendedor`, `chofer`, `cliente`) y datos de contacto.
-*   **`productos`**: Definición base del catálogo de productos y su relación con proveedores.
-*   **`presentaciones`**: Establece los precios de compra y venta, así como los niveles de factor y el **stock actual** de los productos.
-*   **`pedidos`**: Cabecera de operaciones financieras y logísticas, almacenando totales y estados (`pendiente`, `aceptado`, `en_camino`, `entregado`, `cancelado`).
-*   **`detalle_pedido`**: Líneas de artículos específicos por cada pedido.
+| Colección | Contenido |
+| :--- | :--- |
+| `usuarios/{uid}` | Perfil, rol y datos de contacto. Clientes sin cuenta de acceso usan un id automático. |
+| `productos/{id}` | Catálogo: precios por paquete y unidad, unidades por paquete y `stock_unidades`. |
+| `categorias/{id}` · `proveedores/{id}` | Datos maestros del catálogo. |
+| `pedidos/{id}` | Cabecera del pedido o venta con `detalles` embebidos y estado (`pendiente`, `aceptado`, `en_camino`, `entregado`, `cancelado`). |
+| `compras/{id}` | Ingresos de mercadería con `detalles` embebidos. |
+| `ofertas/{id}` | Combos de productos con precio final y descuento. |
+| `movimientos_inventario` | Historial de cada cambio de stock (venta, compra, ajuste, reversión). |
+| `contadores/{coleccion}` | Último id numérico usado; la app sigue trabajando con ids enteros. |
+
+Los campos usan los mismos nombres `snake_case` que tenía la antigua API REST, así los modelos con `@SerializedName` se leen sin cambios.
 
 ---
 
-## 🔌 Endpoints y API REST
+## 🔥 Operación de Firebase
 
-| Método | Endpoint | Descripción |
-| :--- | :--- | :--- |
-| **POST** | `/api/login` | Autentica al usuario y devuelve el JWT y rol. |
-| **GET** | `/api/dashboard` | Retorna métricas clave (ventas, pedidos, stock bajo). |
-| **GET** | `/api/productos` | Recupera el catálogo y los niveles de stock. |
-| **POST** / **PUT** / **DELETE** | `/api/productos` | CRUD completo para manejo de inventario (Solo Admin). |
-| **GET** | `/api/pedidos` | Historial de transacciones, pedidos y ventas de mostrador. |
-| **POST** | `/api/pedidos` | Registra una orden/venta y descuenta stock. |
-| **PUT** | `/api/pedidos/:id` | Actualización de seguimiento (ej. de `pendiente` a `entregado`). |
-| **GET** / **POST** | `/api/usuarios` | Búsqueda, filtrado y creación de clientes. |
+| Tarea | Comando |
+| :--- | :--- |
+| Publicar reglas e índices | `firebase deploy --only firestore` |
+| Cargar datos de ejemplo | `node firebase/seed/seed.js` (agrega `--force` para reescribirlos) |
+| Compilar la app | `./gradlew app:assembleDebug` (requiere JDK 17+) |
+| Probar sin tocar datos reales | `firebase emulators:start --only auth,firestore`, luego `node firebase/seed/seed.js --emulador` y compilar con `./gradlew app:assembleDebug -PfirebaseEmulador=true` |
+
+El script de datos crea usuarios de prueba (admin, vendedor, chofer, cliente) y guarda sus contraseñas en `firebase/seed/credenciales-prueba.txt`, que no se sube al repositorio.
 
 ---
 
 ## 📱 Navegación y Vistas Principales
 
-La aplicación se estructura sobre un **Bottom Navigation Bar** (`bottom_nav_menu.xml`) limpio y funcional con 4 pilares:
+La aplicación se estructura sobre un **Bottom Navigation Bar** (`bottom_nav_menu.xml`) con 4 pilares:
 
 1.  **Dashboard** (`DashboardActivity`): Panel de métricas en tiempo real.
 2.  **Productos** (`ProductosActivity`): Exploración del catálogo y gestión de inventario.

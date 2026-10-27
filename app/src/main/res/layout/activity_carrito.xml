@@ -84,7 +84,7 @@
                 android:textSize="12sp"
                 android:textStyle="bold"
                 app:cornerRadius="12dp"
-                app:icon="@drawable/ic_warning"
+                app:icon="@drawable/ic_delete"
                 app:iconGravity="textStart"
                 app:iconSize="14dp"
                 app:iconTint="#EF4444"
@@ -554,7 +554,7 @@
                             android:layout_width="28dp"
                             android:layout_height="28dp"
                             android:contentDescription="Efectivo"
-                            android:src="@drawable/ic_box"
+                            android:src="@drawable/ic_cash"
                             app:tint="#10B981" />
 
                         <TextView
@@ -592,7 +592,7 @@
                             android:layout_width="28dp"
                             android:layout_height="28dp"
                             android:contentDescription="Yape"
-                            android:src="@drawable/ic_shopping_cart"
+                            android:src="@drawable/ic_phone_pay"
                             app:tint="#3B82F6" />
 
                         <TextView
@@ -630,7 +630,7 @@
                             android:layout_width="28dp"
                             android:layout_height="28dp"
                             android:contentDescription="Tarjeta"
-                            android:src="@drawable/ic_box"
+                            android:src="@drawable/ic_credit_card"
                             app:tint="#F97316" />
 
                         <TextView

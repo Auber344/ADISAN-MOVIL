@@ -5,18 +5,53 @@
     <string name="header_description">Gestiona tus productos, pedidos e inventario de manera sencilla.</string>
 
     <!-- Login -->
-    <string name="login_title">Iniciar sesión</string>
-    <string name="login_subtitle">Ingresa tus credenciales para continuar.</string>
-    <string name="label_usuario">Usuario</string>
-    <string name="hint_usuario">Ingresa tu usuario</string>
+    <string name="login_brand_tagline">DISTRIBUCIONES</string>
+    <string name="login_title">Bienvenido</string>
+    <string name="login_subtitle">Inicia sesión con tu correo y contraseña.</string>
+    <string name="hint_correo">Correo electrónico</string>
     <string name="label_password">Contraseña</string>
-    <string name="hint_password">Ingresa tu contraseña</string>
+    <string name="hint_password">Contraseña</string>
     <string name="btn_login">Iniciar sesión</string>
+    <string name="btn_login_cargando">Ingresando…</string>
+    <string name="login_recordarme">Mantener sesión</string>
+    <string name="login_olvide">¿Olvidaste tu contraseña?</string>
+    <string name="login_feature_inventario">Inventario\nal día</string>
+    <string name="login_feature_pedidos">Pedidos\nmás rápidos</string>
+    <string name="login_feature_reportes">Reportes\nen tiempo real</string>
+    <string name="login_footer">© 2026 Distribuciones ADISAN\nv1.0.0</string>
     <string name="secure_access">Acceso seguro</string>
     <string name="copyright">© 2026 Distribuciones ADISAN</string>
-    <string name="error_empty_usuario">Por favor, ingresa tu usuario</string>
-    <string name="error_empty_password">Por favor, ingresa tu contraseña</string>
-    <string name="login_success_temp">Campos validados. ¡Listo para conectar con el backend!</string>
+    <string name="error_empty_correo">Ingresa tu correo</string>
+    <string name="error_correo_invalido">Ingresa un correo válido</string>
+    <string name="error_empty_password">Ingresa tu contraseña</string>
+    <string name="error_conexion">No hay conexión a internet. Revisa tu red e inténtalo de nuevo.</string>
+    <string name="recuperar_titulo">Recuperar contraseña</string>
+    <string name="recuperar_mensaje">Te enviaremos un enlace para crear una nueva contraseña.</string>
+    <string name="recuperar_enviar">Enviar enlace</string>
+    <string name="recuperar_enviado">Si %1$s tiene una cuenta, recibirás un correo con el enlace en unos minutos.</string>
+    <string name="cancelar">Cancelar</string>
+
+    <!-- Registro de clientes -->
+    <string name="login_sin_cuenta">¿No tienes cuenta? Regístrate</string>
+    <string name="registro_titulo">Crear cuenta</string>
+    <string name="registro_subtitulo">Regístrate como cliente para hacer tus pedidos.</string>
+    <string name="registro_seccion_datos">Tus datos</string>
+    <string name="registro_seccion_acceso">Datos de acceso</string>
+    <string name="registro_nombres">Nombres</string>
+    <string name="registro_apellidos">Apellidos</string>
+    <string name="registro_dni">DNI</string>
+    <string name="registro_telefono">Celular</string>
+    <string name="registro_direccion">Dirección de entrega (opcional)</string>
+    <string name="registro_password">Contraseña (mínimo 6 caracteres)</string>
+    <string name="registro_confirmar">Repite la contraseña</string>
+    <string name="registro_boton">Crear cuenta</string>
+    <string name="registro_cargando">Creando cuenta…</string>
+    <string name="registro_ya_tengo_cuenta">¿Ya tienes cuenta? Inicia sesión</string>
+    <string name="registro_campo_obligatorio">Campo obligatorio</string>
+    <string name="registro_dni_invalido">El DNI tiene 8 dígitos</string>
+    <string name="registro_telefono_invalido">Ingresa un número válido</string>
+    <string name="registro_password_corta">Debe tener al menos 6 caracteres</string>
+    <string name="registro_password_distinta">Las contraseñas no coinciden</string>
 
     <!-- Dashboard -->
     <string name="greeting_format">Hola, %1$s 👋</string>

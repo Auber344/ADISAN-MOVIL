@@ -56,10 +56,14 @@ public class OfertaAdapter extends RecyclerView.Adapter<OfertaAdapter.OfertaView
         holder.tvPrecioNormal.setPaintFlags(holder.tvPrecioNormal.getPaintFlags() | android.graphics.Paint.STRIKE_THRU_TEXT_FLAG);
         holder.tvPrecioOferta.setText(String.format(Locale.US, "S/ %.2f", oferta.getPrecioFinalDouble()));
 
-        String desc = oferta.getDescuento();
-        if (desc != null && !desc.isEmpty() && !desc.equals("0.00") && !desc.equals("0")) {
+        long descuento = 0;
+        try {
+            descuento = Math.round(Double.parseDouble(oferta.getDescuento()));
+        } catch (Exception ignored) {
+        }
+        if (descuento > 0) {
             holder.tvDescuento.setVisibility(View.VISIBLE);
-            holder.tvDescuento.setText(desc + "% OFF");
+            holder.tvDescuento.setText(descuento + "% OFF");
         } else {
             holder.tvDescuento.setVisibility(View.GONE);
         }
@@ -70,9 +74,11 @@ public class OfertaAdapter extends RecyclerView.Adapter<OfertaAdapter.OfertaView
                 String tipoVenta = item.getTipoVenta();
                 String cantidadDesc = "";
                 if ("PAQUETE".equalsIgnoreCase(tipoVenta)) {
-                    cantidadDesc = item.getCantidadPaquetes() + " paquetes";
+                    int n = item.getCantidadPaquetes();
+                    cantidadDesc = n + (n == 1 ? " paquete" : " paquetes");
                 } else if ("UNIDAD".equalsIgnoreCase(tipoVenta)) {
-                    cantidadDesc = item.getCantidadUnidades() + " unidades";
+                    int n = item.getCantidadUnidades();
+                    cantidadDesc = n + (n == 1 ? " unidad" : " unidades");
                 } else {
                     cantidadDesc = item.getCantidadPaquetes() + " paq. + " + item.getCantidadUnidades() + " un.";
                 }

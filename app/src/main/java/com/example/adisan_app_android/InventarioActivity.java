@@ -47,10 +47,7 @@ public class InventarioActivity extends AppCompatActivity {
     private MaterialButton btnVerCompras;
     private EditText etBuscar;
 
-    private MaterialButton chipTodos;
-    private MaterialButton chipBebidas;
-    private MaterialButton chipAbarrotes;
-    private MaterialButton chipLimpieza;
+    private FiltroCategorias filtroCategorias;
 
     private List<Inventario> inventarioListOriginal = new ArrayList<>();
 
@@ -80,10 +77,12 @@ public class InventarioActivity extends AppCompatActivity {
         btnVerCompras = findViewById(R.id.btnVerCompras);
         etBuscar = findViewById(R.id.etBuscarInventario);
 
-        chipTodos = findViewById(R.id.chipTodosInv);
-        chipBebidas = findViewById(R.id.chipBebidasInv);
-        chipAbarrotes = findViewById(R.id.chipAbarrotesInv);
-        chipLimpieza = findViewById(R.id.chipLimpiezaInv);
+        filtroCategorias = new FiltroCategorias(findViewById(R.id.layoutChipsCategoriasInv), categoria -> aplicarFiltrosYBusqueda(textoBusqueda()));
+        filtroCategorias.cargar();
+    }
+
+    private String textoBusqueda() {
+        return etBuscar != null && etBuscar.getText() != null ? etBuscar.getText().toString().trim() : "";
     }
 
     private void setupRecyclerView() {
@@ -134,31 +133,6 @@ public class InventarioActivity extends AppCompatActivity {
                 @Override
                 public void afterTextChanged(Editable s) {}
             });
-        }
-
-        if (chipTodos != null) chipTodos.setOnClickListener(v -> activarCategoriaFiltro("todos", chipTodos));
-        if (chipBebidas != null) chipBebidas.setOnClickListener(v -> activarCategoriaFiltro("bebidas", chipBebidas));
-        if (chipAbarrotes != null) chipAbarrotes.setOnClickListener(v -> activarCategoriaFiltro("abarrotes", chipAbarrotes));
-        if (chipLimpieza != null) chipLimpieza.setOnClickListener(v -> activarCategoriaFiltro("limpieza", chipLimpieza));
-    }
-
-    private void activarCategoriaFiltro(String categoria, MaterialButton chipSeleccionado) {
-        actualizarEstiloChips(chipSeleccionado);
-        aplicarFiltrosYBusqueda(etBuscar != null && etBuscar.getText() != null ? etBuscar.getText().toString().trim() : "");
-    }
-
-    private void actualizarEstiloChips(MaterialButton seleccionado) {
-        MaterialButton[] chips = {chipTodos, chipBebidas, chipAbarrotes, chipLimpieza};
-        for (MaterialButton c : chips) {
-            if (c != null) {
-                if (c == seleccionado) {
-                    c.setBackgroundColor(Color.parseColor("#F97316"));
-                    c.setTextColor(Color.WHITE);
-                } else {
-                    c.setBackgroundColor(Color.parseColor("#101725"));
-                    c.setTextColor(Color.parseColor("#94A3B8"));
-                }
-            }
         }
     }
 
@@ -269,7 +243,7 @@ public class InventarioActivity extends AppCompatActivity {
 
     private void procesarInventarioCargado(List<Inventario> lista) {
         inventarioListOriginal = lista;
-        aplicarFiltrosYBusqueda(etBuscar != null && etBuscar.getText() != null ? etBuscar.getText().toString().trim() : "");
+        aplicarFiltrosYBusqueda(textoBusqueda());
     }
 
     private void aplicarFiltrosYBusqueda(String query) {
@@ -284,6 +258,9 @@ public class InventarioActivity extends AppCompatActivity {
                 if (!nombre.contains(q)) {
                     coincide = false;
                 }
+            }
+            if (filtroCategorias != null && !filtroCategorias.coincide(inv.getCategoria())) {
+                coincide = false;
             }
 
             if (coincide) {
@@ -334,13 +311,12 @@ public class InventarioActivity extends AppCompatActivity {
         TextView tvSueltas = dialogView.findViewById(R.id.tvDetalleUnidadesSueltas);
         TextView tvInfoCat = dialogView.findViewById(R.id.tvDetalleInfoCat);
         TextView tvInfoEstado = dialogView.findViewById(R.id.tvDetalleInfoEstado);
-        TextView tvInfoFecha = dialogView.findViewById(R.id.tvDetalleInfoFecha);
 
         MaterialButton btnHistorial = dialogView.findViewById(R.id.btnDetalleHistorial);
         MaterialButton btnAjustar = dialogView.findViewById(R.id.btnDetalleAjustar);
 
         if (tvNombre != null) tvNombre.setText(inventario.getProductoNombre());
-        if (tvCategoria != null) tvCategoria.setText("BEBIDAS");
+        if (tvCategoria != null) tvCategoria.setText(inventario.getCategoria().toUpperCase());
         if (tvId != null) tvId.setText("ID: " + inventario.getProductoId());
 
         int stock = inventario.getStockUnidades();
@@ -354,8 +330,7 @@ public class InventarioActivity extends AppCompatActivity {
         if (tvUpp != null) tvUpp.setText(String.valueOf(upp));
         if (tvPaqDisp != null) tvPaqDisp.setText(paq + " paq.");
         if (tvSueltas != null) tvSueltas.setText(sueltas + " un.");
-        if (tvInfoCat != null) tvInfoCat.setText("Bebidas");
-        if (tvInfoFecha != null) tvInfoFecha.setText("2025-08-15");
+        if (tvInfoCat != null) tvInfoCat.setText(inventario.getCategoria());
 
         if (stock == 0) {
             if (tvEstadoBadge != null) {
@@ -412,7 +387,7 @@ public class InventarioActivity extends AppCompatActivity {
     }
 
     // =======================================================
-    // DIÁLOGO DE AJUSTE DE INVENTARIO (POST /api/inventario/{id}/ajustes)
+    // DIÁLOGO DE AJUSTE DE INVENTARIO
     // =======================================================
     private void mostrarDialogoAjuste(Inventario inventario) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -512,7 +487,7 @@ public class InventarioActivity extends AppCompatActivity {
     }
 
     // =======================================================
-    // DIÁLOGO DE HISTORIAL DE MOVIMIENTOS (GET /api/inventario/{id}/movimientos)
+    // DIÁLOGO DE HISTORIAL DE MOVIMIENTOS
     // =======================================================
     private void mostrarDialogoMovimientos(Inventario inventario) {
         if (inventario == null) return;

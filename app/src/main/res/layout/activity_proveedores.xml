@@ -186,7 +186,7 @@
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:contentDescription="Buscar"
-                android:src="@drawable/ic_truck"
+                android:src="@drawable/ic_search"
                 app:tint="#64748B" />
 
             <EditText

@@ -74,7 +74,8 @@ public class PedidoAdapter extends RecyclerView.Adapter<PedidoAdapter.PedidoView
         if (pedido.getDetalles() != null) {
             prodCount = pedido.getDetalles().size();
             for (DetallePedido det : pedido.getDetalles()) {
-                totalUnid += det.getCantidad();
+                // Un paquete cuenta todas sus unidades, no 1
+                totalUnid += det.getUnidadesTotales();
             }
         }
         holder.tvResumenItems.setText("Productos: " + prodCount + " • Unidades: " + totalUnid);

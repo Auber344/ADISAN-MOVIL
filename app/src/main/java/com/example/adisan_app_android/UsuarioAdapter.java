@@ -62,20 +62,20 @@ public class UsuarioAdapter extends RecyclerView.Adapter<UsuarioAdapter.UsuarioV
         switch (rol.toLowerCase()) {
             case "admin":
             case "administrador":
-                holder.tvRol.setTextColor(Color.parseColor("#1E40AF"));
-                holder.tvRol.setBackgroundTintList(android.content.res.ColorStateList.valueOf(Color.parseColor("#DBEAFE")));
+                holder.tvRol.setTextColor(Color.parseColor("#60A5FA"));
+                holder.tvRol.setBackgroundTintList(android.content.res.ColorStateList.valueOf(Color.parseColor("#0D2247")));
                 break;
             case "vendedor":
-                holder.tvRol.setTextColor(Color.parseColor("#059669"));
-                holder.tvRol.setBackgroundTintList(android.content.res.ColorStateList.valueOf(Color.parseColor("#D1FAE5")));
+                holder.tvRol.setTextColor(Color.parseColor("#34D399"));
+                holder.tvRol.setBackgroundTintList(android.content.res.ColorStateList.valueOf(Color.parseColor("#062E29")));
                 break;
             case "chofer":
-                holder.tvRol.setTextColor(Color.parseColor("#0D9488"));
-                holder.tvRol.setBackgroundTintList(android.content.res.ColorStateList.valueOf(Color.parseColor("#CCFBF1")));
+                holder.tvRol.setTextColor(Color.parseColor("#2DD4BF"));
+                holder.tvRol.setBackgroundTintList(android.content.res.ColorStateList.valueOf(Color.parseColor("#042F2E")));
                 break;
             default: // cliente
-                holder.tvRol.setTextColor(Color.parseColor("#D97706"));
-                holder.tvRol.setBackgroundTintList(android.content.res.ColorStateList.valueOf(Color.parseColor("#FEF3C7")));
+                holder.tvRol.setTextColor(Color.parseColor("#FBBF24"));
+                holder.tvRol.setBackgroundTintList(android.content.res.ColorStateList.valueOf(Color.parseColor("#3B2C0D")));
                 break;
         }
 

@@ -11,29 +11,35 @@ This document serves as the authoritative technical reference and operational gu
 | **App Name** | ADISAN (Logistics & Commercial Distribution App) |
 | **Language** | **Pure Java** (STRICT RULE: NO Kotlin allowed) |
 | **UI Stack** | **Android XML Layouts + Material Design 3** (STRICT RULE: NO Jetpack Compose) |
-| **Min SDK / Target SDK** | Min SDK 24 / Target SDK 34+ |
-| **HTTP & Networking** | Retrofit 2 + Gson Converter + OkHttp 3 |
-| **Authentication** | JWT (JSON Web Token) saved in `SharedPreferences("AdisanPrefs")` under key `"token"` |
-| **Automatic Headers** | `ApiClient.java` uses an OkHttp Interceptor that automatically attaches `Authorization: Bearer <token>` |
-| **Backend Stack** | Node.js + Express + MySQL 8.0 |
-| **Backend Base URL** | `http://10.0.2.2:3000/` (Android Emulator loopback to local Node.js server) |
-| **Build System** | Gradle (`./gradlew app:assembleDebug`) |
+| **Min SDK / Target SDK** | Min SDK 24 / Target SDK 37 |
+| **Backend** | Firebase only, no custom server: Firebase Authentication (email + password) and Cloud Firestore (`southamerica-east1`) |
+| **Firebase Project** | `adisan-app-pe` (Spark plan). Config in `app/google-services.json`, `firebase.json`, `.firebaserc` |
+| **Data Layer** | `ApiClient.getApiService()` returns `FirebaseApiService`, which implements the `ApiService` interface on top of Firestore |
+| **Call Adapter** | `FirebaseCall<T>` exposes Firebase `Task`s as `retrofit2.Call<T>`, so screens keep using `enqueue` / `Callback` / `Response`. Retrofit is only a dependency for those types |
+| **Session** | After login, `token` (Firebase uid), `usuario`, `rol`, `id` are saved in `SharedPreferences("AdisanPrefs")` |
+| **Access Control** | Firestore Security Rules in `firebase/firestore.rules` (there is no server to enforce roles) |
+| **Build System** | Gradle (`./gradlew app:assembleDebug`, requires JDK 17+) |
 
 ---
 
 ## 🏛️ 2. Core Architectural Principles & Business Rules
 
-### 1. No Independent `ventas` Table
-- **Crucial Rule**: There is NO separate `ventas` or `detalle_venta` table in MySQL or backend route `/api/ventas`.
-- **Unified Order Model**: All commercial operations (orders and direct sales) are represented via `pedidos` and `detalle_pedido`.
+### 1. No Independent `ventas` Collection
+- **Crucial Rule**: There is NO separate `ventas` collection.
+- **Unified Order Model**: All commercial operations (orders and direct sales) are documents in `pedidos`, with their line items embedded in `detalles`.
 - **Completed Sale Definition**: An order with `estado = 'entregado'` (or `'completado'`) constitutes a completed sale for financial metrics and Dashboard calculations.
 
 ### 2. Direct Sales (Venta Directa de Mostrador)
 - Direct over-the-counter sales do **not** require a client.
 - When creating a direct sale:
-  - `pedidos.cliente_id` = `NULL`
+  - `pedidos.cliente_id` = `null`
   - `pedidos.estado` = `'entregado'`
-- In queries (`GET /api/pedidos`), `IFNULL(u.nombres, 'Venta Mostrador')` displays the seller/client as `"Venta Mostrador"`.
+  - `pedidos.cliente` = `"Venta Mostrador"`
+
+### 1b. Stock Changes Always Go Through Transactions
+- Orders, purchases, inventory adjustments and cancellations run in Firestore transactions inside `FirebaseApiService`: they validate stock, update `productos.stock_unidades` and write a document in `movimientos_inventario`.
+- Never write `stock_unidades` directly from a screen; call `ajustarInventario` instead.
+- Cancelling an order (`estado = 'cancelado'`) returns its units to stock (`REVERSIÓN` movement). Orders are never deleted.
 
 ### 3. Role-Based Dynamic UI Text
 Read `rol` from `SharedPreferences` (`"AdisanPrefs"` -> `"rol"`):
@@ -50,85 +56,40 @@ Read `rol` from `SharedPreferences` (`"AdisanPrefs"` -> `"rol"`):
 
 ---
 
-## 🗄️ 3. MySQL Database Schema Reference (`adisan`)
+## 🗄️ 3. Firestore Collections
 
-```sql
--- Table: usuarios (User Accounts & Roles)
-CREATE TABLE usuarios (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  nombres VARCHAR(100) NOT NULL,
-  apellidos VARCHAR(100) NOT NULL,
-  dni VARCHAR(8) NOT NULL UNIQUE,
-  ruc VARCHAR(11) NULL,
-  telefono VARCHAR(20) NOT NULL,
-  correo VARCHAR(150) NOT NULL,
-  usuario VARCHAR(50) NOT NULL UNIQUE,
-  password VARCHAR(255) NOT NULL,
-  direccion TEXT NULL,
-  rol ENUM('admin', 'vendedor', 'chofer', 'cliente') DEFAULT 'cliente',
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
+Field names keep the snake_case names of the former REST API so the `@SerializedName` models deserialize unchanged. Money is stored as numbers and converted to 2-decimal strings when mapped to models.
 
--- Table: productos (Catalog Items)
-CREATE TABLE productos (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  nombre VARCHAR(200) NOT NULL,
-  proveedor_id INT NOT NULL,
-  activo TINYINT(1) DEFAULT 1
-);
-
--- Table: presentaciones (Pricing & Stock Levels)
-CREATE TABLE presentaciones (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  producto_id INT NOT NULL,
-  categoria_id INT NOT NULL,
-  padre_id INT NULL,
-  nivel INT DEFAULT 1,
-  factor INT DEFAULT 1,
-  stock INT DEFAULT 0,
-  precio_compra DECIMAL(10,2) NOT NULL,
-  precio_venta DECIMAL(10,2) NOT NULL
-);
-
--- Table: pedidos (Order & Sale Headers)
-CREATE TABLE pedidos (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  cliente_id INT NULL, -- NULL for Direct Sales
-  total DECIMAL(10,2) NOT NULL,
-  metodo_pago VARCHAR(50) NOT NULL, -- 'Yape', 'Tarjeta', 'Efectivo'
-  estado ENUM('pendiente', 'aceptado', 'en_camino', 'entregado', 'cancelado') DEFAULT 'pendiente',
-  fecha DATETIME DEFAULT CURRENT_TIMESTAMP
-);
-
--- Table: detalle_pedido (Order Line Items)
-CREATE TABLE detalle_pedido (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  pedido_id INT NOT NULL,
-  producto_id INT NOT NULL,
-  presentacion_id INT NOT NULL,
-  cantidad INT NOT NULL,
-  precio DECIMAL(10,2) NOT NULL,
-  subtotal DECIMAL(10,2) NOT NULL
-);
-```
+| Collection | Key fields |
+| :--- | :--- |
+| `usuarios/{uid}` | `id` (int), `uid`, `nombres`, `apellidos`, `dni`, `ruc`, `telefono`, `correo`, `usuario`, `direccion`, `rol` (`admin`/`vendedor`/`chofer`/`cliente`), `activo`. Doc id = Firebase Auth uid; clients without app access use an auto id and `uid = null`. No passwords are stored. |
+| `productos/{id}` | `id`, `nombre`, `categoria_id`, `proveedor_id`, `unidades_por_paquete`, `precio_compra_paquete`, `precio_venta_paquete`, `precio_venta_unidad`, `stock_unidades`, `activo` (deleting sets `activo = 0`) |
+| `categorias/{id}` | `id`, `nombre`, `factor` |
+| `proveedores/{id}` | `id`, `nombre_empresa`, `ruc`, `telefono`, `correo`, `direccion` |
+| `pedidos/{id}` | `id`, `cliente_id`, `cliente_uid`, `cliente`, `vendedor_uid`, `total`, `metodo_pago`, `estado`, `fecha`, `fecha_estimada_entrega`, `detalles[]`, `unidades_por_producto{}` (used to restock on cancel) |
+| `compras/{id}` | `id`, `proveedor_id`, `proveedor_nombre`, `usuario_id`, `total`, `fecha`, `detalles[]` |
+| `ofertas/{id}` | `id`, `nombre`, `precio_normal`, `precio_final`, `descuento`, `activo`, `items[]` |
+| `movimientos_inventario/{auto}` | `producto_id`, `tipo` (`VENTA`, `COMPRA`, `REVERSIÓN`, `entrada`, `salida`), `cantidad_unidades`, `stock_anterior`, `stock_nuevo`, `motivo`, `usuario_uid`, `pedido_id`, `compra_id`, `fecha` |
+| `contadores/{coleccion}` | `ultimo`: last numeric id issued (ids stay `int` in the app) |
 
 ---
 
-## 🔌 4. API Endpoints & Contracts
+## 🔌 4. ApiService Operations
 
-| HTTP Method | Endpoint | Auth Required | Description |
-| :--- | :--- | :--- | :--- |
-| **POST** | `/api/login` | No | Authenticates user credentials. Returns JWT `token`, `usuario`, `rol`, `id`. |
-| **GET** | `/api/dashboard` | Admin / Vendedor | Returns real-time metrics (`totalProductos`, `totalUsuarios`, `totalPedidos`, `totalVentas`, `pedidosPorEstado`, `stockBajo`). |
-| **GET** | `/api/productos` | Yes | Retrieves product catalog and stock levels. |
-| **POST** | `/api/productos` | Admin | Registers a new product with presentation details (`nombre`, `proveedor_id`, `presentaciones`). |
-| **PUT** | `/api/productos/:id` | Admin | Updates an existing product. |
-| **DELETE** | `/api/productos/:id` | Admin | Deletes/Deactivates a product. |
-| **GET** | `/api/pedidos` | Yes | Retrieves order and sales transaction history. |
-| **POST** | `/api/pedidos` | Yes | Registers an order or direct sale, inserts `pedidos` and `detalle_pedido`, and deducts stock in `presentaciones`. |
-| **PUT** | `/api/pedidos/:id` | Yes | Updates order status (`'pendiente'` ➔ `'aceptado'` ➔ `'en_camino'` ➔ `'entregado'` / `'cancelado'`). |
-| **GET** | `/api/usuarios` | Admin / Vendedor | Queries users/clients with search filter (`?search=query`). |
-| **POST** | `/api/usuarios` | Admin / Vendedor | Registers a new client in `usuarios`. |
+`ApiService` is still the contract every screen uses; `FirebaseApiService` implements each method on Firestore.
+
+| Area | Methods | Notes |
+| :--- | :--- | :--- |
+| Auth | `login` | `LoginRequest.usuario` is the email. Reads the role from `usuarios/{uid}` |
+| Dashboard | `getDashboardData` | Computed client-side from products, orders and a user count |
+| Users | `getUsuarios`, `buscarUsuarios`, `crearUsuario`, `editarUsuario`, `eliminarUsuario`, `resetPasswordUsuario` | Creating with email + password also creates the Auth account (secondary `FirebaseApp`, so the admin stays signed in). Reset sends Firebase's password-reset email |
+| Catalog | `getProductos*`, `crearProducto`, `editarProducto`, `eliminarProducto`, `getCategorias*`, `crearCategoria`, `getProveedores*`, `crearProveedor` | `editarProducto` never changes stock |
+| Orders | `getPedidos*`, `getPedidoById*`, `crearPedidoNuevo`, `editarPedido` | Prices come from the catalog; offers expand into their products |
+| Inventory | `getInventario*`, `getMovimientosInventario*`, `ajustarInventario` | `tipo` = `entrada` / `salida` in units |
+| Purchases | `getCompras*`, `crearCompra` | Adds stock and updates the purchase price |
+| Offers | `getOfertas*`, `getOfertasCatalogo*`, `crearOferta`, `editarOferta`, `eliminarOferta` | Catalog returns active offers only |
+
+Errors reach screens as HTTP-style responses: business errors (e.g. insufficient stock) are `400` with `{"success":false,"message":...}` in `errorBody()`, denied rules are `403`, an expired session is `401`, and no connectivity goes to `onFailure`. Use `RespuestaApi.mensajeError(response, fallback)` to show the message.
 
 ---
 
@@ -138,9 +99,13 @@ CREATE TABLE detalle_pedido (
 app/src/main/
 ├── AndroidManifest.xml
 ├── java/com/example/adisan_app_android/
-│   ├── ApiClient.java               # Retrofit instance + OkHttp JWT Interceptor
-│   ├── ApiService.java              # Retrofit API interface definitions
-│   ├── LoginActivity.java           # Authentication screen & JWT storage
+│   ├── AdisanApp.java               # Application: system-bar insets for edge-to-edge screens
+│   ├── ApiClient.java               # Returns FirebaseApiService + shared Gson
+│   ├── ApiService.java              # Data contract used by every screen
+│   ├── FirebaseApiService.java      # ApiService on Firebase Auth + Firestore (business logic)
+│   ├── FirebaseCall.java            # Adapts Firebase Tasks to retrofit2.Call
+│   ├── RespuestaApi.java            # Reads error messages from responses
+│   ├── LoginActivity.java           # Firebase Auth login, password reset, remember session
 │   ├── LoginRequest.java / Response # Auth models
 │   ├── DashboardActivity.java       # Real-time metrics dashboard
 │   ├── DashboardResponse.java       # Dashboard JSON deserialization model
@@ -160,6 +125,11 @@ app/src/main/
     ├── drawable/                    # Icons & Spinner outlined backgrounds
     ├── layout/                      # Activity and Dialog XML layouts
     └── menu/bottom_nav_menu.xml     # Clean 4-item bottom navigation bar
+
+firebase/
+├── firestore.rules                  # Role-based access control (deploy: firebase deploy --only firestore)
+├── firestore.indexes.json
+└── seed/seed.js                     # Sample data + test users (node firebase/seed/seed.js)
 ```
 
 ---
@@ -192,10 +162,15 @@ When implementing new features or fixing bugs in this repository:
    - When mapping fields with `@SerializedName`, ensure that multiple Java fields DO NOT claim the same primary JSON property name to prevent `IllegalArgumentException` conflicts in Retrofit.
    - When handling fields that can be JSON Arrays or Numbers/Strings, use `List<Type>` or flexible getters (`Double.parseDouble(field.toString())`).
 
-4. **Build Verification**:
+4. **Adding Data Operations**:
+   - Add the method to `ApiService` and implement it in `FirebaseApiService`; do not reintroduce HTTP endpoints.
+   - Any operation that changes stock must run in a Firestore transaction and write a `movimientos_inventario` document.
+   - If a new collection or access pattern is added, update `firebase/firestore.rules` and deploy it.
+
+5. **Build Verification**:
    - Always run `./gradlew app:assembleDebug` using `gradle_build` after completing code modifications.
    - Verify that the build finishes with **`BUILD SUCCESSFUL`** and **0 compilation errors**.
 
 ---
 
-*Last Updated: September 2026*
+*Last Updated: October 2026*

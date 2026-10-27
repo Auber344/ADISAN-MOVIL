@@ -199,9 +199,10 @@
                                 app:tint="@color/login_text_muted" />
 
                             <TextView
+                                android:id="@+id/tvChipEnRuta"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="2 Oct 2026"
+                                android:text="0 en ruta"
                                 android:textColor="@color/white"
                                 android:textSize="12sp"
                                 android:textStyle="bold" />
@@ -373,7 +374,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="16dp"
-                                android:text="12"
+                                android:text="—"
                                 android:textColor="@color/white"
                                 android:textSize="26sp"
                                 android:textStyle="bold" />
@@ -433,7 +434,7 @@
                                         android:layout_width="22dp"
                                         android:layout_height="22dp"
                                         android:layout_gravity="center"
-                                        android:src="@drawable/ic_chart_growth"
+                                        android:src="@drawable/ic_inventory"
                                         app:tint="#10B981" />
                                 </com.google.android.material.card.MaterialCardView>
 
@@ -451,7 +452,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="16dp"
-                                android:text="0"
+                                android:text="—"
                                 android:textColor="@color/white"
                                 android:textSize="26sp"
                                 android:textStyle="bold" />
@@ -538,7 +539,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="16dp"
-                                android:text="8"
+                                android:text="—"
                                 android:textColor="@color/white"
                                 android:textSize="26sp"
                                 android:textStyle="bold" />
@@ -616,7 +617,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="16dp"
-                                android:text="0"
+                                android:text="—"
                                 android:textColor="@color/white"
                                 android:textSize="26sp"
                                 android:textStyle="bold" />
@@ -703,7 +704,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="16dp"
-                                android:text="0"
+                                android:text="—"
                                 android:textColor="@color/white"
                                 android:textSize="26sp"
                                 android:textStyle="bold" />
@@ -781,7 +782,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="16dp"
-                                android:text="S/"
+                                android:text="—"
                                 android:textColor="@color/white"
                                 android:textSize="26sp"
                                 android:textStyle="bold" />

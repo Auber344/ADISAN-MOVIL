@@ -9,6 +9,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -51,12 +52,15 @@ public class ProductosActivity extends AppCompatActivity {
     private MaterialButton btnCrearPrimerProducto;
     private MaterialButton btnNuevoProductoHeader;
     private MaterialButton btnVerCarrito;
+    private TextView tvBadgeCarritoHeader;
     private MaterialButton btnVerInventario;
 
     private SwipeRefreshLayout swipeRefresh;
     private RecyclerView rvProductos;
     private ProductoAdapter adapter;
     private List<Producto> listaProductosActuales = new ArrayList<>();
+    private FiltroCategorias filtroCategorias;
+    private EditText etBuscarProducto;
 
     private final androidx.activity.result.ActivityResultLauncher<Intent> detalleActivityLauncher =
             registerForActivityResult(new androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult(), result -> {
@@ -93,11 +97,12 @@ public class ProductosActivity extends AppCompatActivity {
 
             // 4. Configurar listeners
             setupListeners();
+            configurarFiltros();
 
             // 5. Configurar títulos según el Rol del usuario
             configurarTituloPorRol();
 
-            // 6. Cargar productos desde el backend
+            // 6. Cargar productos
             cargarProductos();
         } catch (Exception e) {
             Toast.makeText(this, "Error al abrir Productos: " + e.getMessage(), Toast.LENGTH_LONG).show();
@@ -108,8 +113,21 @@ public class ProductosActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        // Refrescar automáticamente la lista al retomar foco
+        // Refrescar automáticamente la lista y el contador del carrito al retomar foco
         cargarProductos();
+        actualizarBadgeCarrito();
+    }
+
+    private void actualizarBadgeCarrito() {
+        int count = CarritoManager.getInstance().obtenerCantidadProductosDistintos();
+        if (tvBadgeCarritoHeader != null) {
+            if (count > 0) {
+                tvBadgeCarritoHeader.setText(String.valueOf(count));
+                tvBadgeCarritoHeader.setVisibility(View.VISIBLE);
+            } else {
+                tvBadgeCarritoHeader.setVisibility(View.GONE);
+            }
+        }
     }
 
     private void configurarTituloPorRol() {
@@ -135,6 +153,7 @@ public class ProductosActivity extends AppCompatActivity {
         btnCrearPrimerProducto = findViewById(R.id.btnCrearPrimerProducto);
         btnNuevoProductoHeader = findViewById(R.id.btnNuevoProductoHeader);
         btnVerCarrito = findViewById(R.id.btnVerCarrito);
+        tvBadgeCarritoHeader = findViewById(R.id.tvBadgeCarritoHeader);
         btnVerInventario = findViewById(R.id.btnVerInventario);
 
         swipeRefresh = findViewById(R.id.swipeRefresh);
@@ -181,11 +200,20 @@ public class ProductosActivity extends AppCompatActivity {
 
             @Override
             public void onAgregarCarrito(Producto producto) {
+                if (producto == null) return;
                 if (producto.getStockUnidadesVal() <= 0) {
                     Toast.makeText(ProductosActivity.this, "Producto sin stock disponible", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                mostrarDialogoTipoVenta(producto);
+
+                if (CarritoManager.getInstance().contieneProducto(producto.getProductoId())) {
+                    Toast.makeText(ProductosActivity.this, "Este producto ya está en el carrito", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                CarritoManager.getInstance().agregarProducto(producto, "PAQUETE", 1, 0);
+                Toast.makeText(ProductosActivity.this, "¡" + producto.getProductoNombre() + " agregado al carrito!", Toast.LENGTH_SHORT).show();
+                actualizarBadgeCarrito();
             }
 
             @Override
@@ -240,8 +268,7 @@ public class ProductosActivity extends AppCompatActivity {
                     if (itemId == R.id.nav_productos) {
                         return true;
                     } else if (itemId == R.id.nav_dashboard) {
-                        Intent intent = new Intent(ProductosActivity.this, DashboardActivity.class);
-                        startActivity(intent);
+                        startActivity(DashboardActivity.volver(ProductosActivity.this, false));
                         finish();
                         return true;
                     } else if (itemId == R.id.nav_pedidos) {
@@ -250,7 +277,9 @@ public class ProductosActivity extends AppCompatActivity {
                         finish();
                         return true;
                     } else if (itemId == R.id.nav_mas) {
-                        Toast.makeText(ProductosActivity.this, "Sección Más (Próximamente)", Toast.LENGTH_SHORT).show();
+                        // "Más" abre el menú lateral del dashboard, igual que desde el dashboard
+                        startActivity(DashboardActivity.volver(ProductosActivity.this, true));
+                        finish();
                         return true;
                     }
                     return false;
@@ -267,7 +296,6 @@ public class ProductosActivity extends AppCompatActivity {
         ApiClient.getApiService().getProductos().enqueue(new Callback<ProductoResponse>() {
             @Override
             public void onResponse(@NonNull Call<ProductoResponse> call, @NonNull Response<ProductoResponse> response) {
-                android.util.Log.d("ADISAN_PRODUCTOS_TRACE", "ADISAN_PRODUCTOS_TRACE: HTTP code = " + response.code());
                 ocultarSwipeRefresh();
 
                 if (response.code() == 401) {
@@ -275,40 +303,16 @@ public class ProductosActivity extends AppCompatActivity {
                     return;
                 }
 
-                List<Producto> lista = new ArrayList<>();
-                if (response.isSuccessful() && response.body() != null) {
-                    android.util.Log.d("ADISAN_PRODUCTOS_TRACE", "ADISAN_PRODUCTOS_TRACE: response.body() is not null");
-                    try {
-                        lista = response.body().getData();
-                        if (lista == null) {
-                            android.util.Log.e("ADISAN_PRODUCTOS_TRACE", "ADISAN_PRODUCTOS_TRACE: response.body().getData() is NULL!");
-                        } else {
-                            android.util.Log.d("ADISAN_PRODUCTOS_TRACE", "ADISAN_PRODUCTOS_TRACE: getData() size = " + lista.size());
-                            for (Producto p : lista) {
-                                if (p.getId() == 7) {
-                                    android.util.Log.d("ADISAN_PRODUCTOS_TRACE", "ADISAN_PRODUCTOS_TRACE: Producto ID 7 found: id=" + p.getId() + ", nombre=" + p.getNombre() + ", stockUnidadesVal=" + p.getStockUnidadesVal() + ", catId=" + p.getCategoriaId() + ", upp=" + p.getUnidadesPorPaqueteVal() + ", pCompra=" + p.getPrecioCompraPaquete() + ", pVentaPaq=" + p.getPrecioVentaPaquete() + ", pVentaUnid=" + p.getPrecioVentaUnidad());
-                                }
-                            }
-                        }
-                    } catch (Exception e) {
-                        android.util.Log.e("ADISAN_PRODUCTOS_TRACE", "ADISAN_PRODUCTOS_TRACE: EXCEPTION en onResponse: " + e.getMessage(), e);
-                    }
-                } else {
-                    android.util.Log.e("ADISAN_PRODUCTOS_TRACE", "ADISAN_PRODUCTOS_TRACE: response not successful or body is null. code=" + response.code());
-                }
-
+                List<Producto> lista = response.isSuccessful() && response.body() != null ? response.body().getData() : null;
                 if (lista != null && !lista.isEmpty()) {
-                    android.util.Log.d("ADISAN_PRODUCTOS_TRACE", "ADISAN_PRODUCTOS_TRACE: llamando a mostrarListaProductos()");
                     mostrarListaProductos(lista);
                 } else {
-                    android.util.Log.d("ADISAN_PRODUCTOS_TRACE", "ADISAN_PRODUCTOS_TRACE: lista vacía, llamando a cargarProductosDirecto()");
                     cargarProductosDirecto();
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<ProductoResponse> call, @NonNull Throwable t) {
-                android.util.Log.e("ADISAN_PRODUCTOS_TRACE", "ADISAN_PRODUCTOS_TRACE: FAILURE: " + t.getMessage(), t);
                 cargarProductosDirecto();
             }
         });
@@ -318,16 +322,10 @@ public class ProductosActivity extends AppCompatActivity {
         ApiClient.getApiService().getProductosDirectList().enqueue(new Callback<List<Producto>>() {
             @Override
             public void onResponse(@NonNull Call<List<Producto>> call, @NonNull Response<List<Producto>> response) {
-                android.util.Log.d("ADISAN_STOCK_TRACE", "TRACE 1B (getProductosDirectList response): code=" + response.code());
                 ocultarSwipeRefresh();
                 List<Producto> lista = new ArrayList<>();
                 if (response.isSuccessful() && response.body() != null) {
                     lista = response.body();
-                    for (Producto p : lista) {
-                        if (p.getId() == 7) {
-                            android.util.Log.d("ADISAN_STOCK_TRACE", "TRACE 2B (DirectList after response): id=" + p.getId() + ", nombre=" + p.getNombre() + ", getStockVal=" + p.getStockUnidadesVal());
-                        }
-                    }
                 }
 
                 if (lista != null && !lista.isEmpty()) {
@@ -341,7 +339,7 @@ public class ProductosActivity extends AppCompatActivity {
             public void onFailure(@NonNull Call<List<Producto>> call, @NonNull Throwable t) {
                 ocultarSwipeRefresh();
                 if (t instanceof java.io.IOException) {
-                    mostrarEstadoError("Error de conexión al servidor (10.0.2.2:3000).");
+                    mostrarEstadoError("Sin conexión a internet. Revisa tu red e inténtalo de nuevo.");
                 } else {
                     mostrarEstadoVacio();
                 }
@@ -396,23 +394,21 @@ public class ProductosActivity extends AppCompatActivity {
                     return;
                 }
 
-                int nuevoStock = producto.getStock() + cantidadAgregar;
-                producto.setStock(nuevoStock);
-                if (adapter != null) adapter.notifyDataSetChanged();
-                
-                ejecutarActualizacionStock(producto.getProductoId(), producto, bottomSheetDialog, btnGuardar);
+                ejecutarActualizacionStock(producto.getProductoId(), cantidadAgregar, bottomSheetDialog, btnGuardar);
             });
         }
 
         bottomSheetDialog.show();
     }
 
-    private void ejecutarActualizacionStock(int id, Producto productoRequest, com.google.android.material.bottomsheet.BottomSheetDialog dialog, MaterialButton btnGuardar) {
+    private void ejecutarActualizacionStock(int id, int cantidadAgregar, com.google.android.material.bottomsheet.BottomSheetDialog dialog, MaterialButton btnGuardar) {
         if (btnGuardar != null) btnGuardar.setEnabled(false);
-        
-        ApiClient.getApiService().editarProducto(id, productoRequest).enqueue(new Callback<ProductoResponse>() {
+
+        // Ajuste atómico: suma sobre el stock real (no sobre el valor cargado en pantalla) y queda en el historial
+        InventarioAjusteRequest request = new InventarioAjusteRequest("entrada", cantidadAgregar, "Stock agregado desde el catálogo");
+        ApiClient.getApiService().ajustarInventario(id, request).enqueue(new Callback<InventarioResponse>() {
             @Override
-            public void onResponse(@NonNull Call<ProductoResponse> call, @NonNull Response<ProductoResponse> response) {
+            public void onResponse(@NonNull Call<InventarioResponse> call, @NonNull Response<InventarioResponse> response) {
                 if (btnGuardar != null) btnGuardar.setEnabled(true);
 
                 if (response.code() == 401) {
@@ -422,16 +418,9 @@ public class ProductosActivity extends AppCompatActivity {
                 }
 
                 if (response.isSuccessful() && response.body() != null) {
-                    ProductoResponse body = response.body();
-                    if (body.isSuccess() || body.getMessage() == null || body.getMessage().toLowerCase().contains("éxito") || body.getMessage().toLowerCase().contains("correctamente")) {
-                        Toast.makeText(ProductosActivity.this, "¡Stock añadido correctamente!", Toast.LENGTH_SHORT).show();
-                        if (dialog != null && dialog.isShowing()) dialog.dismiss();
-                        cargarProductos();
-                    } else {
-                        String msg = body.getMessage() != null ? body.getMessage() : "Error al actualizar stock";
-                        Toast.makeText(ProductosActivity.this, msg, Toast.LENGTH_LONG).show();
-                        cargarProductos();
-                    }
+                    Toast.makeText(ProductosActivity.this, "¡Stock añadido correctamente!", Toast.LENGTH_SHORT).show();
+                    if (dialog != null && dialog.isShowing()) dialog.dismiss();
+                    cargarProductos();
                 } else {
                     String msg = "Error al actualizar stock (" + response.code() + ")";
                     Toast.makeText(ProductosActivity.this, msg, Toast.LENGTH_LONG).show();
@@ -441,7 +430,7 @@ public class ProductosActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(@NonNull Call<ProductoResponse> call, @NonNull Throwable t) {
+            public void onFailure(@NonNull Call<InventarioResponse> call, @NonNull Throwable t) {
                 if (btnGuardar != null) btnGuardar.setEnabled(true);
                 Toast.makeText(ProductosActivity.this, "Error de conexión: " + t.getMessage(), Toast.LENGTH_LONG).show();
                 if (dialog != null && dialog.isShowing()) dialog.dismiss();
@@ -1070,23 +1059,66 @@ public class ProductosActivity extends AppCompatActivity {
         if (layoutError != null) layoutError.setVisibility(View.GONE);
 
         if (rvProductos != null && productos != null) {
-            rvProductos.setVisibility(View.VISIBLE);
-
-            List<Producto> listaMutable = new ArrayList<>(productos);
             listaProductosActuales = new ArrayList<>(productos);
-            android.util.Log.d("ADISAN_PRODUCTOS_DEBUG", "cantidad enviada al adapter = " + listaMutable.size());
-
-            // Ordenar por ID descendente para que el nuevo producto creado aparezca primero en la parte superior
-            Collections.sort(listaMutable, (p1, p2) -> Integer.compare(p2.getProductoId(), p1.getProductoId()));
-
-            if (adapter == null) {
-                adapter = new ProductoAdapter(this, listaMutable);
-                rvProductos.setAdapter(adapter);
-            } else {
-                adapter.setProductos(listaMutable);
-            }
-            rvProductos.scrollToPosition(0);
+            aplicarFiltros();
         }
+    }
+
+    private void configurarFiltros() {
+        etBuscarProducto = findViewById(R.id.etBuscarProducto);
+        if (etBuscarProducto != null) {
+            etBuscarProducto.addTextChangedListener(new android.text.TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    aplicarFiltros();
+                }
+
+                @Override
+                public void afterTextChanged(android.text.Editable s) {}
+            });
+        }
+        android.widget.LinearLayout chips = findViewById(R.id.layoutChipsCategorias);
+        if (chips != null) {
+            filtroCategorias = new FiltroCategorias(chips, categoria -> aplicarFiltros());
+            filtroCategorias.cargar();
+        }
+    }
+
+    /** Filtra los productos cargados por el texto buscado y la categoría elegida. */
+    private void aplicarFiltros() {
+        if (rvProductos == null) return;
+        String q = etBuscarProducto != null && etBuscarProducto.getText() != null
+                ? etBuscarProducto.getText().toString().trim().toLowerCase() : "";
+        List<Producto> listaMutable = new ArrayList<>();
+        for (Producto p : listaProductosActuales) {
+            if (p == null) continue;
+            if (!q.isEmpty() && !p.getNombre().toLowerCase().contains(q)) continue;
+            if (filtroCategorias != null && !filtroCategorias.coincide(p.getCategoriaId())) continue;
+            listaMutable.add(p);
+        }
+
+        if (listaMutable.isEmpty()) {
+            mostrarEstadoVacio();
+            return;
+        }
+        if (pbLoading != null) pbLoading.setVisibility(View.GONE);
+        if (layoutVacio != null) layoutVacio.setVisibility(View.GONE);
+        if (layoutError != null) layoutError.setVisibility(View.GONE);
+        rvProductos.setVisibility(View.VISIBLE);
+
+        // Ordenar por ID descendente para que el nuevo producto creado aparezca primero en la parte superior
+        Collections.sort(listaMutable, (p1, p2) -> Integer.compare(p2.getProductoId(), p1.getProductoId()));
+
+        if (adapter == null) {
+            adapter = new ProductoAdapter(this, listaMutable);
+            rvProductos.setAdapter(adapter);
+        } else {
+            adapter.setProductos(listaMutable);
+        }
+        rvProductos.scrollToPosition(0);
     }
 
     private void mostrarEstadoVacio() {

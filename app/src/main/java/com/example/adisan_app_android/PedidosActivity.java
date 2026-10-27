@@ -242,8 +242,7 @@ public class PedidosActivity extends AppCompatActivity {
                     if (itemId == R.id.nav_pedidos) {
                         return true;
                     } else if (itemId == R.id.nav_dashboard) {
-                        Intent intent = new Intent(PedidosActivity.this, DashboardActivity.class);
-                        startActivity(intent);
+                        startActivity(DashboardActivity.volver(PedidosActivity.this, false));
                         finish();
                         return true;
                     } else if (itemId == R.id.nav_productos) {
@@ -252,7 +251,9 @@ public class PedidosActivity extends AppCompatActivity {
                         finish();
                         return true;
                     } else if (itemId == R.id.nav_mas) {
-                        Toast.makeText(PedidosActivity.this, "Sección Más (Próximamente)", Toast.LENGTH_SHORT).show();
+                        // "Más" abre el menú lateral del dashboard, igual que desde el dashboard
+                        startActivity(DashboardActivity.volver(PedidosActivity.this, true));
+                        finish();
                         return true;
                     }
                     return false;
@@ -345,7 +346,7 @@ public class PedidosActivity extends AppCompatActivity {
                 public void onFailure(@NonNull Call<List<Pedido>> call, @NonNull Throwable t) {
                     try {
                         ocultarSwipeRefresh();
-                        mostrarEstadoError("Error de conexión al servidor (10.0.2.2:3000). Verifica que el backend esté ejecutándose.");
+                        mostrarEstadoError("Sin conexión a internet. Revisa tu red e inténtalo de nuevo.");
                     } catch (Throwable e) {
                         Toast.makeText(PedidosActivity.this, "CRASH DirectList onFailure: " + e.getMessage(), Toast.LENGTH_LONG).show();
                     }

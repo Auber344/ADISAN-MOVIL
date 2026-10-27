@@ -41,6 +41,21 @@ public class Producto {
     @SerializedName("stock_unidades")
     private int stockUnidades = 0;
 
+    // Solo lectura: FirebaseApiService los agrega al listar para mostrar nombres en vez de ids
+    @SerializedName("categoria_nombre")
+    private String categoriaNombre;
+
+    @SerializedName("proveedor_nombre")
+    private String proveedorNombre;
+
+    public String getCategoriaNombre() {
+        return categoriaNombre != null && !categoriaNombre.isEmpty() ? categoriaNombre : "Sin categoría";
+    }
+
+    public String getProveedorNombre() {
+        return proveedorNombre != null && !proveedorNombre.isEmpty() ? proveedorNombre : "Sin proveedor";
+    }
+
     public int getId() {
         return id > 0 ? id : productoId;
     }

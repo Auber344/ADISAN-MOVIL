@@ -1,9 +1,89 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
-    <style name="Base.Theme.Adisanappandroid" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+    <!--
+        Tema de marca ADISAN: oscuro, como el diseño de las pantallas.
+        Se aplica siempre (aunque el teléfono esté en modo claro) y reemplaza el morado por defecto
+        de Material 3 en botones, campos de texto, diálogos, selectores y barras de progreso.
+    -->
+    <style name="Base.Theme.Adisanappandroid" parent="Theme.Material3.Dark.NoActionBar">
+        <item name="colorPrimary">@color/blue_primary</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorPrimaryContainer">@color/blue_primary_dark</item>
+        <item name="colorOnPrimaryContainer">@color/accent_blue_bg_on</item>
+        <item name="colorPrimaryDark">@color/blue_primary_dark</item>
+
+        <item name="colorSecondary">@color/blue_soft</item>
+        <item name="colorOnSecondary">@color/white</item>
+        <item name="colorSecondaryContainer">@color/blue_light</item>
+        <item name="colorOnSecondaryContainer">@color/accent_blue_bg_on</item>
+
+        <item name="colorTertiary">@color/accent_teal</item>
+        <item name="colorOnTertiary">@color/white</item>
+
+        <item name="colorError">@color/accent_red</item>
+        <item name="colorOnError">@color/white</item>
+        <item name="colorErrorContainer">@color/accent_red_bg</item>
+
+        <item name="android:colorBackground">@color/screen_bg</item>
+        <item name="colorOnBackground">@color/text_primary</item>
+        <item name="colorSurface">@color/card_bg</item>
+        <item name="colorOnSurface">@color/text_primary</item>
+        <item name="colorOnSurfaceVariant">@color/text_secondary</item>
+        <item name="colorOutline">@color/outline</item>
+        <item name="colorOutlineVariant">@color/border_color</item>
+
+        <!-- Superficies neutras (Material 3 las tiñe de lila por defecto en tarjetas y diálogos) -->
+        <item name="colorSurfaceContainerLowest">@color/screen_bg</item>
+        <item name="colorSurfaceContainerLow">@color/surface_low</item>
+        <item name="colorSurfaceContainer">@color/surface_mid</item>
+        <item name="colorSurfaceContainerHigh">@color/surface_mid</item>
+        <item name="colorSurfaceContainerHighest">@color/surface_high</item>
+        <item name="colorSurfaceVariant">@color/surface_high</item>
+
+        <item name="android:windowBackground">@color/screen_bg</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@color/screen_bg</item>
+        <item name="android:windowLightNavigationBar" tools:targetApi="27">false</item>
+
+        <item name="bottomNavigationStyle">@style/Widget.Adisan.BottomNavigation</item>
+        <item name="materialAlertDialogTheme">@style/ThemeOverlay.Adisan.AlertDialog</item>
+        <item name="alertDialogTheme">@style/ThemeOverlay.Adisan.AlertDialog</item>
+        <item name="bottomSheetDialogTheme">@style/ThemeOverlay.Adisan.BottomSheet</item>
     </style>
 
     <style name="Theme.Adisanappandroid" parent="Base.Theme.Adisanappandroid" />
+
+    <!-- Login: fondo azul marino de marca -->
+    <style name="Theme.Adisanappandroid.Login" parent="Theme.Adisanappandroid">
+        <item name="android:windowBackground">@color/login_bg_dark</item>
+        <item name="android:navigationBarColor">@color/login_bg_dark</item>
+    </style>
+
+    <style name="ThemeOverlay.Adisan.AlertDialog" parent="ThemeOverlay.Material3.MaterialAlertDialog">
+        <item name="colorPrimary">@color/blue_soft</item>
+        <item name="colorSurface">@color/card_bg</item>
+        <item name="colorSurfaceContainerHigh">@color/card_bg</item>
+        <item name="colorOnSurface">@color/text_primary</item>
+        <item name="colorOnSurfaceVariant">@color/text_secondary</item>
+        <item name="shapeAppearanceOverlay">@style/ShapeAppearance.Adisan.Dialog</item>
+    </style>
+
+    <style name="ThemeOverlay.Adisan.BottomSheet" parent="ThemeOverlay.Material3.BottomSheetDialog">
+        <item name="colorSurface">@color/card_bg</item>
+        <item name="colorSurfaceContainerLow">@color/card_bg</item>
+    </style>
+
+    <!-- Indicador azul translúcido en la barra inferior en vez del pastel por defecto -->
+    <style name="Widget.Adisan.BottomNavigation" parent="Widget.Material3.BottomNavigationView">
+        <item name="itemActiveIndicatorStyle">@style/Widget.Adisan.BottomNavigation.Indicador</item>
+    </style>
+
+    <style name="Widget.Adisan.BottomNavigation.Indicador" parent="Widget.Material3.BottomNavigationView.ActiveIndicator">
+        <item name="android:color">#332563EB</item>
+    </style>
+
+    <style name="ShapeAppearance.Adisan.Dialog" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">20dp</item>
+    </style>
 </resources>

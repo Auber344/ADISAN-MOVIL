@@ -272,7 +272,23 @@ public class PedidoDetalleActivity extends AppCompatActivity {
             ivClienteAvatar.setImageResource(R.drawable.ic_user);
         }
 
-        tvInfoMetodoPago.setText(pedido.getMetodoPago() != null ? pedido.getMetodoPago() : "Efectivo");
+        String metodoPago = pedido.getMetodoPago() != null ? pedido.getMetodoPago() : "Efectivo";
+        tvInfoMetodoPago.setText(metodoPago);
+        android.widget.ImageView ivIconoPago = findViewById(R.id.ivIconoMetodoPago);
+        com.google.android.material.card.MaterialCardView cardIconoPago = findViewById(R.id.cardIconoMetodoPago);
+        if (ivIconoPago != null && cardIconoPago != null) {
+            String metodo = metodoPago.toLowerCase();
+            if (metodo.contains("tarjeta")) {
+                ivIconoPago.setImageResource(R.drawable.ic_credit_card);
+                cardIconoPago.setCardBackgroundColor(android.graphics.Color.parseColor("#F97316"));
+            } else if (metodo.contains("efectivo")) {
+                ivIconoPago.setImageResource(R.drawable.ic_cash);
+                cardIconoPago.setCardBackgroundColor(android.graphics.Color.parseColor("#10B981"));
+            } else {
+                ivIconoPago.setImageResource(R.drawable.ic_phone_pay);
+                cardIconoPago.setCardBackgroundColor(android.graphics.Color.parseColor("#8B5CF6"));
+            }
+        }
 
         // Resumen y Tab Productos
         int nProductos = 0;

@@ -52,6 +52,7 @@ public class InventarioAdapter extends RecyclerView.Adapter<InventarioAdapter.In
         if (inv == null) return;
 
         holder.tvNombre.setText(inv.getProductoNombre());
+        if (holder.tvCategoria != null) holder.tvCategoria.setText(inv.getCategoria().toUpperCase());
 
         int stock = inv.getStockUnidades();
         holder.tvStockUnidades.setText(stock + " un.");

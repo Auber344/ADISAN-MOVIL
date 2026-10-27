@@ -428,7 +428,7 @@ public class CompraFormularioActivity extends AppCompatActivity {
         android.util.Log.d("DEBUG_COMPRA", "cantidad_unidades = 0");
         android.util.Log.d("DEBUG_COMPRA", "precio_unitario = " + precioStr);
         android.util.Log.d("DEBUG_COMPRA", "items.size() = " + itemRequests.size());
-        android.util.Log.d("DEBUG_COMPRA", "se va a ejecutar POST /api/compras");
+        android.util.Log.d("DEBUG_COMPRA", "registrando compra");
 
         CompraRequest request = new CompraRequest(proveedorId, itemRequests);
 

@@ -59,6 +59,9 @@ public class DashboardActivity extends AppCompatActivity {
     private TextView tvValStockBajo;
     private TextView tvValEnCamino;
     private TextView tvTotalVendido;
+    private TextView tvValOfertas;
+    private TextView tvValReportes;
+    private TextView tvChipEnRuta;
 
     // Alertas
     private TextView tvAlertStockBajoText;
@@ -94,17 +97,43 @@ public class DashboardActivity extends AppCompatActivity {
         // 2. Cargar datos de usuario guardados en SharedPreferences
         cargarDatosUsuario();
 
-        // 3. Consumir backend GET /api/dashboard
+        // 3. Cargar métricas del dashboard
         obtenerDatosDashboard();
 
         // 4. Configurar listeners de interacción y Sidebar
         setupListeners();
         setupSidebar();
+
+        if (getIntent().getBooleanExtra(EXTRA_ABRIR_MENU, false) && drawerLayout != null) {
+            drawerLayout.openDrawer(GravityCompat.START);
+        }
+    }
+
+    private static final String EXTRA_ABRIR_MENU = "abrir_menu";
+
+    /** Vuelve al dashboard ya abierto (sin apilar otro) y opcionalmente abre el menú lateral. */
+    static Intent volver(android.content.Context origen, boolean abrirMenu) {
+        Intent intent = new Intent(origen, DashboardActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        intent.putExtra(EXTRA_ABRIR_MENU, abrirMenu);
+        return intent;
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        if (intent.getBooleanExtra(EXTRA_ABRIR_MENU, false) && drawerLayout != null) {
+            drawerLayout.openDrawer(GravityCompat.START);
+        }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        // Al volver desde Productos o Pedidos la barra inferior seguía marcando esa pestaña
+        if (bottomNavigation != null && bottomNavigation.getSelectedItemId() != R.id.nav_dashboard) {
+            bottomNavigation.setSelectedItemId(R.id.nav_dashboard);
+        }
         // Recargar siempre los datos del Dashboard al retomar el foco
         obtenerDatosDashboard();
     }
@@ -123,6 +152,9 @@ public class DashboardActivity extends AppCompatActivity {
         tvValStockBajo = findViewById(R.id.tvValStockBajo);
         tvValEnCamino = findViewById(R.id.tvValEnCamino);
         tvTotalVendido = findViewById(R.id.tvTotalVendido);
+        tvValOfertas = findViewById(R.id.tvValOfertas);
+        tvValReportes = findViewById(R.id.tvValReportes);
+        tvChipEnRuta = findViewById(R.id.tvChipEnRuta);
 
         tvAlertStockBajoText = findViewById(R.id.tvAlertStockBajoText);
         tvAlertEnCaminoText = findViewById(R.id.tvAlertEnCaminoText);
@@ -229,7 +261,7 @@ public class DashboardActivity extends AppCompatActivity {
         if (navConfiguracion != null) {
             navConfiguracion.setOnClickListener(v -> {
                 if (drawerLayout != null) drawerLayout.closeDrawer(GravityCompat.START);
-                Toast.makeText(DashboardActivity.this, "Configuración del Sistema ADISAN v1.0.0", Toast.LENGTH_SHORT).show();
+                mostrarAcercaDe();
             });
         }
 
@@ -295,13 +327,28 @@ public class DashboardActivity extends AppCompatActivity {
             @Override
             public void onFailure(@NonNull Call<DashboardResponse> call, @NonNull Throwable t) {
                 Toast.makeText(DashboardActivity.this,
-                        "Error de conexión con el backend (/api/dashboard)",
+                        "Sin conexión. No se pudieron cargar las métricas.",
                         Toast.LENGTH_SHORT).show();
             }
         });
 
         cargarConteoComprasDashboard();
         cargarConteoInventarioDisponibleDashboard();
+        cargarConteoOfertasDashboard();
+    }
+
+    private void cargarConteoOfertasDashboard() {
+        ApiClient.getApiService().getOfertas().enqueue(new Callback<OfertaResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<OfertaResponse> call, @NonNull Response<OfertaResponse> response) {
+                if (response.isSuccessful() && response.body() != null && response.body().getData() != null && tvValOfertas != null) {
+                    tvValOfertas.setText(String.format(Locale.getDefault(), "%,d", response.body().getData().size()));
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<OfertaResponse> call, @NonNull Throwable t) {}
+        });
     }
 
     private void cargarConteoComprasDashboard() {
@@ -406,12 +453,14 @@ public class DashboardActivity extends AppCompatActivity {
         if (tvValVentas != null) {
             tvValVentas.setText(String.format(Locale.US, "S/ %,.2f", data.getVentas()));
         }
-        cargarConteoInventarioDisponibleDashboard();
-        if (tvValEnCamino != null) {
-            tvValEnCamino.setText(String.format(Locale.getDefault(), "%,d", data.getEnCamino()));
-        }
         if (tvTotalVendido != null) {
             tvTotalVendido.setText(String.format(Locale.US, "S/ %,.2f", data.getTotalVendido()));
+        }
+        if (tvValReportes != null) {
+            tvValReportes.setText(String.format(Locale.US, "S/ %,.2f", data.getTotalVendido()));
+        }
+        if (tvChipEnRuta != null) {
+            tvChipEnRuta.setText(data.getEnCamino() + " en ruta");
         }
 
         // Actualizar alertas
@@ -576,7 +625,7 @@ public class DashboardActivity extends AppCompatActivity {
             tvInicial.setText(savedUser.substring(0, 1).toUpperCase());
         }
 
-        // Cargar perfil completo desde backend GET /api/usuarios/:id
+        // Cargar perfil completo del usuario
         if (pbLoading != null) pbLoading.setVisibility(View.VISIBLE);
         if (layoutCampos != null) layoutCampos.setVisibility(View.GONE);
 
@@ -1032,66 +1081,55 @@ public class DashboardActivity extends AppCompatActivity {
         });
     }
 
-    // Modal para resetear contraseña
-    private void mostrarDialogoResetPasswordUsuario(Usuario usuario) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_reset_password, null);
-        builder.setView(dialogView);
-
-        AlertDialog dialogReset = builder.create();
-        if (dialogReset.getWindow() != null) {
-            dialogReset.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+    private void mostrarAcercaDe() {
+        SharedPreferences prefs = getSharedPreferences("AdisanPrefs", MODE_PRIVATE);
+        String correo = prefs.getString("correo", "");
+        String rol = prefs.getString("rol", "");
+        String version;
+        try {
+            version = getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
+        } catch (Exception e) {
+            version = "1.0";
         }
-
-        TextInputLayout tilPassword = dialogView.findViewById(R.id.tilNuevaPassword);
-        TextInputEditText etPassword = dialogView.findViewById(R.id.etNuevaPassword);
-        MaterialButton btnCancelar = dialogView.findViewById(R.id.btnCancelarReset);
-        MaterialButton btnGuardar = dialogView.findViewById(R.id.btnGuardarReset);
-
-        if (btnCancelar != null) {
-            btnCancelar.setOnClickListener(v -> dialogReset.dismiss());
-        }
-
-        if (btnGuardar != null) {
-            btnGuardar.setOnClickListener(v -> {
-                if (tilPassword != null) tilPassword.setError(null);
-
-                String nuevaPass = etPassword != null && etPassword.getText() != null ? etPassword.getText().toString().trim() : "";
-
-                if (TextUtils.isEmpty(nuevaPass) || nuevaPass.length() < 8) {
-                    if (tilPassword != null) tilPassword.setError("La contraseña debe tener al menos 8 caracteres");
-                    return;
-                }
-
-                ejecutarResetPassword(usuario.getId(), nuevaPass, dialogReset, btnGuardar);
-            });
-        }
-
-        dialogReset.show();
+        new com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
+                .setTitle("Distribuciones ADISAN")
+                .setMessage("Versión " + version
+                        + "\n\nSesión: " + (correo.isEmpty() ? "—" : correo)
+                        + "\nRol: " + (rol.isEmpty() ? "—" : rol.substring(0, 1).toUpperCase() + rol.substring(1))
+                        + "\n\nDatos sincronizados con Firebase.")
+                .setPositiveButton("Cerrar", null)
+                .show();
     }
 
-    private void ejecutarResetPassword(int id, String nuevaPassword, AlertDialog dialogReset, MaterialButton btnGuardar) {
-        if (btnGuardar != null) btnGuardar.setEnabled(false);
+    // Restablecer contraseña: Firebase envía al usuario un enlace para que elija una nueva
+    private void mostrarDialogoResetPasswordUsuario(Usuario usuario) {
+        String correo = usuario.getCorreo() != null ? usuario.getCorreo().trim() : "";
+        if (correo.isEmpty()) {
+            Toast.makeText(this, "Este usuario no tiene correo registrado", Toast.LENGTH_LONG).show();
+            return;
+        }
+        new com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
+                .setTitle("Restablecer contraseña")
+                .setMessage("Se enviará a " + correo + " un enlace para que " + usuario.getNombreCompleto()
+                        + " cree una nueva contraseña.")
+                .setNegativeButton("Cancelar", null)
+                .setPositiveButton("Enviar enlace", (dialog, which) -> ejecutarResetPassword(usuario.getId()))
+                .show();
+    }
 
-        ResetPasswordRequest request = new ResetPasswordRequest(nuevaPassword);
-
-        ApiClient.getApiService().resetPasswordUsuario(id, request).enqueue(new Callback<UsuarioResponse>() {
+    private void ejecutarResetPassword(int id) {
+        ApiClient.getApiService().resetPasswordUsuario(id, new ResetPasswordRequest(null)).enqueue(new Callback<UsuarioResponse>() {
             @Override
             public void onResponse(@NonNull Call<UsuarioResponse> call, @NonNull Response<UsuarioResponse> response) {
-                if (btnGuardar != null) btnGuardar.setEnabled(true);
-
-                if (response.isSuccessful()) {
-                    Toast.makeText(DashboardActivity.this, "¡Contraseña restablecida correctamente!", Toast.LENGTH_SHORT).show();
-                    if (dialogReset != null && dialogReset.isShowing()) dialogReset.dismiss();
-                } else {
-                    Toast.makeText(DashboardActivity.this, "Error al restablecer contraseña (" + response.code() + ")", Toast.LENGTH_SHORT).show();
-                }
+                String mensaje = response.isSuccessful() && response.body() != null && response.body().getMessage() != null
+                        ? response.body().getMessage()
+                        : RespuestaApi.mensajeError(response, "No se pudo enviar el correo (" + response.code() + ")");
+                Toast.makeText(DashboardActivity.this, mensaje, Toast.LENGTH_LONG).show();
             }
 
             @Override
             public void onFailure(@NonNull Call<UsuarioResponse> call, @NonNull Throwable t) {
-                if (btnGuardar != null) btnGuardar.setEnabled(true);
-                Toast.makeText(DashboardActivity.this, "Error de conexión al restablecer contraseña", Toast.LENGTH_LONG).show();
+                Toast.makeText(DashboardActivity.this, "Error de conexión al enviar el correo", Toast.LENGTH_LONG).show();
             }
         });
     }
@@ -1117,7 +1155,7 @@ public class DashboardActivity extends AppCompatActivity {
                     }
                     obtenerDatosDashboard();
                 } else {
-                    Toast.makeText(DashboardActivity.this, "Error al eliminar usuario (" + response.code() + ")", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(DashboardActivity.this, RespuestaApi.mensajeError(response, "Error al eliminar usuario (" + response.code() + ")"), Toast.LENGTH_LONG).show();
                 }
             }
 

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "651669953106",
+    "project_id": "adisan-app-pe",
+    "storage_bucket": "adisan-app-pe.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:651669953106:android:5250985e53a69aed8a5d8b",
+        "android_client_info": {
+          "package_name": "com.example.adisan_app_android"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBdwJzCxf9xsgU9XZCI_u7PaQ8PvpConOc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -106,7 +106,7 @@
                         android:layout_width="20dp"
                         android:layout_height="20dp"
                         android:contentDescription="Buscar"
-                        android:src="@drawable/ic_box"
+                        android:src="@drawable/ic_search"
                         app:tint="#64748B" />
 
                     <EditText
@@ -134,61 +134,10 @@
                 android:scrollbars="none">
 
                 <LinearLayout
+                    android:id="@+id/layoutChipsCategoriasInv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/chipTodosInv"
-                        style="@style/Widget.Material3.Button"
-                        android:layout_width="wrap_content"
-                        android:layout_height="38dp"
-                        android:layout_marginEnd="8dp"
-                        android:backgroundTint="#F97316"
-                        android:text="Todos"
-                        android:textColor="@color/white"
-                        android:textSize="12sp"
-                        android:textStyle="bold"
-                        app:cornerRadius="18dp" />
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/chipBebidasInv"
-                        style="@style/Widget.Material3.Button.OutlinedButton"
-                        android:layout_width="wrap_content"
-                        android:layout_height="38dp"
-                        android:layout_marginEnd="8dp"
-                        android:backgroundTint="#101725"
-                        android:text="Bebidas"
-                        android:textColor="#94A3B8"
-                        android:textSize="12sp"
-                        app:cornerRadius="18dp"
-                        app:strokeColor="#1E293B" />
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/chipAbarrotesInv"
-                        style="@style/Widget.Material3.Button.OutlinedButton"
-                        android:layout_width="wrap_content"
-                        android:layout_height="38dp"
-                        android:layout_marginEnd="8dp"
-                        android:backgroundTint="#101725"
-                        android:text="Abarrotes"
-                        android:textColor="#94A3B8"
-                        android:textSize="12sp"
-                        app:cornerRadius="18dp"
-                        app:strokeColor="#1E293B" />
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/chipLimpiezaInv"
-                        style="@style/Widget.Material3.Button.OutlinedButton"
-                        android:layout_width="wrap_content"
-                        android:layout_height="38dp"
-                        android:backgroundTint="#101725"
-                        android:text="Limpieza"
-                        android:textColor="#94A3B8"
-                        android:textSize="12sp"
-                        app:cornerRadius="18dp"
-                        app:strokeColor="#1E293B" />
-                </LinearLayout>
+                    android:orientation="horizontal" />
             </HorizontalScrollView>
 
             <!-- SwipeRefresh + RecyclerView -->

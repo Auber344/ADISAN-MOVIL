@@ -418,7 +418,7 @@ public class ReportesFinancierosActivity extends AppCompatActivity {
 
     private void mostrarDialogoSelectorPeriodo() {
         String[] opciones = {
-            "Mes Actual (Oct 2026)",
+            "Mes actual (" + mesActualTexto() + ")",
             "Seleccionar Mes / Año",
             "Ver Todos los Tiempos"
         };
@@ -450,6 +450,12 @@ public class ReportesFinancierosActivity extends AppCompatActivity {
                     }
                 })
                 .show();
+    }
+
+    private static String mesActualTexto() {
+        String[] mesesAbbr = {"Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"};
+        Calendar cal = Calendar.getInstance();
+        return mesesAbbr[cal.get(Calendar.MONTH)] + " " + cal.get(Calendar.YEAR);
     }
 
     private void actualizarTextoPeriodo() {
@@ -736,8 +742,18 @@ public class ReportesFinancierosActivity extends AppCompatActivity {
         if (tvCountVentasPeriodo != null) tvCountVentasPeriodo.setText(countVentas + (countVentas == 1 ? " venta registrada" : " ventas registradas"));
 
         if (tvBadgeVariacionVentas != null) {
-            tvBadgeVariacionVentas.setText(countVentas > 0 ? "▲ +12%" : "Sin datos comparativos");
-            tvBadgeVariacionVentas.setVisibility(View.VISIBLE);
+            // Variación real frente al mes anterior; sin base de comparación no se muestra
+            double ventasMesAnterior = "MES".equals(periodoModo) ? ventasDelMesAnterior() : 0;
+            if (ventasMesAnterior > 0) {
+                double variacion = (totalVentas - ventasMesAnterior) / ventasMesAnterior * 100;
+                boolean sube = variacion >= 0;
+                tvBadgeVariacionVentas.setText(String.format(Locale.US, "%s %+.0f%%", sube ? "▲" : "▼", variacion));
+                tvBadgeVariacionVentas.setTextColor(Color.parseColor(sube ? "#10B981" : "#EF4444"));
+                tvBadgeVariacionVentas.setBackgroundColor(Color.parseColor(sube ? "#062E29" : "#3B1111"));
+                tvBadgeVariacionVentas.setVisibility(View.VISIBLE);
+            } else {
+                tvBadgeVariacionVentas.setVisibility(View.GONE);
+            }
         }
 
         if (tvValIngresos != null) tvValIngresos.setText(String.format(Locale.US, "S/ %.2f", totalVentas));
@@ -855,6 +871,26 @@ public class ReportesFinancierosActivity extends AppCompatActivity {
             if (tvSinMovimientosFinancieros != null) tvSinMovimientosFinancieros.setVisibility(View.GONE);
             if (movimientoAdapter != null) movimientoAdapter.setMovimientos(filtrados);
         }
+    }
+
+    /** Ventas (no canceladas) del mes anterior al seleccionado, para calcular la variación. */
+    private double ventasDelMesAnterior() {
+        int mes = selectedMonth == 0 ? 11 : selectedMonth - 1;
+        int anio = selectedMonth == 0 ? selectedYear - 1 : selectedYear;
+        double total = 0;
+        for (Pedido p : listaPedidosReal) {
+            if (p == null || TextUtils.isEmpty(p.getFecha())) continue;
+            String est = p.getEstado() != null ? p.getEstado().toLowerCase() : "";
+            if ("cancelado".equals(est) || "rechazado".equals(est)) continue;
+            try {
+                String[] partes = p.getFecha().replace("T", " ").split(" ")[0].split("-");
+                if (Integer.parseInt(partes[0]) == anio && Integer.parseInt(partes[1]) - 1 == mes) {
+                    total += p.getTotalDouble();
+                }
+            } catch (Exception ignored) {
+            }
+        }
+        return total;
     }
 
     private boolean coincidirFecha(String rawFecha) {

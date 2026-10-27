@@ -14,16 +14,16 @@
         android:layout_height="wrap_content"
         android:paddingHorizontal="24dp"
         android:paddingTop="40dp"
-        android:paddingBottom="32dp">
+        android:paddingBottom="24dp">
 
-        <!-- Logo Icon ADISAN (Centered) -->
+        <!-- Marca -->
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/cardLogoContainer"
             android:layout_width="72dp"
             android:layout_height="72dp"
             app:cardBackgroundColor="@color/login_accent_blue"
-            app:cardCornerRadius="20dp"
-            app:cardElevation="6dp"
+            app:cardCornerRadius="22dp"
+            app:cardElevation="0dp"
             app:strokeWidth="0dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -31,22 +31,21 @@
 
             <ImageView
                 android:id="@+id/ivLogo"
-                android:layout_width="44dp"
-                android:layout_height="44dp"
+                android:layout_width="42dp"
+                android:layout_height="42dp"
                 android:layout_gravity="center"
                 android:contentDescription="@string/company_name"
                 android:src="@drawable/ic_adisan_logo"
                 app:tint="@color/white" />
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- Titulo de Marca (Centered) -->
         <TextView
             android:id="@+id/tvBrandName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:letterSpacing="0.08"
-            android:text="ADISAN"
+            android:text="@string/app_name"
             android:textColor="@color/white"
             android:textSize="28sp"
             android:textStyle="bold"
@@ -54,373 +53,257 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/cardLogoContainer" />
 
-        <!-- Subtitulo Nombre de Empresa (Centered) -->
         <TextView
             android:id="@+id/tvCompanyName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="2dp"
-            android:letterSpacing="0.1"
-            android:text="DISTRIBUCIONES"
-            android:textAllCaps="true"
+            android:letterSpacing="0.18"
+            android:text="@string/login_brand_tagline"
             android:textColor="@color/login_text_muted"
-            android:textSize="12sp"
+            android:textSize="11sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tvBrandName" />
 
-        <!-- Descripcion Corta del Sistema (Centered) -->
-        <TextView
-            android:id="@+id/tvHeaderDescription"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:gravity="center"
-            android:text="Gestiona tu negocio de forma segura y eficiente"
-            android:textColor="@color/login_text_muted"
-            android:textSize="14sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tvCompanyName" />
-
-        <!-- Tarjeta Principal de Login -->
+        <!-- Tarjeta de acceso -->
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/cardLogin"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
+            android:layout_marginTop="32dp"
             app:cardBackgroundColor="@color/login_card_dark"
             app:cardCornerRadius="24dp"
-            app:cardElevation="8dp"
+            app:cardElevation="0dp"
             app:strokeColor="@color/login_card_border"
             app:strokeWidth="1dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tvHeaderDescription">
+            app:layout_constraintTop_toBottomOf="@id/tvCompanyName"
+            app:layout_constraintWidth_max="480dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="24dp">
+                android:orientation="vertical">
 
-                <!-- Titulo Tarjeta -->
-                <TextView
-                    android:id="@+id/tvLoginTitle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Iniciar sesión"
-                    android:textColor="@color/white"
-                    android:textSize="20sp"
-                    android:textStyle="bold" />
-
-                <!-- Subtitulo Tarjeta -->
-                <TextView
-                    android:id="@+id/tvLoginSubtitle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:text="Ingresa tus credenciales para continuar"
-                    android:textColor="@color/login_text_muted"
-                    android:textSize="13sp" />
-
-                <!-- Campo Usuario -->
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/tilUsuario"
-                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                <com.google.android.material.progressindicator.LinearProgressIndicator
+                    android:id="@+id/progressLogin"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="18dp"
-                    app:boxBackgroundColor="@color/login_input_bg"
-                    app:boxCornerRadiusBottomEnd="14dp"
-                    app:boxCornerRadiusBottomStart="14dp"
-                    app:boxCornerRadiusTopEnd="14dp"
-                    app:boxCornerRadiusTopStart="14dp"
-                    app:boxStrokeColor="@color/login_input_border"
-                    app:hintTextColor="@color/login_input_hint"
-                    app:startIconDrawable="@drawable/ic_user"
-                    app:startIconTint="@color/login_text_muted">
+                    android:indeterminate="true"
+                    android:visibility="invisible"
+                    app:indicatorColor="@color/login_accent_bright"
+                    app:trackColor="@color/login_card_dark"
+                    app:trackThickness="3dp" />
 
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/etUsuario"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:hint="Usuario"
-                        android:inputType="textPersonName"
-                        android:maxLines="1"
-                        android:textColor="@color/white"
-                        android:textColorHint="@color/login_input_hint"
-                        android:textSize="14sp" />
-
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <!-- Campo Contraseña -->
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/tilPassword"
-                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    app:boxBackgroundColor="@color/login_input_bg"
-                    app:boxCornerRadiusBottomEnd="14dp"
-                    app:boxCornerRadiusBottomStart="14dp"
-                    app:boxCornerRadiusTopEnd="14dp"
-                    app:boxCornerRadiusTopStart="14dp"
-                    app:boxStrokeColor="@color/login_input_border"
-                    app:endIconMode="password_toggle"
-                    app:endIconTint="@color/login_text_muted"
-                    app:hintTextColor="@color/login_input_hint"
-                    app:startIconDrawable="@drawable/ic_lock"
-                    app:startIconTint="@color/login_text_muted">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/etPassword"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:hint="Contraseña"
-                        android:inputType="textPassword"
-                        android:maxLines="1"
-                        android:textColor="@color/white"
-                        android:textColorHint="@color/login_input_hint"
-                        android:textSize="14sp" />
-
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <!-- Fila Recordarme y Olvidaste contraseña -->
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp">
-
-                    <CheckBox
-                        android:id="@+id/cbRecordarme"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentStart="true"
-                        android:layout_centerVertical="true"
-                        android:buttonTint="@color/login_accent_blue"
-                        android:checked="true"
-                        android:minHeight="36dp"
-                        android:paddingStart="4dp"
-                        android:paddingEnd="0dp"
-                        android:text="Recordarme"
-                        android:textColor="@color/login_text_light"
-                        android:textSize="12sp" />
+                    android:orientation="vertical"
+                    android:paddingHorizontal="24dp"
+                    android:paddingTop="21dp"
+                    android:paddingBottom="24dp">
 
                     <TextView
-                        android:id="@+id/tvOlvidastePassword"
+                        android:id="@+id/tvLoginTitle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_alignParentEnd="true"
-                        android:layout_centerVertical="true"
-                        android:background="?attr/selectableItemBackgroundBorderless"
-                        android:padding="4dp"
-                        android:text="¿Olvidaste tu contraseña?"
-                        android:textColor="@color/login_accent_bright"
-                        android:textSize="12sp"
+                        android:text="@string/login_title"
+                        android:textColor="@color/white"
+                        android:textSize="20sp"
                         android:textStyle="bold" />
-                </RelativeLayout>
 
-                <!-- Boton Iniciar Sesion -->
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnLogin"
-                    android:layout_width="match_parent"
-                    android:layout_height="52dp"
-                    android:layout_marginTop="18dp"
-                    android:backgroundTint="@color/login_accent_blue"
-                    android:text="Iniciar sesión"
-                    android:textAllCaps="false"
-                    android:textColor="@color/white"
-                    android:textSize="15sp"
-                    android:textStyle="bold"
-                    app:cornerRadius="14dp"
-                    app:elevation="4dp"
-                    app:icon="@drawable/ic_chevron_right"
-                    app:iconGravity="textEnd"
-                    app:iconPadding="8dp"
-                    app:iconTint="@color/white" />
+                    <TextView
+                        android:id="@+id/tvLoginSubtitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="@string/login_subtitle"
+                        android:textColor="@color/login_text_muted"
+                        android:textSize="13sp" />
 
-                <!-- Views ocultos para mantener IDs esperados por LoginActivity (por seguridad) -->
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    android:visibility="gone"
-                    android:orientation="horizontal">
-                    <com.google.android.material.card.MaterialCardView
-                        android:id="@+id/btnQuickGoogle"
-                        android:layout_width="1dp"
-                        android:layout_height="1dp" />
-                    <com.google.android.material.card.MaterialCardView
-                        android:id="@+id/btnQuickMicrosoft"
-                        android:layout_width="1dp"
-                        android:layout_height="1dp" />
-                    <com.google.android.material.card.MaterialCardView
-                        android:id="@+id/btnQuickBiometric"
-                        android:layout_width="1dp"
-                        android:layout_height="1dp" />
+                    <!-- Mensaje de error del inicio de sesión -->
+                    <TextView
+                        android:id="@+id/tvLoginError"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:background="@drawable/bg_login_error"
+                        android:drawablePadding="10dp"
+                        android:gravity="center_vertical"
+                        android:paddingHorizontal="14dp"
+                        android:paddingVertical="10dp"
+                        android:textColor="@color/login_error_text"
+                        android:textSize="13sp"
+                        android:visibility="gone"
+                        app:drawableStartCompat="@drawable/ic_warning"
+                        app:drawableTint="@color/login_error_text"
+                        tools:text="Correo o contraseña incorrectos"
+                        tools:visibility="visible" />
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/tilCorreo"
+                        style="@style/Widget.Adisan.LoginInput"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="18dp"
+                        android:hint="@string/hint_correo"
+                        app:startIconDrawable="@drawable/ic_user">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/etCorreo"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:autofillHints="emailAddress"
+                            android:imeOptions="actionNext"
+                            android:inputType="textEmailAddress"
+                            android:maxLines="1"
+                            android:textColor="@color/white"
+                            android:textSize="15sp" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/tilPassword"
+                        style="@style/Widget.Adisan.LoginInput"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:hint="@string/hint_password"
+                        app:endIconMode="password_toggle"
+                        app:endIconTint="@color/login_text_muted"
+                        app:startIconDrawable="@drawable/ic_lock">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/etPassword"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:autofillHints="password"
+                            android:imeOptions="actionDone"
+                            android:inputType="textPassword"
+                            android:maxLines="1"
+                            android:textColor="@color/white"
+                            android:textSize="15sp" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <com.google.android.material.checkbox.MaterialCheckBox
+                            android:id="@+id/cbRecordarme"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:checked="true"
+                            android:text="@string/login_recordarme"
+                            android:textColor="@color/login_text_light"
+                            android:textSize="13sp"
+                            app:buttonTint="@color/login_accent_bright" />
+
+                        <TextView
+                            android:id="@+id/tvOlvidastePassword"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="?attr/selectableItemBackground"
+                            android:minHeight="48dp"
+                            android:gravity="center_vertical"
+                            android:paddingHorizontal="4dp"
+                            android:text="@string/login_olvide"
+                            android:textColor="@color/login_accent_bright"
+                            android:textSize="13sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnLogin"
+                        android:layout_width="match_parent"
+                        android:layout_height="54dp"
+                        android:layout_marginTop="12dp"
+                        android:backgroundTint="@color/login_accent_blue"
+                        android:text="@string/btn_login"
+                        android:textAllCaps="false"
+                        android:textColor="@color/white"
+                        android:textSize="15sp"
+                        android:textStyle="bold"
+                        app:cornerRadius="14dp"
+                        app:icon="@drawable/ic_chevron_right"
+                        app:iconGravity="textEnd"
+                        app:iconPadding="8dp"
+                        app:iconTint="@color/white" />
+
+                    <TextView
+                        android:id="@+id/tvIrRegistro"
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        android:layout_marginTop="8dp"
+                        android:background="?attr/selectableItemBackground"
+                        android:gravity="center"
+                        android:text="@string/login_sin_cuenta"
+                        android:textColor="@color/login_accent_bright"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
                 </LinearLayout>
-
             </LinearLayout>
-
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- 3 Columnas Inferiores de Características -->
+        <!-- Beneficios -->
         <LinearLayout
             android:id="@+id/layoutFeatures"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="28dp"
             android:baselineAligned="false"
             android:orientation="horizontal"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/cardLogin">
+            app:layout_constraintTop_toBottomOf="@id/cardLogin"
+            app:layout_constraintWidth_max="480dp">
 
-            <!-- Columna 1: Inventario al día -->
-            <com.google.android.material.card.MaterialCardView
+            <TextView
+                style="@style/Widget.Adisan.LoginFeature"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:layout_marginEnd="8dp"
-                app:cardBackgroundColor="@color/login_card_dark"
-                app:cardCornerRadius="14dp"
-                app:cardElevation="2dp"
-                app:strokeColor="@color/login_card_border"
-                app:strokeWidth="1dp">
+                android:text="@string/login_feature_inventario"
+                app:drawableTopCompat="@drawable/ic_box" />
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:orientation="vertical"
-                    android:padding="14dp">
-
-                    <ImageView
-                        android:layout_width="26dp"
-                        android:layout_height="26dp"
-                        android:contentDescription="Inventario"
-                        android:src="@drawable/ic_box"
-                        app:tint="@color/login_accent_bright" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:gravity="center"
-                        android:text="Inventario\nal día"
-                        android:textColor="@color/login_text_light"
-                        android:textSize="11sp"
-                        android:textStyle="bold" />
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-
-            <!-- Columna 2: Pedidos más rápidos -->
-            <com.google.android.material.card.MaterialCardView
+            <TextView
+                style="@style/Widget.Adisan.LoginFeature"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:layout_marginHorizontal="4dp"
-                app:cardBackgroundColor="@color/login_card_dark"
-                app:cardCornerRadius="14dp"
-                app:cardElevation="2dp"
-                app:strokeColor="@color/login_card_border"
-                app:strokeWidth="1dp">
+                android:text="@string/login_feature_pedidos"
+                app:drawableTopCompat="@drawable/ic_truck" />
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:orientation="vertical"
-                    android:padding="14dp">
-
-                    <ImageView
-                        android:layout_width="26dp"
-                        android:layout_height="26dp"
-                        android:contentDescription="Pedidos"
-                        android:src="@drawable/ic_truck"
-                        app:tint="@color/login_accent_bright" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:gravity="center"
-                        android:text="Pedidos\nmás rápidos"
-                        android:textColor="@color/login_text_light"
-                        android:textSize="11sp"
-                        android:textStyle="bold" />
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-
-            <!-- Columna 3: Tu negocio en crecimiento -->
-            <com.google.android.material.card.MaterialCardView
+            <TextView
+                style="@style/Widget.Adisan.LoginFeature"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:layout_marginStart="8dp"
-                app:cardBackgroundColor="@color/login_card_dark"
-                app:cardCornerRadius="14dp"
-                app:cardElevation="2dp"
-                app:strokeColor="@color/login_card_border"
-                app:strokeWidth="1dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:orientation="vertical"
-                    android:padding="14dp">
-
-                    <ImageView
-                        android:layout_width="26dp"
-                        android:layout_height="26dp"
-                        android:contentDescription="Crecimiento"
-                        android:src="@drawable/ic_chart_growth"
-                        app:tint="@color/login_accent_bright" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:gravity="center"
-                        android:text="Tu negocio\nen crecimiento"
-                        android:textColor="@color/login_text_light"
-                        android:textSize="11sp"
-                        android:textStyle="bold" />
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-
+                android:text="@string/login_feature_reportes"
+                app:drawableTopCompat="@drawable/ic_chart_growth" />
         </LinearLayout>
 
-        <!-- Pie de Pagina -->
-        <LinearLayout
-            android:id="@+id/layoutFooter"
+        <!-- Pie -->
+        <TextView
+            android:id="@+id/tvFooter"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="28dp"
             android:gravity="center"
-            android:orientation="vertical"
+            android:lineSpacingExtra="2dp"
+            android:text="@string/login_footer"
+            android:textColor="@color/login_text_muted"
+            android:textSize="11sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/layoutFeatures">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="© 2026 Distribuciones ADISAN"
-                android:textColor="@color/login_text_muted"
-                android:textSize="11sp" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
-                android:text="v1.0.0"
-                android:textColor="@color/login_text_muted"
-                android:textSize="10sp" />
-
-        </LinearLayout>
+            app:layout_constraintTop_toBottomOf="@id/layoutFeatures"
+            app:layout_constraintVertical_bias="1" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -90,9 +90,9 @@ public class ProductoDetalleActivity extends AppCompatActivity {
 
         if (tvNombreHeader != null) tvNombreHeader.setText(producto.getProductoNombre());
         if (tvInfoNombre != null) tvInfoNombre.setText(producto.getProductoNombre());
-        if (tvInfoCategoria != null) tvInfoCategoria.setText("Categoría #" + producto.getCategoriaId());
-        if (tvCategoriaHeader != null) tvCategoriaHeader.setText("Categoría #" + producto.getCategoriaId());
-        if (tvInfoProveedor != null) tvInfoProveedor.setText("Proveedor #" + producto.getProveedorId());
+        if (tvInfoCategoria != null) tvInfoCategoria.setText(producto.getCategoriaNombre());
+        if (tvCategoriaHeader != null) tvCategoriaHeader.setText(producto.getCategoriaNombre());
+        if (tvInfoProveedor != null) tvInfoProveedor.setText(producto.getProveedorNombre());
         if (tvInfoUnidadesPaq != null) tvInfoUnidadesPaq.setText(producto.getUnidadesPorPaqueteVal() + " unidades");
 
         boolean activo = producto.getActivo() == 1;

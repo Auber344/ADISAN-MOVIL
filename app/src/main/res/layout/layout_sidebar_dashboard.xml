@@ -277,15 +277,15 @@
                 <ImageView
                     android:layout_width="22dp"
                     android:layout_height="22dp"
-                    android:contentDescription="Configuración"
-                    android:src="@drawable/ic_more"
+                    android:contentDescription="Acerca de"
+                    android:src="@drawable/ic_info"
                     app:tint="@color/login_text_light" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="14dp"
-                    android:text="Configuración"
+                    android:text="Acerca de ADISAN"
                     android:textColor="@color/login_text_light"
                     android:textSize="14sp" />
             </LinearLayout>

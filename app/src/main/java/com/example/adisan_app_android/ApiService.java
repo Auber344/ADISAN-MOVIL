@@ -17,6 +17,10 @@ public interface ApiService {
     @POST("api/login")
     Call<LoginResponse> login(@Body LoginRequest loginRequest);
 
+    /** Autorregistro desde el login: siempre crea una cuenta con rol "cliente". */
+    @POST("api/registro")
+    Call<LoginResponse> registrarCliente(@Body Usuario usuario);
+
     @GET("api/dashboard")
     Call<DashboardResponse> getDashboardData(@Header("Authorization") String token);
 

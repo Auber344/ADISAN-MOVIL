@@ -1,187 +1,251 @@
 package com.example.adisan_app_android;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Patterns;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.button.MaterialButton;
-import com.google.android.material.card.MaterialCardView;
+import com.google.android.material.checkbox.MaterialCheckBox;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.progressindicator.LinearProgressIndicator;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.gson.Gson;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+/**
+ * Inicio de sesión con Firebase Auth (correo + contraseña).
+ * El rol y los datos del usuario se leen de su perfil en Firestore y se guardan en
+ * SharedPreferences("AdisanPrefs") con las mismas claves que ya usan las demás pantallas.
+ */
 public class LoginActivity extends AppCompatActivity {
 
-    private TextInputEditText etUsuario;
-    private TextInputEditText etPassword;
-    private TextInputLayout tilUsuario;
-    private TextInputLayout tilPassword;
-    private MaterialButton btnLogin;
+    static final String PREFS = "AdisanPrefs";
+    private static final String KEY_RECORDAR = "recordar";
+    private static final String KEY_CORREO = "correo";
 
-    private TextView tvOlvidastePassword;
-    private MaterialCardView btnQuickGoogle;
-    private MaterialCardView btnQuickMicrosoft;
-    private MaterialCardView btnQuickBiometric;
+    private TextInputLayout tilCorreo;
+    private TextInputLayout tilPassword;
+    private TextInputEditText etCorreo;
+    private TextInputEditText etPassword;
+    private MaterialCheckBox cbRecordarme;
+    private MaterialButton btnLogin;
+    private LinearProgressIndicator progressLogin;
+    private TextView tvLoginError;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (restaurarSesion()) return;
+
         setContentView(R.layout.activity_login);
-
-        // Inicializar vistas
         initViews();
-
-        // Configurar listeners
         setupListeners();
     }
 
-    private void initViews() {
-        etUsuario = findViewById(R.id.etUsuario);
-        etPassword = findViewById(R.id.etPassword);
-        tilUsuario = findViewById(R.id.tilUsuario);
-        tilPassword = findViewById(R.id.tilPassword);
-        btnLogin = findViewById(R.id.btnLogin);
+    /**
+     * Entra directo si hay una sesión de Firebase activa y el usuario pidió mantenerla.
+     * Las pantallas cierran sesión limpiando SharedPreferences, así que si las preferencias
+     * ya no dicen "isLoggedIn" también se cierra la sesión de Firebase.
+     */
+    private boolean restaurarSesion() {
+        SharedPreferences prefs = getSharedPreferences(PREFS, MODE_PRIVATE);
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        boolean sesionLocal = prefs.getBoolean("isLoggedIn", false);
+        boolean recordar = prefs.getBoolean(KEY_RECORDAR, false);
 
-        tvOlvidastePassword = findViewById(R.id.tvOlvidastePassword);
-        btnQuickGoogle = findViewById(R.id.btnQuickGoogle);
-        btnQuickMicrosoft = findViewById(R.id.btnQuickMicrosoft);
-        btnQuickBiometric = findViewById(R.id.btnQuickBiometric);
+        if (auth.getCurrentUser() != null && sesionLocal && recordar) {
+            abrirDashboard();
+            return true;
+        }
+        if (auth.getCurrentUser() != null) {
+            auth.signOut();
+        }
+        if (sesionLocal) {
+            String correo = prefs.getString(KEY_CORREO, null);
+            prefs.edit().clear().putString(KEY_CORREO, correo).apply();
+        }
+        return false;
+    }
+
+    private void initViews() {
+        tilCorreo = findViewById(R.id.tilCorreo);
+        tilPassword = findViewById(R.id.tilPassword);
+        etCorreo = findViewById(R.id.etCorreo);
+        etPassword = findViewById(R.id.etPassword);
+        cbRecordarme = findViewById(R.id.cbRecordarme);
+        btnLogin = findViewById(R.id.btnLogin);
+        progressLogin = findViewById(R.id.progressLogin);
+        tvLoginError = findViewById(R.id.tvLoginError);
+
+        String ultimoCorreo = getSharedPreferences(PREFS, MODE_PRIVATE).getString(KEY_CORREO, null);
+        if (!TextUtils.isEmpty(ultimoCorreo)) {
+            etCorreo.setText(ultimoCorreo);
+            etPassword.requestFocus();
+        }
     }
 
     private void setupListeners() {
-        if (btnLogin != null) {
-            btnLogin.setOnClickListener(v -> validarYIniciarSesion());
-        }
+        btnLogin.setOnClickListener(v -> validarYIniciarSesion());
 
-        if (tvOlvidastePassword != null) {
-            tvOlvidastePassword.setOnClickListener(v ->
-                Toast.makeText(LoginActivity.this, "Por favor contacta al administrador del sistema ADISAN para restablecer tu contraseña.", Toast.LENGTH_LONG).show()
-            );
-        }
+        etPassword.setOnEditorActionListener((v, actionId, event) -> {
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                validarYIniciarSesion();
+                return true;
+            }
+            return false;
+        });
 
-        View.OnClickListener quickLoginListener = v ->
-            Toast.makeText(LoginActivity.this, "Acceso rápido habilitado para usuarios registrados", Toast.LENGTH_SHORT).show();
-
-        if (btnQuickGoogle != null) btnQuickGoogle.setOnClickListener(quickLoginListener);
-        if (btnQuickMicrosoft != null) btnQuickMicrosoft.setOnClickListener(quickLoginListener);
-        if (btnQuickBiometric != null) btnQuickBiometric.setOnClickListener(quickLoginListener);
+        findViewById(R.id.tvOlvidastePassword).setOnClickListener(v -> mostrarRecuperarPassword());
+        findViewById(R.id.tvIrRegistro).setOnClickListener(v -> startActivity(new Intent(this, RegistroActivity.class)));
     }
 
     private void validarYIniciarSesion() {
-        // Limpiar errores previos en las cajas de texto
-        if (tilUsuario != null) tilUsuario.setError(null);
-        if (tilPassword != null) tilPassword.setError(null);
+        tilCorreo.setError(null);
+        tilPassword.setError(null);
+        mostrarError(null);
 
-        String usuario = etUsuario != null && etUsuario.getText() != null
-                ? etUsuario.getText().toString().trim()
-                : "";
-        String password = etPassword != null && etPassword.getText() != null
-                ? etPassword.getText().toString().trim()
-                : "";
+        String correo = texto(etCorreo);
+        String password = etPassword.getText() != null ? etPassword.getText().toString() : "";
 
-        boolean esValido = true;
-
-        if (TextUtils.isEmpty(usuario)) {
-            if (tilUsuario != null) {
-                tilUsuario.setError(getString(R.string.error_empty_usuario));
-            } else if (etUsuario != null) {
-                etUsuario.setError(getString(R.string.error_empty_usuario));
-            }
-            esValido = false;
+        boolean valido = true;
+        if (TextUtils.isEmpty(correo)) {
+            tilCorreo.setError(getString(R.string.error_empty_correo));
+            valido = false;
+        } else if (!Patterns.EMAIL_ADDRESS.matcher(correo).matches()) {
+            tilCorreo.setError(getString(R.string.error_correo_invalido));
+            valido = false;
         }
-
         if (TextUtils.isEmpty(password)) {
-            if (tilPassword != null) {
-                tilPassword.setError(getString(R.string.error_empty_password));
-            } else if (etPassword != null) {
-                etPassword.setError(getString(R.string.error_empty_password));
-            }
-            esValido = false;
+            tilPassword.setError(getString(R.string.error_empty_password));
+            valido = false;
         }
 
-        if (esValido) {
-            ejecutarLogin(usuario, password);
+        if (valido) {
+            ejecutarLogin(correo, password);
         }
     }
 
-    private void ejecutarLogin(String usuario, String password) {
-        // Deshabilitar botón durante la petición
-        if (btnLogin != null) btnLogin.setEnabled(false);
+    private void ejecutarLogin(String correo, String password) {
+        setCargando(true);
 
-        LoginRequest request = new LoginRequest(usuario, password);
-
-        ApiClient.getApiService().login(request).enqueue(new Callback<LoginResponse>() {
+        ApiClient.getApiService().login(new LoginRequest(correo, password)).enqueue(new Callback<LoginResponse>() {
             @Override
             public void onResponse(@NonNull Call<LoginResponse> call, @NonNull Response<LoginResponse> response) {
-                if (btnLogin != null) btnLogin.setEnabled(true);
-
-                if (response.isSuccessful() && response.body() != null) {
-                    LoginResponse res = response.body();
-
-                    if (res.isSuccess()) {
-                        // 1. Mostrar mensaje de bienvenida
-                        String nombreUsuario = res.getUsuario() != null ? res.getUsuario() : usuario;
-                        Toast.makeText(LoginActivity.this, "¡Bienvenido, " + nombreUsuario + "!", Toast.LENGTH_SHORT).show();
-
-                        // 2. Guardar token, usuario y rol en SharedPreferences
-                        guardarSesion(res);
-
-                        // 3. Abrir DashboardActivity
-                        Intent intent = new Intent(LoginActivity.this, DashboardActivity.class);
-                        startActivity(intent);
-
-                        // 4. Cerrar LoginActivity
-                        finish();
-                    } else {
-                        String msg = res.getMessage() != null ? res.getMessage() : "Credenciales incorrectas";
-                        Toast.makeText(LoginActivity.this, msg, Toast.LENGTH_LONG).show();
-                    }
-                } else {
-                    // Procesar respuesta con código de error HTTP (400, 401, etc.)
-                    String mensajeError = "Credenciales incorrectas o error en el servidor";
-                    if (response.errorBody() != null) {
-                        try {
-                            String errorString = response.errorBody().string();
-                            LoginResponse errorRes = new Gson().fromJson(errorString, LoginResponse.class);
-                            if (errorRes != null && errorRes.getMessage() != null) {
-                                mensajeError = errorRes.getMessage();
-                            }
-                        } catch (Exception ignored) {
-                        }
-                    }
-                    Toast.makeText(LoginActivity.this, mensajeError, Toast.LENGTH_LONG).show();
+                setCargando(false);
+                LoginResponse res = response.body();
+                if (response.isSuccessful() && res != null && res.isSuccess()) {
+                    guardarSesion(LoginActivity.this, res, correo, cbRecordarme.isChecked());
+                    abrirDashboard();
+                    return;
                 }
+                mostrarError(mensajeDeError(response));
             }
 
             @Override
             public void onFailure(@NonNull Call<LoginResponse> call, @NonNull Throwable t) {
-                if (btnLogin != null) btnLogin.setEnabled(true);
-                Toast.makeText(LoginActivity.this,
-                        "Error de conexión con el servidor (10.0.2.2:3000). Verifica que el backend esté ejecutándose.",
-                        Toast.LENGTH_LONG).show();
+                setCargando(false);
+                mostrarError(getString(R.string.error_conexion));
             }
         });
     }
 
-    private void guardarSesion(LoginResponse response) {
-        SharedPreferences preferences = getSharedPreferences("AdisanPrefs", MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putString("token", response.getToken());
-        editor.putString("usuario", response.getUsuario());
-        editor.putString("rol", response.getRol());
-        editor.putInt("id", response.getId());
-        editor.putBoolean("isLoggedIn", true);
-        editor.apply();
+    private String mensajeDeError(Response<LoginResponse> response) {
+        if (response.errorBody() != null) {
+            try {
+                LoginResponse error = new Gson().fromJson(response.errorBody().string(), LoginResponse.class);
+                if (error != null && !TextUtils.isEmpty(error.getMessage())) return error.getMessage();
+            } catch (Exception ignored) {
+            }
+        }
+        return "No se pudo iniciar sesión. Inténtalo de nuevo.";
+    }
+
+    private void mostrarRecuperarPassword() {
+        View vista = LayoutInflater.from(this).inflate(R.layout.dialog_reset_password_email, null);
+        TextInputLayout tilEmail = vista.findViewById(R.id.tilResetCorreo);
+        TextInputEditText etEmail = vista.findViewById(R.id.etResetCorreo);
+        etEmail.setText(texto(etCorreo));
+
+        androidx.appcompat.app.AlertDialog dialogo = new MaterialAlertDialogBuilder(this)
+                .setTitle(R.string.recuperar_titulo)
+                .setMessage(R.string.recuperar_mensaje)
+                .setView(vista)
+                .setNegativeButton(R.string.cancelar, null)
+                .setPositiveButton(R.string.recuperar_enviar, null)
+                .create();
+
+        dialogo.setOnShowListener(d -> dialogo.getButton(androidx.appcompat.app.AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
+            String correo = texto(etEmail);
+            if (!Patterns.EMAIL_ADDRESS.matcher(correo).matches()) {
+                tilEmail.setError(getString(R.string.error_correo_invalido));
+                return;
+            }
+            tilEmail.setError(null);
+            v.setEnabled(false);
+            // El mensaje es el mismo exista o no la cuenta, para no revelar qué correos están registrados
+            FirebaseAuth.getInstance().sendPasswordResetEmail(correo).addOnCompleteListener(task -> {
+                dialogo.dismiss();
+                if (task.getException() instanceof com.google.firebase.FirebaseNetworkException) {
+                    mostrarError(getString(R.string.error_conexion));
+                    return;
+                }
+                new MaterialAlertDialogBuilder(this)
+                        .setTitle(R.string.recuperar_titulo)
+                        .setMessage(getString(R.string.recuperar_enviado, correo))
+                        .setPositiveButton(android.R.string.ok, null)
+                        .show();
+            });
+        }));
+        dialogo.show();
+    }
+
+    static void guardarSesion(Context context, LoginResponse response, String correo, boolean recordar) {
+        context.getSharedPreferences(PREFS, MODE_PRIVATE).edit()
+                .putString("token", response.getToken())
+                .putString("usuario", response.getUsuario())
+                .putString("rol", response.getRol())
+                .putInt("id", response.getId())
+                .putString(KEY_CORREO, correo)
+                .putBoolean(KEY_RECORDAR, recordar)
+                .putBoolean("isLoggedIn", true)
+                .apply();
+    }
+
+    private void abrirDashboard() {
+        startActivity(new Intent(this, DashboardActivity.class));
+        finish();
+    }
+
+    private void setCargando(boolean cargando) {
+        btnLogin.setEnabled(!cargando);
+        btnLogin.setText(cargando ? R.string.btn_login_cargando : R.string.btn_login);
+        etCorreo.setEnabled(!cargando);
+        etPassword.setEnabled(!cargando);
+        progressLogin.setVisibility(cargando ? View.VISIBLE : View.INVISIBLE);
+    }
+
+    private void mostrarError(String mensaje) {
+        tvLoginError.setText(mensaje);
+        tvLoginError.setVisibility(TextUtils.isEmpty(mensaje) ? View.GONE : View.VISIBLE);
+    }
+
+    private static String texto(TextInputEditText campo) {
+        return campo.getText() != null ? campo.getText().toString().trim() : "";
     }
 }

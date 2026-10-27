@@ -407,10 +407,9 @@ public class CarritoActivity extends AppCompatActivity {
                     startActivity(intent);
                     finish();
                 } else {
-                    String msg = "Error al crear pedido";
-                    if (response.body() != null && response.body().getMessage() != null) {
-                        msg = response.body().getMessage();
-                    }
+                    String msg = response.body() != null && response.body().getMessage() != null
+                            ? response.body().getMessage()
+                            : RespuestaApi.mensajeError(response, "Error al crear pedido");
                     Toast.makeText(CarritoActivity.this, msg, Toast.LENGTH_LONG).show();
                 }
             }

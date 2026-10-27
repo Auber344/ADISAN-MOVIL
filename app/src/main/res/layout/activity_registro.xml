@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/login_bg_dark"
+    android:fillViewport="true"
+    android:overScrollMode="never"
+    tools:context=".RegistroActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingHorizontal="24dp"
+        android:paddingTop="16dp"
+        android:paddingBottom="24dp">
+
+        <ImageView
+            android:id="@+id/btnVolverRegistro"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginStart="-12dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/cancelar"
+            android:padding="12dp"
+            android:rotation="180"
+            android:src="@drawable/ic_chevron_right"
+            app:tint="@color/white" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/registro_titulo"
+            android:textColor="@color/white"
+            android:textSize="26sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="@string/registro_subtitulo"
+            android:textColor="@color/login_text_muted"
+            android:textSize="14sp" />
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            app:cardBackgroundColor="@color/login_card_dark"
+            app:cardCornerRadius="24dp"
+            app:cardElevation="0dp"
+            app:strokeColor="@color/login_card_border"
+            app:strokeWidth="1dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <com.google.android.material.progressindicator.LinearProgressIndicator
+                    android:id="@+id/progressRegistro"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:indeterminate="true"
+                    android:visibility="invisible"
+                    app:indicatorColor="@color/login_accent_bright"
+                    app:trackColor="@color/login_card_dark"
+                    app:trackThickness="3dp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:paddingHorizontal="20dp"
+                    android:paddingTop="13dp"
+                    android:paddingBottom="20dp">
+
+                    <TextView
+                        android:id="@+id/tvRegistroError"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="12dp"
+                        android:background="@drawable/bg_login_error"
+                        android:drawablePadding="10dp"
+                        android:gravity="center_vertical"
+                        android:paddingHorizontal="14dp"
+                        android:paddingVertical="10dp"
+                        android:textColor="@color/login_error_text"
+                        android:textSize="13sp"
+                        android:visibility="gone"
+                        app:drawableStartCompat="@drawable/ic_warning"
+                        app:drawableTint="@color/login_error_text" />
+
+                    <TextView
+                        style="@style/Widget.Adisan.RegistroSeccion"
+                        android:text="@string/registro_seccion_datos" />
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/tilNombresReg"
+                        style="@style/Widget.Adisan.LoginInput"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/registro_nombres"
+                        app:startIconDrawable="@drawable/ic_user">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/etNombresReg"
+                            style="@style/Widget.Adisan.LoginInputTexto"
+                            android:autofillHints="givenName"
+                            android:inputType="textPersonName|textCapWords" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/tilApellidosReg"
+                        style="@style/Widget.Adisan.LoginInput"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:hint="@string/registro_apellidos"
+                        app:startIconDrawable="@drawable/ic_user">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/etApellidosReg"
+                            style="@style/Widget.Adisan.LoginInputTexto"
+                            android:autofillHints="familyName"
+                            android:inputType="textPersonName|textCapWords" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:baselineAligned="false"
+                        android:orientation="horizontal">
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/tilDniReg"
+                            style="@style/Widget.Adisan.LoginInput"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="6dp"
+                            android:layout_weight="1"
+                            android:hint="@string/registro_dni"
+                            app:counterEnabled="false">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/etDniReg"
+                                style="@style/Widget.Adisan.LoginInputTexto"
+                                android:inputType="number"
+                                android:maxLength="8" />
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/tilTelefonoReg"
+                            style="@style/Widget.Adisan.LoginInput"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="6dp"
+                            android:layout_weight="1"
+                            android:hint="@string/registro_telefono">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/etTelefonoReg"
+                                style="@style/Widget.Adisan.LoginInputTexto"
+                                android:autofillHints="phone"
+                                android:inputType="phone"
+                                android:maxLength="15" />
+                        </com.google.android.material.textfield.TextInputLayout>
+                    </LinearLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/tilDireccionReg"
+                        style="@style/Widget.Adisan.LoginInput"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:hint="@string/registro_direccion"
+                        app:startIconDrawable="@drawable/ic_truck">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/etDireccionReg"
+                            style="@style/Widget.Adisan.LoginInputTexto"
+                            android:autofillHints="postalAddress"
+                            android:inputType="textPostalAddress|textCapSentences" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <TextView
+                        style="@style/Widget.Adisan.RegistroSeccion"
+                        android:layout_marginTop="18dp"
+                        android:text="@string/registro_seccion_acceso" />
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/tilCorreoReg"
+                        style="@style/Widget.Adisan.LoginInput"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/hint_correo"
+                        app:startIconDrawable="@drawable/ic_user">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/etCorreoReg"
+                            style="@style/Widget.Adisan.LoginInputTexto"
+                            android:autofillHints="emailAddress"
+                            android:inputType="textEmailAddress" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/tilPasswordReg"
+                        style="@style/Widget.Adisan.LoginInput"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:hint="@string/registro_password"
+                        app:endIconMode="password_toggle"
+                        app:endIconTint="@color/login_text_muted"
+                        app:startIconDrawable="@drawable/ic_lock">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/etPasswordReg"
+                            style="@style/Widget.Adisan.LoginInputTexto"
+                            android:autofillHints="newPassword"
+                            android:inputType="textPassword" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/tilConfirmarReg"
+                        style="@style/Widget.Adisan.LoginInput"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:hint="@string/registro_confirmar"
+                        app:endIconMode="password_toggle"
+                        app:endIconTint="@color/login_text_muted"
+                        app:startIconDrawable="@drawable/ic_lock">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/etConfirmarReg"
+                            style="@style/Widget.Adisan.LoginInputTexto"
+                            android:autofillHints="newPassword"
+                            android:imeOptions="actionDone"
+                            android:inputType="textPassword" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnCrearCuenta"
+                        android:layout_width="match_parent"
+                        android:layout_height="54dp"
+                        android:layout_marginTop="20dp"
+                        android:backgroundTint="@color/login_accent_blue"
+                        android:text="@string/registro_boton"
+                        android:textAllCaps="false"
+                        android:textColor="@color/white"
+                        android:textSize="15sp"
+                        android:textStyle="bold"
+                        app:cornerRadius="14dp" />
+                </LinearLayout>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <TextView
+            android:id="@+id/tvIrLogin"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="12dp"
+            android:background="?attr/selectableItemBackground"
+            android:gravity="center"
+            android:paddingHorizontal="12dp"
+            android:text="@string/registro_ya_tengo_cuenta"
+            android:textColor="@color/login_accent_bright"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+</ScrollView>

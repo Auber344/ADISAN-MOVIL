@@ -1,0 +1,112 @@
+rules_version = '2';
+
+// Reglas de ADISAN. La app no tiene servidor propio: todo el control de acceso vive aquí.
+// Roles (campo "rol" en usuarios/{uid}): admin, vendedor, chofer, cliente.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function autenticado() {
+      return request.auth != null;
+    }
+
+    // Falla (y por tanto deniega) si el usuario no tiene perfil en /usuarios
+    function rol() {
+      return get(/databases/$(database)/documents/usuarios/$(request.auth.uid)).data.rol;
+    }
+
+    function esAdmin() {
+      return autenticado() && rol() == 'admin';
+    }
+
+    // Gestionan catálogo, compras, ofertas y clientes
+    function esGestor() {
+      return autenticado() && rol() in ['admin', 'vendedor'];
+    }
+
+    // Personal interno: además ve y actualiza pedidos (el chofer marca entregas)
+    function esPersonal() {
+      return autenticado() && rol() in ['admin', 'vendedor', 'chofer'];
+    }
+
+    function soloCambia(campos) {
+      return request.resource.data.diff(resource.data).affectedKeys().hasOnly(campos);
+    }
+
+    match /usuarios/{docId} {
+      allow get: if autenticado() && (request.auth.uid == docId || esPersonal());
+      allow list: if esPersonal();
+      // El admin crea cualquier rol; el vendedor solo registra clientes;
+      // quien se registra desde la app solo puede crear su propio perfil y como cliente
+      allow create: if esAdmin()
+        || (esGestor() && request.resource.data.rol == 'cliente')
+        || (autenticado() && request.auth.uid == docId
+            && request.resource.data.uid == request.auth.uid
+            && request.resource.data.rol == 'cliente');
+      allow update: if esAdmin()
+        || (esGestor() && resource.data.rol == 'cliente' && request.resource.data.rol == 'cliente')
+        || (autenticado() && request.auth.uid == docId
+            && request.resource.data.rol == resource.data.rol
+            && request.resource.data.id == resource.data.id);
+      allow delete: if esAdmin();
+    }
+
+    match /categorias/{id} {
+      allow read: if autenticado();
+      allow write: if esGestor();
+    }
+
+    match /proveedores/{id} {
+      allow read: if autenticado();
+      allow write: if esGestor();
+    }
+
+    match /productos/{id} {
+      allow read: if autenticado();
+      allow create, delete: if esGestor();
+      // Los clientes descuentan stock al comprar y lo devuelven al cancelar,
+      // pero solo pueden tocar stock_unidades y nunca dejarlo negativo
+      allow update: if esGestor()
+        || (autenticado() && soloCambia(['stock_unidades'])
+            && request.resource.data.stock_unidades is int
+            && request.resource.data.stock_unidades >= 0);
+    }
+
+    match /pedidos/{id} {
+      allow read: if esPersonal()
+        || (autenticado() && resource.data.cliente_uid == request.auth.uid);
+      allow create: if esGestor()
+        || (autenticado() && request.resource.data.cliente_uid == request.auth.uid
+            && request.resource.data.estado == 'pendiente');
+      allow update: if (esPersonal() && soloCambia(['estado', 'actualizado_en', 'fecha_estimada_entrega']))
+        || (autenticado() && resource.data.cliente_uid == request.auth.uid
+            && resource.data.estado == 'pendiente'
+            && request.resource.data.estado == 'cancelado'
+            && soloCambia(['estado', 'actualizado_en']));
+      // El historial de ventas no se borra; los pedidos se cancelan
+      allow delete: if false;
+    }
+
+    match /compras/{id} {
+      allow read, create: if esGestor();
+      allow update, delete: if false;
+    }
+
+    match /ofertas/{id} {
+      allow read: if autenticado();
+      allow write: if esGestor();
+    }
+
+    match /movimientos_inventario/{id} {
+      allow read: if esGestor();
+      allow create: if autenticado() && request.resource.data.usuario_uid == request.auth.uid;
+      allow update, delete: if false;
+    }
+
+    // Último id numérico por colección; solo puede avanzar de uno en uno
+    match /contadores/{coleccion} {
+      allow read: if autenticado();
+      allow create: if autenticado() && request.resource.data.ultimo == 1;
+      allow update: if autenticado() && request.resource.data.ultimo == resource.data.ultimo + 1;
+    }
+  }
+}

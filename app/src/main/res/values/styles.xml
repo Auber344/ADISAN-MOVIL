@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Campo de texto del login (fondo oscuro de marca) -->
+    <style name="Widget.Adisan.LoginInput" parent="Widget.Material3.TextInputLayout.OutlinedBox">
+        <item name="boxBackgroundColor">@color/login_input_bg</item>
+        <item name="boxStrokeColor">@color/login_accent_bright</item>
+        <item name="boxStrokeWidth">1dp</item>
+        <item name="boxStrokeWidthFocused">2dp</item>
+        <item name="boxCornerRadiusTopStart">14dp</item>
+        <item name="boxCornerRadiusTopEnd">14dp</item>
+        <item name="boxCornerRadiusBottomStart">14dp</item>
+        <item name="boxCornerRadiusBottomEnd">14dp</item>
+        <item name="hintTextColor">@color/login_accent_bright</item>
+        <item name="android:textColorHint">@color/login_input_hint</item>
+        <item name="startIconTint">@color/login_text_muted</item>
+        <item name="errorTextColor">@color/login_error_text</item>
+        <item name="errorIconTint">@color/login_error_text</item>
+        <item name="boxStrokeErrorColor">@color/login_error_text</item>
+    </style>
+
+    <!-- Texto de los campos del login y del registro -->
+    <style name="Widget.Adisan.LoginInputTexto" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:imeOptions">actionNext</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">15sp</item>
+    </style>
+
+    <!-- Título de sección dentro del formulario de registro -->
+    <style name="Widget.Adisan.RegistroSeccion" parent="">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginBottom">8dp</item>
+        <item name="android:letterSpacing">0.08</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:textColor">@color/login_text_muted</item>
+        <item name="android:textSize">11sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <!-- Beneficio destacado bajo la tarjeta de login -->
+    <style name="Widget.Adisan.LoginFeature" parent="">
+        <item name="android:gravity">center</item>
+        <item name="android:drawablePadding">8dp</item>
+        <item name="android:paddingHorizontal">4dp</item>
+        <item name="android:textColor">@color/login_text_light</item>
+        <item name="android:textSize">11sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="drawableTint">@color/login_accent_bright</item>
+    </style>
+
+</resources>
